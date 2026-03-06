@@ -10,8 +10,6 @@
 import 'package:flutter/material.dart';
 import '../../../services/api_service.dart';
 
-enum _HealthViewState { idle, loading, result }
-
 class HomeScreen extends StatefulWidget {
     const HomeScreen({super.key});
 
@@ -21,18 +19,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
     final ApiService _apiService = ApiService();
-
-    _HealthViewState _state = _HealthViewState.idle;
-    String? _status;
-    String? _time;
-    String? _error;
+    bool _isLoading = false;
 
     Future<void> _checkHealth() async {
         setState(() {
-            _state = _HealthViewState.loading;
-            _status = null;
-            _time = null;
-            _error = null;
+            _isLoading = true;
         });
 
         final response = await _apiService.checkHealth();
@@ -42,50 +33,79 @@ class _HomeScreenState extends State<HomeScreen> {
         }
 
         setState(() {
-            _state = _HealthViewState.result;
-
-            if (response.isSuccess && response.data != null) {
-                final data = response.data!;
-                _status = data['status']?.toString();
-                _time = data['time']?.toString();
-                _error = null;
-            } else {
-                _error = response.error ?? 'Unknown error';
-            }
+            _isLoading = false;
         });
+
+        if (response.isSuccess && response.data != null) {
+            final data = response.data!;
+            final status = data['status']?.toString() ?? '-';
+            final time = data['time']?.toString() ?? '-';
+            ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Status: $status | Time: $time'),
+                ),
+            );
+            return;
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(response.error ?? 'Unknown error'),
+            ),
+        );
     }
 
     @override
     Widget build(BuildContext context) {
+        final theme = Theme.of(context);
+
         return Scaffold(
-            body: Center(
+            body: SafeArea(
                 child: Padding(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 20,
+                    ),
                     child: Column(
-                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                            ElevatedButton(
-                                onPressed: _state == _HealthViewState.loading
-                                    ? null
-                                    : _checkHealth,
-                                child: const Text('Check Health'),
-                            ),
-                            const SizedBox(height: 16),
-                            if (_state == _HealthViewState.loading)
-                                const CircularProgressIndicator()
-                            else if (_state == _HealthViewState.result &&
-                                _error != null)
-                                Text(
-                                    _error!,
-                                    style: const TextStyle(color: Colors.red),
-                                )
-                            else if (_state == _HealthViewState.result)
-                                Column(
-                                    children: [
-                                        Text('Status: ${_status ?? '-'}'),
-                                        Text('Time: ${_time ?? '-'}'),
-                                    ],
+                            Text(
+                                'OVERDRIVE',
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.displayLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
                                 ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                                'MOTORSPORT REIMAGINED',
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.primary,
+                                    fontWeight: FontWeight.w500,
+                                    letterSpacing: 0.6,
+                                ),
+                            ),
+                            const SizedBox(height: 28),
+                            Text(
+                                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+                                'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 20),
+                            Text(
+                                'VER 1.19.235\nLEC +0.130\nHAD +278',
+                                textAlign: TextAlign.center,
+                                style: theme.textTheme.titleMedium,
+                            ),
+                            const Spacer(),
+                            ElevatedButton(
+                                onPressed: _isLoading ? null : _checkHealth,
+                                child: Text(
+                                    _isLoading ? 'Checking...' : 'Check Health',
+                                ),
+                            ),
                         ],
                     ),
                 ),

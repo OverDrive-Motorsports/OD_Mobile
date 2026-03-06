@@ -9,7 +9,8 @@
  
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'features/home/presentation/home_screen.dart';
+import 'core/router/app_router.dart';
+import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
@@ -25,9 +26,12 @@ class MyApp extends StatelessWidget {
     Widget build(BuildContext context) {
         final appEnv = dotenv.env['APP_ENV'] ?? 'unknown';
 
-        return MaterialApp(
+        return MaterialApp.router(
             title: 'OverDrive ($appEnv)',
-            home: const HomeScreen(),
+            routerConfig: appRouter,
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: ThemeMode.system,
         );
     }
 }
