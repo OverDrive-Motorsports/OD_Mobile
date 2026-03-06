@@ -1,16 +1,69 @@
-# overdrive
+# OverDrive Mobile
 
-A new Flutter project.
+Application mobile Flutter du projet OverDrive.
 
-## Getting Started
+## Prerequisites
 
-This project is a starting point for a Flutter application.
+- Flutter SDK installe
+- Dart SDK disponible dans le PATH
 
-A few resources to get you started if this is your first Flutter project:
+## Installation
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+```bash
+flutter pub get
+```
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Environment Configuration
+
+Le projet utilise `flutter_dotenv` avec deux fichiers:
+
+- `.env` (developpement)
+- `.env.prod` (production)
+
+Variables attendues:
+
+- `API_BASE_URL`
+- `APP_ENV`
+
+Le chargement de l'environnement se fait dans `lib/main.dart`:
+
+- par defaut: `.env`
+- surcharge possible avec `--dart-define=ENV_FILE=.env.prod`
+
+## Run
+
+Developpement:
+
+```bash
+flutter run
+```
+
+Production (fichier prod):
+
+```bash
+flutter run --dart-define=ENV_FILE=.env.prod
+```
+
+## Quality
+
+Lint:
+
+```bash
+flutter analyze
+```
+
+Format:
+
+```bash
+dart format lib/
+```
+
+Configuration associee:
+
+- `analysis_options.yaml`
+- `.editorconfig`
+
+## Notes
+
+- `.env` et `.env.prod` sont ignores par Git.
+- Les assets Flutter incluent `.env` et `.env.prod` via `pubspec.yaml`.

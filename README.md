@@ -73,7 +73,57 @@ Project developed by the **OverDrive Team – Epitech Paris (2026)**.
 
 ## Installation & Usage
 
-The project is currently under development. No public version is available at this time.
+### Repository
+
+```bash
+git clone <repo-url>
+cd OD_Mobile
+```
+
+### Mobile App (Flutter)
+
+Le module mobile se trouve dans `overdrive/`.
+
+```bash
+cd overdrive
+flutter pub get
+```
+
+Environment files:
+
+- `.env` (dev)
+- `.env.prod` (prod)
+
+Required variables:
+
+- `API_BASE_URL`
+- `APP_ENV`
+
+Run in development:
+
+```bash
+flutter run
+```
+
+Run with production environment file:
+
+```bash
+flutter run --dart-define=ENV_FILE=.env.prod
+```
+
+Code quality:
+
+```bash
+flutter analyze
+dart format lib/
+```
+
+Lint and formatting configuration is defined in:
+
+- `overdrive/analysis_options.yaml`
+- `overdrive/.editorconfig`
+
+More details for the Flutter app are available in `overdrive/README.md`.
 
 <br>
 
