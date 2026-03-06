@@ -1,0 +1,16 @@
+include: package:flutter_lints/flutter.yaml
+
+linter:
+  rules:
+    - prefer_const_constructors
+    - prefer_const_literals_to_create_immutables
+    - avoid_print
+    - always_declare_return_types
+    - prefer_single_quotes
+    - sort_child_properties_last
+    - use_super_parameters
+
+analyzer:
+  errors:
+    missing_required_param: error
+    missing_return: error
