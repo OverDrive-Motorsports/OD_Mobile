@@ -56,7 +56,11 @@ class ApiService {
         fromJson != null ? fromJson(response.data) : response.data,
       );
     } on DioException catch (e) {
-      return ApiResponse.failure(_handleError(e));
+      final error = e.error;
+      if (error is String && error.trim().isNotEmpty) {
+        return ApiResponse.failure(error);
+      }
+      return ApiResponse.failure(e.message ?? 'Unexpected error');
     }
   }
 
@@ -65,41 +69,5 @@ class ApiService {
       '/health',
       fromJson: (json) => Map<String, dynamic>.from(json as Map),
     );
-  }
-
-  String _handleError(DioException e) {
-    switch (e.type) {
-      case DioExceptionType.connectionTimeout:
-      case DioExceptionType.receiveTimeout:
-        return 'Connection timeout';
-      case DioExceptionType.connectionError:
-        return 'No internet connection';
-      case DioExceptionType.badResponse:
-        return 'Server error ${e.response?.statusCode}';
-      case DioExceptionType.unknown:
-        final errorText = e.error?.toString() ?? '';
-        final messageText = e.message ?? '';
-        final details = '$errorText $messageText'.toLowerCase();
-
-        if (details.contains('cleartext')) {
-          return 'HTTP blocked by Android cleartext policy';
-        }
-
-        if (details.contains('connection refused')) {
-          return 'Cannot reach backend at ${dotenv.env['API_BASE_URL'] ?? ''}';
-        }
-
-        if (messageText.trim().isNotEmpty) {
-          return messageText;
-        }
-
-        if (errorText.trim().isNotEmpty) {
-          return errorText;
-        }
-
-        return 'Unexpected network error';
-      default:
-        return 'Unexpected error';
-    }
   }
 }
