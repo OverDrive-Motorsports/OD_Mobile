@@ -171,7 +171,7 @@ class _CompactMenu extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          width: 188,
+          width: 212,
           padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -196,6 +196,12 @@ class _CompactMenu extends StatelessWidget {
                 label: 'Formule 1',
                 active: selectedIndex == 1,
                 onTap: () => onNavigate(1),
+              ),
+              _CompactMenuEntry(
+                icon: Icons.live_tv_rounded,
+                label: 'TV',
+                active: selectedIndex == 2,
+                onTap: () => onNavigate(2),
               ),
             ],
           ),

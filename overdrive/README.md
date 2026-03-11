@@ -7,9 +7,9 @@ Flutter mobile client for the OverDrive ecosystem.
 The current app is a multi-page shell focused on a liquid-glass iOS-style interface:
 
 - **Home**: schedule dashboard with day tabs (`Hier`, `Aujourd'hui`, `A venir`)
-- **Formula 1**: intentionally empty placeholder page
+- **Formula 1**: event sessions + driver standings (20 drivers)
+- **TV**: single stream card (`CANAL+ SPORT CHINE`)
 - **Global overlay menu**: `OD` (top-left) + `Accueil` button (top-right) on every page
-- **Menu entries**: `Accueil`, `Formule 1`
 
 Navigation between pages is controlled through a shared `ValueNotifier<int>`.
 
@@ -39,6 +39,7 @@ lib/
   pages/
     home/home_page.dart
     f1/f1_page.dart
+    tv/tv_page.dart
   widgets/
     glass_card.dart
     top_left_menu_overlay.dart
@@ -134,6 +135,5 @@ dart format lib test
 
 ## Notes
 
-- The TV page and related stream dependencies were removed.
 - `lib/widgets/app_navigation.dart` still exists in the repository but is not part of the current active navigation flow.
 - API service files exist and are ready for backend integration, but current page content is mostly mocked UI data.

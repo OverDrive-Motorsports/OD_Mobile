@@ -11,37 +11,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// COLORS
-// ─────────────────────────────────────────────────────────────────────────────
 
 class AppColors {
   AppColors._();
 
-  // Backgrounds
   static const Color black        = Color(0xFF000000);
   static const Color bg           = Color(0xFF0A0A0A);
   static const Color surface1     = Color(0xFF111111);
   static const Color surface2     = Color(0xFF1A1A1A);
 
-  // Glass
   static const Color glass        = Color(0x12FFFFFF);
   static const Color glassBorder  = Color(0x1FFFFFFF);
   static const Color glassDivider = Color(0x14FFFFFF);
 
-  // Text
   static const Color textPrimary   = Color(0xFFFFFFFF);
   static const Color textSecondary = Color(0x8CFFFFFF);
   static const Color textMuted     = Color(0x66FFFFFF);
   static const Color textTertiary  = textMuted;
   static const Color divider       = glassDivider;
 
-  // Brand
   static const Color gold = Color(0xFFC9A84C);
   static const Color red  = Color(0xFFE8002D);
   static const Color f1Red = red;
 
-  // F1 Teams
   static const Color teamMercedes = Color(0xFF27F4D2);
   static const Color teamFerrari  = Color(0xFFE8002D);
   static const Color teamRedBull  = Color(0xFF3671C6);
@@ -50,20 +42,15 @@ class AppColors {
   static const Color teamWilliams = Color(0xFF64C4FF);
   static const Color teamSauber   = Color(0xFF52E252);
 
-  // Sectors
   static const Color sectorPurple = Color(0xFFC77DFF);
   static const Color sectorGreen  = Color(0xFF39D353);
   static const Color sectorYellow = Color(0xFFFFD60A);
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TEXT STYLES
-// ─────────────────────────────────────────────────────────────────────────────
 
 class AppTextStyles {
   AppTextStyles._();
 
-  // Orbitron — display & headings
   static TextStyle display({Color color = AppColors.textPrimary}) =>
       GoogleFonts.orbitron(
         fontSize: 28,
@@ -87,7 +74,6 @@ class AppTextStyles {
         letterSpacing: 0.4,
       );
 
-  // Helvetica Neue — body
   static const TextStyle _hv = TextStyle(
     fontFamilyFallback: ['Helvetica Neue', 'Helvetica'],
   );
@@ -119,7 +105,6 @@ class AppTextStyles {
       _hv.copyWith(fontSize: 12, fontWeight: FontWeight.w700, color: color);
 }
 
-// Backward compatibility helpers for pages still using the old AppText API.
 class AppText {
   AppText._();
 
@@ -130,9 +115,6 @@ class AppText {
   static TextStyle get micro => AppTextStyles.label();
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// THEME
-// ─────────────────────────────────────────────────────────────────────────────
 
 class AppTheme {
   AppTheme._();

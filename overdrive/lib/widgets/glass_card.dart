@@ -45,7 +45,6 @@ class GlassCard extends StatelessWidget {
                 blurRadius: 32,
                 offset: const Offset(0, 8),
               ),
-              // Inner top highlight — liquid glass shimmer
               BoxShadow(
                 color: Colors.white.withOpacity(0.04),
                 blurRadius: 0,
@@ -64,7 +63,6 @@ class GlassCard extends StatelessWidget {
   }
 }
 
-// ── Segmented control ─────────────────────────────────────────────────────────
 
 class GlassSegmentedControl extends StatelessWidget {
   const GlassSegmentedControl({
@@ -126,7 +124,6 @@ class GlassSegmentedControl extends StatelessWidget {
   }
 }
 
-// ── Live badge ────────────────────────────────────────────────────────────────
 
 class LiveBadge extends StatelessWidget {
   const LiveBadge({super.key});
@@ -153,7 +150,6 @@ class LiveBadge extends StatelessWidget {
   }
 }
 
-// ── F1 pill badge ─────────────────────────────────────────────────────────────
 
 class F1Badge extends StatelessWidget {
   const F1Badge({super.key});

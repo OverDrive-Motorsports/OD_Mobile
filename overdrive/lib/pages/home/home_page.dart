@@ -10,9 +10,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/top_left_menu_overlay.dart';
 
-// ─────────────────────────────────────────────
-//  DATA MODELS
-// ─────────────────────────────────────────────
 
 enum RaceStatus { finished, live, upcoming }
 

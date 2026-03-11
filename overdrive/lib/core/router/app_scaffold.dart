@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 import '../../pages/home/home_page.dart';
 import '../../pages/f1/f1_page.dart';
+import '../../pages/tv/tv_page.dart';
 import 'app_navigation_controller.dart';
 
 class AppScaffold extends StatefulWidget {
@@ -25,20 +26,18 @@ class _AppScaffoldState extends State<AppScaffold> {
   static const List<Widget> _pages = [
     HomePage(),
     F1Page(),
+    TvPage(),
   ];
 
-  int _coerceIndex(int index) => index.clamp(0, _pages.length - 1).toInt();
-
   void _syncNavigationIndex() {
-    final nextIndex = _coerceIndex(appNavigationIndex.value);
-    if (!mounted || _selectedIndex == nextIndex) return;
-    setState(() => _selectedIndex = nextIndex);
+    if (!mounted || _selectedIndex == appNavigationIndex.value) return;
+    setState(() => _selectedIndex = appNavigationIndex.value);
   }
 
   @override
   void initState() {
     super.initState();
-    _selectedIndex = _coerceIndex(appNavigationIndex.value);
+    _selectedIndex = appNavigationIndex.value;
     appNavigationIndex.addListener(_syncNavigationIndex);
   }
 
@@ -53,7 +52,7 @@ class _AppScaffoldState extends State<AppScaffold> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: IndexedStack(
-        index: _coerceIndex(_selectedIndex),
+        index: _selectedIndex,
         children: _pages,
       ),
     );

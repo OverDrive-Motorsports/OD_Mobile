@@ -33,7 +33,7 @@ class AppNavigation extends StatelessWidget {
             ),
           ),
           child: NavigationBar(
-            selectedIndex: selectedIndex.clamp(0, 1).toInt(),
+            selectedIndex: selectedIndex,
             onDestinationSelected: onDestinationSelected,
             backgroundColor: Colors.transparent,
             elevation: 0,
@@ -47,6 +47,11 @@ class AppNavigation extends StatelessWidget {
                 icon: Icon(Icons.flag_outlined),
                 selectedIcon: Icon(Icons.flag_rounded),
                 label: 'F1',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.live_tv_outlined),
+                selectedIcon: Icon(Icons.live_tv_rounded),
+                label: 'Live',
               ),
             ],
           ),
