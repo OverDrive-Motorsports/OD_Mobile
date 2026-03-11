@@ -1,137 +1,104 @@
-# OverDrive Mobile
+# OverDrive Mobile (Flutter)
 
-Flutter mobile client for the OverDrive project.
+Flutter mobile client for the OverDrive ecosystem.
 
-## Module Purpose
+## What Is Implemented
 
-The current app is a base mobile shell with:
-- environment loading at startup
-- a reusable REST client built on Dio
-- a Home screen that calls `/health` and displays API status/time
+The current app is a multi-page shell focused on a liquid-glass iOS-style interface:
+
+- **Home**: schedule dashboard with day tabs (`Hier`, `Aujourd'hui`, `A venir`)
+- **Formula 1**: intentionally empty placeholder page
+- **Global overlay menu**: `OD` (top-left) + `Accueil` button (top-right) on every page
+- **Menu entries**: `Accueil`, `Formule 1`
+
+Navigation between pages is controlled through a shared `ValueNotifier<int>`.
 
 ## Tech Stack
 
 - Flutter / Dart SDK `^3.10.7`
-- `dio` for HTTP requests
-- `flutter_dotenv` for environment variables
-- `pretty_dio_logger` for request/response logging
+- `go_router` for routing
+- `flutter_dotenv` for environment loading
+- `google_fonts` for typography
+- `flutter_animate` (present in dependencies)
+- `dio` + `pretty_dio_logger` for API client services
 
-## Project Layout
+## Project Structure
 
 ```text
 lib/
   main.dart
-  features/
-    home/presentation/home_screen.dart
+  core/
+    router/
+      app_router.dart
+      app_scaffold.dart
+      app_navigation_controller.dart
+    theme/
+      app_theme.dart
+    constants/
+      app_constants.dart
+  pages/
+    home/home_page.dart
+    f1/f1_page.dart
+  widgets/
+    glass_card.dart
+    top_left_menu_overlay.dart
+    app_navigation.dart
   services/
     api_service.dart
     api_interceptor.dart
     api_response.dart
-  core/
-    constants/app_constants.dart
-    theme/app_theme.dart
-    utils/logger.dart
-  shared/
-    widgets/app_scaffold.dart
 ```
 
-## Startup Flow
+## App Bootstrap Flow
 
-1. `main()` calls `WidgetsFlutterBinding.ensureInitialized()`.
+1. `main()` initializes Flutter bindings.
 2. Environment file is loaded from `ENV_FILE` (`.env` by default).
-3. `MyApp` reads `APP_ENV` and injects it into the app title.
-4. The app opens `HomeScreen`.
+3. `OverDriveApp` starts `MaterialApp.router` with `appRouter`.
+4. The root route (`/`) renders `AppScaffold`.
+5. `AppScaffold` switches pages via `IndexedStack` and `appNavigationIndex`.
 
-Code reference: `lib/main.dart`.
+## Routing and Navigation
 
-## Home Screen Behavior
+- Routing entry point: `lib/core/router/app_router.dart`
+- Shell state container: `lib/core/router/app_scaffold.dart`
+- Shared index state: `lib/core/router/app_navigation_controller.dart`
 
-`HomeScreen` (`lib/features/home/presentation/home_screen.dart`) manages 3 UI states:
-- `idle`
-- `loading`
-- `result`
+The `TopLeftMenuOverlay` updates `appNavigationIndex`, and `AppScaffold` reacts by switching the visible page.
 
-When the user taps **Check Health**:
-- it calls `ApiService.checkHealth()`
-- on success, it renders `status` and `time` from the JSON response
-- on failure, it renders an error message
+## Theming
 
-## Network Layer
+Theme and design tokens are centralized in `lib/core/theme/app_theme.dart`:
 
-### Architecture
+- `AppColors`
+- `AppTextStyles`
+- `AppTheme.darkTheme`
 
-- UI should call `ApiService` only.
-- HTTP client concerns are centralized in `services/`.
-- API results are wrapped in `ApiResponse<T>` to avoid raw exception handling in UI code.
-
-### `ApiService`
-
-`lib/services/api_service.dart`:
-- reads `API_BASE_URL` from `.env`
-- configures Dio with `connectTimeout = 10s` and `receiveTimeout = 10s`
-- registers `ApiInterceptor()` and `PrettyDioLogger(...)`
-- validates `API_BASE_URL` before requests
-- exposes generic `get<T>()` and `checkHealth()` for `GET /health`
-- maps Dio errors to user-facing messages
-
-Important: `PrettyDioLogger` is currently added unconditionally in the constructor.
-
-### `ApiInterceptor`
-
-`lib/services/api_interceptor.dart`:
-- currently extends Dio `Interceptor` with no overrides
-- acts as the insertion point for Bearer token injection, global request/response hooks, and centralized error/reporting policies
-
-### `ApiResponse<T>`
-
-`lib/services/api_response.dart` provides two explicit states:
-- `ApiResponse.success(data)`
-- `ApiResponse.failure(error)`
-
-This keeps UI logic simple (`isSuccess`, `data`, `error`) and avoids `try/catch` in presentation code.
+Reusable liquid-glass components are in `lib/widgets/glass_card.dart`.
 
 ## Environment Configuration
 
-The app uses two files:
-- `.env` for development
-- `.env.prod` for production
+Environment assets are declared in `pubspec.yaml`:
+
+- `.env`
+- `.env.prod`
 
 Required variables:
+
 - `API_BASE_URL`
 - `APP_ENV`
 
-Local examples:
+Example (`.env`):
 
 ```env
-# Android emulator
 API_BASE_URL=http://10.0.2.2:8080
 APP_ENV=dev
 ```
 
-```env
-# iOS simulator
-API_BASE_URL=http://localhost:8080
-APP_ENV=dev
-```
-
-Production example:
-
-```env
-API_BASE_URL=https://api.overdrive.com
-APP_ENV=prod
-```
-
-`ENV_FILE` override:
+Run with production env file:
 
 ```bash
 flutter run --dart-define=ENV_FILE=.env.prod
 ```
-
-## Android Networking Setup
-
-`android/app/src/main/AndroidManifest.xml` includes:
-- `android.permission.INTERNET`
-- `android:usesCleartextTraffic="true"` for local HTTP development
 
 ## Commands
 
@@ -141,40 +108,32 @@ Install dependencies:
 flutter pub get
 ```
 
-Run in development:
+Run the app:
 
 ```bash
 flutter run
 ```
 
-Run with production environment:
-
-```bash
-flutter run --dart-define=ENV_FILE=.env.prod
-```
-
-Static analysis:
+Analyze code:
 
 ```bash
 flutter analyze
 ```
 
+Run tests:
+
+```bash
+flutter test
+```
+
 Format source:
 
 ```bash
-dart format lib/
+dart format lib test
 ```
 
-## Linting and Style
+## Notes
 
-- Lint rules are configured in `analysis_options.yaml`.
-- Formatting and indentation are configured in `.editorconfig`.
-- Dart indentation in this project is set to 4 spaces.
-
-## Current Gaps
-
-- `core/constants/app_constants.dart` is a placeholder.
-- `core/theme/app_theme.dart` is a placeholder.
-- `core/utils/logger.dart` is a placeholder.
-- `shared/widgets/app_scaffold.dart` is a placeholder.
-- `test/widget_test.dart` is still the default Flutter counter test and does not match current UI.
+- The TV page and related stream dependencies were removed.
+- `lib/widgets/app_navigation.dart` still exists in the repository but is not part of the current active navigation flow.
+- API service files exist and are ready for backend integration, but current page content is mostly mocked UI data.
