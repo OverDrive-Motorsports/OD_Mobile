@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../core/router/app_navigation_controller.dart';
 import '../core/theme/app_theme.dart';
+import '../services/health_service.dart';
 
 class TopLeftMenuOverlay extends StatefulWidget {
   const TopLeftMenuOverlay({super.key});
@@ -12,7 +13,10 @@ class TopLeftMenuOverlay extends StatefulWidget {
 
 class _TopLeftMenuOverlayState extends State<TopLeftMenuOverlay>
     with SingleTickerProviderStateMixin {
+  final HealthService _healthService = HealthService();
+
   bool _isOpen = false;
+  bool _isCheckingHealth = false;
   late final AnimationController _menuCtrl;
   late final Animation<double> _menuFade;
   late final Animation<Offset> _menuSlide;
@@ -51,6 +55,49 @@ class _TopLeftMenuOverlayState extends State<TopLeftMenuOverlay>
   void _navigateTo(int index) {
     _closeMenu();
     setAppNavigationIndex(index);
+  }
+
+  Future<void> _checkBackendHealth() async {
+    if (_isCheckingHealth) {
+      return;
+    }
+
+    _closeMenu();
+
+    setState(() => _isCheckingHealth = true);
+    final response = await _healthService.checkHealth();
+
+    if (!mounted) {
+      return;
+    }
+
+    setState(() => _isCheckingHealth = false);
+
+    final messenger = ScaffoldMessenger.maybeOf(context);
+    if (messenger == null) {
+      return;
+    }
+
+    if (response.isSuccess && response.data != null) {
+      final health = response.data!;
+      final suffix = health.timestamp != null
+          ? ' (${health.timestampLabel})'
+          : '';
+      messenger.showSnackBar(
+        SnackBar(
+          backgroundColor: const Color(0xFF15351D),
+          content: Text('Backend health: ${health.status}$suffix'),
+        ),
+      );
+      return;
+    }
+
+    messenger.showSnackBar(
+      SnackBar(
+        backgroundColor: const Color(0xFF3A1616),
+        content: Text('Backend indisponible: ${response.error ?? 'Erreur'}'),
+      ),
+    );
   }
 
   @override
@@ -102,8 +149,9 @@ class _TopLeftMenuOverlayState extends State<TopLeftMenuOverlay>
                   builder: (context, selectedIndex, child) {
                     return _CompactMenu(
                       selectedIndex: selectedIndex,
-                      onClose: _closeMenu,
                       onNavigate: _navigateTo,
+                      onHealthTap: _checkBackendHealth,
+                      isCheckingHealth: _isCheckingHealth,
                     );
                   },
                 ),
@@ -156,13 +204,15 @@ class _TopLeftButton extends StatelessWidget {
 class _CompactMenu extends StatelessWidget {
   const _CompactMenu({
     required this.selectedIndex,
-    required this.onClose,
     required this.onNavigate,
+    required this.onHealthTap,
+    required this.isCheckingHealth,
   });
 
   final int selectedIndex;
-  final VoidCallback onClose;
   final ValueChanged<int> onNavigate;
+  final VoidCallback onHealthTap;
+  final bool isCheckingHealth;
 
   @override
   Widget build(BuildContext context) {
@@ -202,6 +252,11 @@ class _CompactMenu extends StatelessWidget {
                 label: 'TV',
                 active: selectedIndex == 2,
                 onTap: () => onNavigate(2),
+              ),
+              _CompactMenuEntry(
+                icon: Icons.monitor_heart_outlined,
+                label: isCheckingHealth ? 'Health...' : 'Health',
+                onTap: onHealthTap,
               ),
             ],
           ),

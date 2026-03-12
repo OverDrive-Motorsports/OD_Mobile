@@ -95,6 +95,13 @@ API_BASE_URL=http://10.0.2.2:8080
 APP_ENV=dev
 ```
 
+For a real phone, `10.0.2.2` does not work. Use your computer LAN IP:
+
+```env
+API_BASE_URL=http://192.168.x.x:8080
+APP_ENV=dev
+```
+
 Run with production env file:
 
 ```bash
@@ -113,6 +120,12 @@ Run the app:
 
 ```bash
 flutter run
+```
+
+Run the app with filtered emulator noise logs:
+
+```bash
+./scripts/run_filtered_logs.sh
 ```
 
 Analyze code:
