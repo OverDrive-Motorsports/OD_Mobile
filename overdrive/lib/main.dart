@@ -9,13 +9,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'core/router/app_router.dart';
+import 'pages/home/home_page.dart';
 import 'core/theme/app_theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   const envFile = String.fromEnvironment('ENV_FILE', defaultValue: '.env');
-  await dotenv.load(fileName: envFile);
+
+  try {
+    await dotenv.load(fileName: envFile);
+  } catch (_) {
+    // The app can run without an env file and will fallback to default URLs.
+  }
+
   runApp(const OverDriveApp());
 }
 
@@ -24,10 +30,10 @@ class OverDriveApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'OverDrive',
-      routerConfig: appRouter,
+      home: const HomePage(),
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
     );
