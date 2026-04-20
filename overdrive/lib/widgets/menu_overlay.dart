@@ -3,13 +3,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
-import '../pages/calendar/calendar_page.dart';
-import '../pages/championship/championship_page.dart';
-import '../pages/profile/profile_page.dart';
-import '../pages/search/search_page.dart';
-import '../pages/settings/settings_page.dart';
-import '../pages/telemetry/telemetry_page.dart';
-import '../pages/tv/tv_page.dart';
 import '../services/health_service.dart';
 
 class MenuOverlay extends StatefulWidget {
@@ -72,9 +65,9 @@ class _MenuOverlayState extends State<MenuOverlay>
     _animationController.reverse();
   }
 
-  void _openPage(Widget page) {
+  void _goHome() {
     _closeMenu();
-    Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => page));
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   Future<void> _showHealthStatus() async {
@@ -157,14 +150,8 @@ class _MenuOverlayState extends State<MenuOverlay>
                 ignoring: !_isOpen,
                 child: MenuPanel(
                   isLoadingHealth: _isLoadingHealth,
-                  onCalendarTap: () => _openPage(const CalendarPage()),
-                  onChampionshipTap: () => _openPage(const ChampionshipPage()),
                   onHealthTap: _showHealthStatus,
-                  onProfileTap: () => _openPage(const ProfilePage()),
-                  onSearchTap: () => _openPage(const SearchPage()),
-                  onSettingsTap: () => _openPage(const SettingsPage()),
-                  onTelemetryTap: () => _openPage(const TelemetryPage()),
-                  onTvTap: () => _openPage(const TvPage()),
+                  onHomeTap: _goHome,
                 ),
               ),
             ),
@@ -214,57 +201,19 @@ class MenuButton extends StatelessWidget {
 class MenuPanel extends StatelessWidget {
   const MenuPanel({
     required this.isLoadingHealth,
-    required this.onCalendarTap,
-    required this.onChampionshipTap,
     required this.onHealthTap,
-    required this.onProfileTap,
-    required this.onSearchTap,
-    required this.onSettingsTap,
-    required this.onTelemetryTap,
-    required this.onTvTap,
+    required this.onHomeTap,
     super.key,
   });
 
   final bool isLoadingHealth;
-  final VoidCallback onCalendarTap;
-  final VoidCallback onChampionshipTap;
   final VoidCallback onHealthTap;
-  final VoidCallback onProfileTap;
-  final VoidCallback onSearchTap;
-  final VoidCallback onSettingsTap;
-  final VoidCallback onTelemetryTap;
-  final VoidCallback onTvTap;
+  final VoidCallback onHomeTap;
 
   @override
   Widget build(BuildContext context) {
     final actions = <MenuEntry>[
-      MenuEntry(
-        icon: Icons.person_outline,
-        label: 'Profil',
-        onTap: onProfileTap,
-      ),
-      MenuEntry(
-        icon: Icons.settings_outlined,
-        label: 'Settings',
-        onTap: onSettingsTap,
-      ),
-      MenuEntry(
-        icon: Icons.calendar_month_outlined,
-        label: 'Calendar',
-        onTap: onCalendarTap,
-      ),
-      MenuEntry(
-        icon: Icons.emoji_events_outlined,
-        label: 'Championship',
-        onTap: onChampionshipTap,
-      ),
-      MenuEntry(icon: Icons.tv_outlined, label: 'TV', onTap: onTvTap),
-      MenuEntry(
-        icon: Icons.speed_outlined,
-        label: 'Telemetry',
-        onTap: onTelemetryTap,
-      ),
-      MenuEntry(icon: Icons.search, label: 'Search', onTap: onSearchTap),
+      MenuEntry(icon: Icons.home_outlined, label: 'Home', onTap: onHomeTap),
       MenuEntry(
         icon: Icons.monitor_heart_outlined,
         label: isLoadingHealth ? 'Health...' : 'Health',

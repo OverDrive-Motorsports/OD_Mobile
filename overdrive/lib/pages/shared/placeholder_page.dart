@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../widgets/menu_overlay.dart';
 
 class PlaceholderPage extends StatelessWidget {
   const PlaceholderPage({required this.title, super.key});
@@ -11,8 +12,16 @@ class PlaceholderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
-      body: SafeArea(
-        child: Center(child: Text(title, style: AppTextStyles.display())),
+      body: ColoredBox(
+        color: AppColors.black,
+        child: Stack(
+          children: [
+            SafeArea(
+              child: Center(child: Text(title, style: AppTextStyles.display())),
+            ),
+            const MenuOverlay(),
+          ],
+        ),
       ),
     );
   }
