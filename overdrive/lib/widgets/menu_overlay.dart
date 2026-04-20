@@ -1,3 +1,12 @@
+/**
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## menu_overlay.dart - Overlay menu and quick navigation panel.
+ ##
+ */
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';

@@ -1,7 +1,9 @@
-/*
+/**
  ##
- ## OverDrive 2026 — home_page.dart
- ## Minimal home page with the application menu overlay.
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## home_page.dart - Home screen with the application menu overlay.
  ##
  */
 

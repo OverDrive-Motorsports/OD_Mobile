@@ -84,6 +84,17 @@ cd OD_Mobile
 
 Le module mobile se trouve dans `overdrive/`.
 
+État actuel du module mobile :
+
+- écran `Home` avec menu overlay
+- pages placeholders `Profil`, `Settings`, `Calendar`, `Championship`, `TV`, `Telemetry` et `Search`
+- fond noir uni sur ces écrans
+- vérification backend conservée via `GET /health`
+
+Convention de code :
+
+- tous les fichiers Dart sous `overdrive/lib/` utilisent désormais un header standardisé avec le nom du fichier et une courte description
+
 ```bash
 cd overdrive
 flutter pub get

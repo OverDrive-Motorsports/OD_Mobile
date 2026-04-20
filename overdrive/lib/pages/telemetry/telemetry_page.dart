@@ -1,3 +1,12 @@
+/**
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## telemetry_page.dart - Telemetry screen placeholder.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 
 import '../shared/placeholder_page.dart';
