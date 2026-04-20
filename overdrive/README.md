@@ -2,6 +2,10 @@
 
 Application Flutter minimaliste avec une seule page `Home`.
 
+Documentation détaillée :
+
+- `ARCHITECTURE_LIB.md`
+
 ## Structure actuelle
 
 - `lib/main.dart` lance directement `HomePage`

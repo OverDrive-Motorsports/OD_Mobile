@@ -16,14 +16,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.background, Color(0xFF050505)],
-          ),
-        ),
+      backgroundColor: AppColors.black,
+      body: ColoredBox(
+        color: AppColors.black,
         child: Stack(children: [MenuOverlay()]),
       ),
     );
