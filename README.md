@@ -55,19 +55,6 @@ The application adapts information density and hierarchy according to the user p
 - Real-time oriented.
 - Compatible with progressive scaling.
 
-<br>
-
-## Contributors
-
-Project developed by the **OverDrive Team – Epitech Paris (2026)**.
-
-| Name            |
-|-----------------|
-| Anthony El Achkar |
-| Clément-Alexis Fournier |
-| Mariia Semenchenko |
-| Batien Leroux |
-| Corto Morrow |
 
 <br>
 
@@ -82,7 +69,18 @@ cd OD_Mobile
 
 ### Mobile App (Flutter)
 
-Le module mobile se trouve dans `overdrive/`.
+The mobile module is located in overdrive/`.
+
+Current state of the mobile module:
+
+- `Home`screen with menu overlay
+- pages placeholders `Profil`, `Settings`, `Calendar`, `Championship`, `TV`, `Telemetry` and `Search`
+- solid black background on all screens
+- backend health check retained via `GET /health`
+
+Convention de code :
+
+- all Dart files under `overdrive/lib/`     now use a standardized header including the file name and a short descriptio
 
 ```bash
 cd overdrive
@@ -124,6 +122,20 @@ Lint and formatting configuration is defined in:
 - `overdrive/.editorconfig`
 
 More details for the Flutter app are available in `overdrive/README.md`.
+
+<br>
+
+## Contributors
+
+Project developed by the **OverDrive Team – Epitech Paris (2026)**.
+
+| Name            |
+|-----------------|
+| Anthony El Achkar |
+| Clément-Alexis Fournier |
+| Mariia Semenchenko |
+| Batien Leroux |
+| Corto Morrow |
 
 <br>
 

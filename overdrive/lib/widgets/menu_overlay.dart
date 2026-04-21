@@ -1,3 +1,12 @@
+/**
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## menu_overlay.dart - Overlay menu and quick navigation panel.
+ ##
+ */
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -63,6 +72,11 @@ class _MenuOverlayState extends State<MenuOverlay>
 
     setState(() => _isOpen = false);
     _animationController.reverse();
+  }
+
+  void _goHome() {
+    _closeMenu();
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   Future<void> _showHealthStatus() async {
@@ -146,6 +160,7 @@ class _MenuOverlayState extends State<MenuOverlay>
                 child: MenuPanel(
                   isLoadingHealth: _isLoadingHealth,
                   onHealthTap: _showHealthStatus,
+                  onHomeTap: _goHome,
                 ),
               ),
             ),
@@ -196,14 +211,25 @@ class MenuPanel extends StatelessWidget {
   const MenuPanel({
     required this.isLoadingHealth,
     required this.onHealthTap,
+    required this.onHomeTap,
     super.key,
   });
 
   final bool isLoadingHealth;
   final VoidCallback onHealthTap;
+  final VoidCallback onHomeTap;
 
   @override
   Widget build(BuildContext context) {
+    final actions = <MenuEntry>[
+      MenuEntry(icon: Icons.home_outlined, label: 'Home', onTap: onHomeTap),
+      MenuEntry(
+        icon: Icons.monitor_heart_outlined,
+        label: isLoadingHealth ? 'Health...' : 'Health',
+        onTap: onHealthTap,
+      ),
+    ];
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(24),
       child: BackdropFilter(
@@ -220,15 +246,35 @@ class MenuPanel extends StatelessWidget {
             borderRadius: BorderRadius.circular(24),
             border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
           ),
-          child: MenuAction(
-            icon: Icons.monitor_heart_outlined,
-            label: isLoadingHealth ? 'Health...' : 'Health',
-            onTap: onHealthTap,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final action in actions) ...[
+                MenuAction(
+                  icon: action.icon,
+                  label: action.label,
+                  onTap: action.onTap,
+                ),
+                if (action != actions.last) const SizedBox(height: 8),
+              ],
+            ],
           ),
         ),
       ),
     );
   }
+}
+
+class MenuEntry {
+  const MenuEntry({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
 }
 
 class MenuAction extends StatelessWidget {

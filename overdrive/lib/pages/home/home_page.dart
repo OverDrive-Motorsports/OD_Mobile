@@ -1,7 +1,9 @@
-/*
+/**
  ##
- ## OverDrive 2026 — home_page.dart
- ## Minimal home page with the application menu overlay.
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## home_page.dart - Home screen with the application menu overlay.
  ##
  */
 
@@ -16,14 +18,9 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [AppColors.background, Color(0xFF050505)],
-          ),
-        ),
+      backgroundColor: AppColors.black,
+      body: ColoredBox(
+        color: AppColors.black,
         child: Stack(children: [MenuOverlay()]),
       ),
     );

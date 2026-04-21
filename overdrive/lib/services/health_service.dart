@@ -1,9 +1,9 @@
-/*
+/**
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## health_service.dart - Backend health-check service.
+ ## health_service.dart - Backend health-check client and response models.
  ##
  */
 
