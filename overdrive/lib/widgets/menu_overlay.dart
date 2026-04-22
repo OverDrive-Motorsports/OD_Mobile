@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
 import '../services/health_service.dart';
+import 'glass_pill.dart';
 
 class MenuOverlay extends StatefulWidget {
   const MenuOverlay({super.key});
@@ -181,16 +182,8 @@ class MenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-        decoration: BoxDecoration(
-          color: isOpen
-              ? Colors.white.withValues(alpha: 0.24)
-              : Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
-        ),
+      child: GlassPill(
+        highlighted: isOpen,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
