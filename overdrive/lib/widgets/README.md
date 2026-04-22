@@ -78,6 +78,90 @@ Ce fichier contient plusieurs widgets lies entre eux :
 
 <br>
 
+## `monthly_calendar.dart`
+
+Calendrier mensuel reutilisable et decouple des pages.
+
+Responsabilites :
+- afficher une vue complete du mois
+- gerer la navigation verticale entre les mois avec `PageView`
+- exposer une API typed pour la date selectionnee et les callbacks
+- rester volontairement minimal dans son rendu
+
+API principale :
+- `MonthlyCalendar`
+
+Props disponibles :
+- `selectedDate`
+- `initialMonth`
+- `eventsByDate`
+- `onDateSelected`
+- `onMonthChanged`
+- `isLoading`
+- `firstAvailableMonth`
+- `lastAvailableMonth`
+- `today`
+- `weekdayLabels`
+- `monthLabelBuilder`
+
+<br>
+
+## `weekly_calendar.dart`
+
+Calendrier hebdomadaire reutilisable et decouple des pages.
+
+Responsabilites :
+- afficher une semaine sur une seule ligne
+- gerer la navigation horizontale entre les semaines avec `PageView`
+- exposer une API typed pour la date selectionnee et les callbacks
+- rester minimal dans son rendu pour etre rebranche facilement ailleurs
+
+API principale :
+- `WeeklyCalendar`
+
+Props disponibles :
+- `selectedDate`
+- `initialDate`
+- `eventsByDate`
+- `onDateSelected`
+- `onWeekChanged`
+- `isLoading`
+- `firstAvailableDate`
+- `lastAvailableDate`
+- `today`
+- `weekdayLabels`
+- `weekLabelBuilder`
+
+<br>
+
+## `daily_calendar.dart`
+
+Calendrier journalier reutilisable et decouple des pages.
+
+Responsabilites :
+- afficher une seule journee a la fois
+- gerer la navigation horizontale entre les jours avec `PageView`
+- exposer une API typed pour la date selectionnee et les callbacks
+- permettre au parent de fixer facilement les bornes de navigation
+
+API principale :
+- `DailyCalendar`
+
+Props disponibles :
+- `selectedDate`
+- `initialDate`
+- `eventsByDate`
+- `onDateSelected`
+- `onDayChanged`
+- `isLoading`
+- `firstAvailableDate`
+- `lastAvailableDate`
+- `today`
+- `dayLabelBuilder`
+- `weekdayLabelBuilder`
+
+<br>
+
 ## Regles de dossier
 
 - privilegier des widgets reutilisables et bien isoles
@@ -93,4 +177,3 @@ Avant d'ajouter un nouveau widget ici, se demander :
 - est-ce que ce composant pourra etre reutilise ailleurs ?
 - est-ce qu'il reste presentational ou au moins bien decouple ?
 - est-ce qu'une partie de son style devrait etre factorisee comme `GlassPill` ?
-
