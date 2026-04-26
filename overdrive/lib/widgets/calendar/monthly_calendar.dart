@@ -9,8 +9,8 @@
 
 import 'package:flutter/material.dart';
 
-import 'calendar_event.dart';
-import '../core/theme/app_theme.dart';
+import '../../core/theme/app_theme.dart';
+import 'event_calendar.dart';
 
 class MonthlyCalendar extends StatefulWidget {
   const MonthlyCalendar({
