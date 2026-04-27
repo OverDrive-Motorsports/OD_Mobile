@@ -140,6 +140,73 @@ Note:
 
 <br>
 
+## `championships/championship_icon.dart`
+
+Reusable championship tile inspired by sports app grids.
+
+Responsibilities:
+- display a circular dark championship icon container based on `GlassPill`
+- render a centered asset logo or emoji fallback
+- display the championship name below the icon
+- optionally display a small muted subtitle
+- optionally display a favorite star prefix before the title
+- expose a simple tap callback
+
+Main API:
+- `ChampionshipIcon`
+
+Available props:
+- `name`
+- `logoAsset`
+- `subtitle`
+- `isFavorite`
+- `onTap`
+
+<br>
+
+## `championships/championship_standings_widget.dart`
+
+Reusable championship standings card with an optional segmented switch between sections.
+
+Responsibilities:
+- display a standings title
+- optionally switch between multiple standings sections inside the same card
+- display column headers such as driver or constructor, wins, and points
+- display a main row title with an optional subtitle
+- support avatar initials or remote images for each standings row
+
+Main API:
+- `ChampionshipStandingsWidget`
+- `ChampionshipStandingsSection`
+- `ChampionshipStandingEntry`
+
+Available props on `ChampionshipStandingsWidget`:
+- `title`
+- `sections`
+- `initialSectionIndex`
+
+Available props on `ChampionshipStandingsSection`:
+- `label`
+- `entries`
+- `leadingColumnLabel`
+- `middleColumnLabel`
+- `trailingColumnLabel`
+
+Available props on `ChampionshipStandingEntry`:
+- `position`
+- `title`
+- `trailingValue`
+- `subtitle`
+- `middleValue`
+- `imageUrl`
+- `avatarLabel`
+- `avatarColor`
+
+Note:
+- this widget remains presentational and should not embed demo data directly
+
+<br>
+
 ## Directory Rules
 
 - prefer reusable and well-isolated widgets

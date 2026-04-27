@@ -3,7 +3,7 @@
 ## OverDrive 2026
 ## All Technical rights reserved
 ##
-## home_page.dart - Home screen with championship standings only.
+## home_page.dart - Home screen scaffold with menu overlay.
 ##
 */
 
