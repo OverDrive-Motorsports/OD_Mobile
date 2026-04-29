@@ -140,6 +140,43 @@ Note:
 
 <br>
 
+## `calendar/session_schedule_block.dart`
+
+Reusable session schedule block for a race weekend.
+
+Responsibilities:
+- display a compact race weekend session list inside a single card
+- display a centered block title
+- display session titles with an optional secondary subtitle
+- display the session day and time aligned on the right
+- display an optional countdown badge for upcoming sessions
+- display an animated live badge for live sessions
+- visually dim completed sessions through softer text colors
+
+Main API:
+- `SessionScheduleBlock`
+- `SessionRow`
+- `SessionType`
+- `SessionStatus`
+
+Available props on `SessionScheduleBlock`:
+- `sessions`
+- `title`
+
+Available props on `SessionRow`:
+- `sessionName`
+- `dateTime`
+- `type`
+- `status`
+- `countdownLabel`
+- `subtitle`
+
+Note:
+- `sessions` should be provided pre-sorted by date
+- this widget remains presentational and does not embed demo data
+
+<br>
+
 ## Directory Rules
 
 - prefer reusable and well-isolated widgets

@@ -19,9 +19,11 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppColors.black,
-      body: ColoredBox(
-        color: AppColors.black,
-        child: Stack(children: <Widget>[SizedBox.expand(), MenuOverlay()]),
+      body: Stack(
+        children: <Widget>[
+          ColoredBox(color: AppColors.black, child: SizedBox.expand()),
+          MenuOverlay(),
+        ],
       ),
     );
   }
