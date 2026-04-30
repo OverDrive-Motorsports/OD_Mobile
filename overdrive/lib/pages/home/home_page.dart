@@ -3,7 +3,7 @@
 ## OverDrive 2026
 ## All Technical rights reserved
 ##
-## home_page.dart - Home screen with the application menu overlay.
+## home_page.dart - Home screen scaffold with menu overlay.
 ##
 */
 
@@ -19,10 +19,22 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppColors.black,
-      body: ColoredBox(
-        color: AppColors.black,
-        child: Stack(children: <Widget>[SizedBox.expand(), MenuOverlay()]),
+      body: Stack(
+        children: <Widget>[
+          ColoredBox(color: AppColors.black, child: SizedBox.expand()),
+          _HomeChampionshipContent(),
+          MenuOverlay(),
+        ],
       ),
     );
+  }
+}
+
+class _HomeChampionshipContent extends StatelessWidget {
+  const _HomeChampionshipContent();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox.expand();
   }
 }
