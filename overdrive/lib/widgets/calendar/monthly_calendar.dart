@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'event_calendar.dart';
 
+/// A reusable monthly calendar widget for date selection.
 class MonthlyCalendar extends StatefulWidget {
   const MonthlyCalendar({
     this.selectedDate,
@@ -44,6 +45,7 @@ class MonthlyCalendar extends StatefulWidget {
   State<MonthlyCalendar> createState() => _MonthlyCalendarState();
 }
 
+/// The state that manages visible month, paging and date bounds.
 class _MonthlyCalendarState extends State<MonthlyCalendar> {
   late final PageController _pageController;
   late DateTime _firstMonth;
@@ -245,6 +247,7 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
   }
 }
 
+/// The header that shows the current month and navigation buttons.
 class _CalendarHeader extends StatelessWidget {
   const _CalendarHeader({
     required this.title,
@@ -286,6 +289,7 @@ class _CalendarHeader extends StatelessWidget {
   }
 }
 
+/// A compact icon button used in the calendar header.
 class _HeaderButton extends StatelessWidget {
   const _HeaderButton({
     required this.icon,
@@ -325,6 +329,7 @@ class _HeaderButton extends StatelessWidget {
   }
 }
 
+/// A row that displays the weekday labels.
 class _WeekdayRow extends StatelessWidget {
   const _WeekdayRow({required this.labels});
 
@@ -346,6 +351,7 @@ class _WeekdayRow extends StatelessWidget {
   }
 }
 
+/// A full month grid with all visible day cells.
 class _MonthGrid extends StatelessWidget {
   const _MonthGrid({
     required this.month,
@@ -391,6 +397,7 @@ class _MonthGrid extends StatelessWidget {
   }
 }
 
+/// A single day cell shown inside the month grid.
 class _DayCell extends StatelessWidget {
   const _DayCell({
     required this.date,
@@ -457,6 +464,7 @@ class _DayCell extends StatelessWidget {
   }
 }
 
+/// A small row of dots used to show event markers on a day.
 class _MonthlyEventDots extends StatelessWidget {
   const _MonthlyEventDots({required this.events});
 
@@ -503,6 +511,7 @@ Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
   return normalized;
 }
 
+/// A placeholder grid shown while the calendar is loading.
 class _CalendarLoadingGrid extends StatelessWidget {
   const _CalendarLoadingGrid();
 

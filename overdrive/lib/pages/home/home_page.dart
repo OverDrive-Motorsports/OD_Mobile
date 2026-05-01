@@ -3,7 +3,7 @@
 ## OverDrive 2026
 ## All Technical rights reserved
 ##
-## home_page.dart - Home screen scaffold with menu overlay.
+## home_page.dart - Empty home screen scaffold.
 ##
 */
 
@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/menu_overlay.dart';
 
+/// The empty home screen used as the current app entry page.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -19,22 +20,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppColors.black,
-      body: Stack(
-        children: <Widget>[
-          ColoredBox(color: AppColors.black, child: SizedBox.expand()),
-          _HomeChampionshipContent(),
-          MenuOverlay(),
-        ],
-      ),
+      body: Stack(children: <Widget>[SizedBox.expand(), MenuOverlay()]),
     );
-  }
-}
-
-class _HomeChampionshipContent extends StatelessWidget {
-  const _HomeChampionshipContent();
-
-  @override
-  Widget build(BuildContext context) {
-    return const SizedBox.expand();
   }
 }

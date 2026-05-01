@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../glass_pill.dart';
 
+/// A championship tile with a circular icon and text labels.
 class ChampionshipIcon extends StatelessWidget {
   const ChampionshipIcon({
     required this.name,
@@ -84,6 +85,7 @@ class ChampionshipIcon extends StatelessWidget {
   }
 }
 
+/// The centered logo content used inside the championship tile.
 class _LogoContent extends StatelessWidget {
   const _LogoContent({required this.logoAsset});
 

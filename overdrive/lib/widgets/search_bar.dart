@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../core/theme/app_theme.dart';
 import 'glass_pill.dart';
 
+/// A typed configuration object for the search bar.
 class SearchBarProps {
   const SearchBarProps({
     required this.controller,
@@ -34,6 +35,7 @@ class SearchBarProps {
   final TextInputAction textInputAction;
 }
 
+/// A presentational search bar with an external controller and callbacks.
 class SearchBar extends StatefulWidget {
   const SearchBar({required this.props, super.key});
 
@@ -43,6 +45,7 @@ class SearchBar extends StatefulWidget {
   State<SearchBar> createState() => _SearchBarState();
 }
 
+/// The state that manages focus and the clear action.
 class _SearchBarState extends State<SearchBar> {
   FocusNode? _ownedFocusNode;
 

@@ -1,5 +1,15 @@
+/*
+##
+## OverDrive 2026
+## All Technical rights reserved
+##
+## glass_pill.dart - Reusable translucent pill surface for compact controls.
+##
+*/
+
 import 'package:flutter/material.dart';
 
+/// A small translucent pill container used by compact controls.
 class GlassPill extends StatelessWidget {
   const GlassPill({
     required this.child,

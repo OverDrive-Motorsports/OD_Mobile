@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -15,6 +15,7 @@ import '../core/theme/app_theme.dart';
 import '../services/health_service.dart';
 import 'glass_pill.dart';
 
+/// A floating top menu shown above the current page.
 class MenuOverlay extends StatefulWidget {
   const MenuOverlay({super.key});
 
@@ -22,6 +23,7 @@ class MenuOverlay extends StatefulWidget {
   State<MenuOverlay> createState() => _MenuOverlayState();
 }
 
+/// The state that controls the menu open and close animations.
 class _MenuOverlayState extends State<MenuOverlay>
     with SingleTickerProviderStateMixin {
   final HealthService _healthService = HealthService();
@@ -172,6 +174,7 @@ class _MenuOverlayState extends State<MenuOverlay>
   }
 }
 
+/// A compact pill button used to open and close the menu.
 class MenuButton extends StatelessWidget {
   const MenuButton({required this.isOpen, required this.onTap, super.key});
 
@@ -200,6 +203,7 @@ class MenuButton extends StatelessWidget {
   }
 }
 
+/// A floating panel that groups the menu actions.
 class MenuPanel extends StatelessWidget {
   const MenuPanel({
     required this.isLoadingHealth,
@@ -258,6 +262,7 @@ class MenuPanel extends StatelessWidget {
   }
 }
 
+/// A simple data object that describes one menu action.
 class MenuEntry {
   const MenuEntry({
     required this.icon,
@@ -270,6 +275,7 @@ class MenuEntry {
   final VoidCallback onTap;
 }
 
+/// A visual row used inside the menu panel.
 class MenuAction extends StatelessWidget {
   const MenuAction({
     required this.icon,

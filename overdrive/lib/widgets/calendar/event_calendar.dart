@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
+/// A small marker used by the monthly calendar to show event dots.
 class CalendarEventMarker {
   const CalendarEventMarker({this.color = AppColors.accent, this.label});
 
@@ -20,6 +21,7 @@ class CalendarEventMarker {
 
 enum CalendarScheduleStatus { past, ongoing, upcoming }
 
+/// A data model for one scheduled event in the calendar.
 class CalendarScheduleEvent {
   CalendarScheduleEvent({
     required this.id,
@@ -62,6 +64,7 @@ class CalendarScheduleEvent {
   }
 }
 
+/// A list of event cards used by the calendar screens.
 class EventCalendar extends StatelessWidget {
   const EventCalendar({
     required this.events,
@@ -118,6 +121,7 @@ class EventCalendar extends StatelessWidget {
   }
 }
 
+/// A single event card displayed inside the event list.
 class _EventCalendarCard extends StatelessWidget {
   const _EventCalendarCard({
     required this.event,
@@ -235,6 +239,7 @@ class _EventCalendarCard extends StatelessWidget {
   }
 }
 
+/// A small metadata row item used inside event cards.
 class _MetaItem extends StatelessWidget {
   const _MetaItem({
     required this.icon,
@@ -264,6 +269,7 @@ class _MetaItem extends StatelessWidget {
   }
 }
 
+/// A pill that shows the status of an event.
 class _StatusPill extends StatelessWidget {
   const _StatusPill({
     required this.label,
@@ -296,6 +302,7 @@ class _StatusPill extends StatelessWidget {
   }
 }
 
+/// An empty state shown when there are no events to display.
 class _EventCalendarEmptyState extends StatelessWidget {
   const _EventCalendarEmptyState({required this.title, required this.subtitle});
 
@@ -331,6 +338,7 @@ class _EventCalendarEmptyState extends StatelessWidget {
   }
 }
 
+/// A style object used internally by the event card.
 class _EventCardStyle {
   const _EventCardStyle({
     required this.backgroundGradient,

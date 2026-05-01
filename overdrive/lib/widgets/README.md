@@ -1,53 +1,162 @@
 # Widgets
 
-This directory contains the shared UI widgets used across the OverDrive application.
+This directory contains the shared presentation layer for the OverDrive app.
+Pages should compose these widgets instead of rebuilding the same UI patterns.
 
-The idea is simple:
-- `widgets/` contains reusable UI building blocks
-- pages consume these widgets instead of duplicating their rendering
-- when behavior is specific to a page, it should stay in that page or in a dedicated hook/service
-- calendar-related widgets now live in `widgets/calendar/`
+## Principles
 
-<br>
+- Keep widgets reusable and explicitly typed.
+- Keep business logic outside UI primitives whenever possible.
+- Prefer small, composable files over page-specific one-off rendering.
+- Reuse shared visual primitives such as `GlassPill` or the base widget library before adding new styles.
 
+## Base Widgets
 
+### `base/od_button.dart`
 
-## `glass_pill.dart`
+Reusable pill button for standard actions across the app.
 
-Reusable visual primitive for buttons and fields using a "pill" style.
+Main API:
+- `OdButton`
 
-Responsibilities:
-- apply the semi-transparent background
-- handle normal, focus/highlight, and disabled borders
-- centralize shared styling across multiple widgets
+Props:
+- `label`: button text.
+- `onPressed`: tap callback. Passing `null` disables the button.
+- `leadingIcon`: optional icon displayed before the label.
+- `isLoading`: replaces the icon with a spinner and disables taps.
+- `fullWidth`: stretches the button to the available width.
 
-Typical use cases:
-- menu button
-- search bar
-- future compact buttons or floating controls
+Behavior:
+- Uses a 44px minimum touch target.
+- Applies a subtle press animation for active taps.
+- Keeps one consistent dark outlined visual style for the whole app.
 
-<br>
+### `base/od_text_field.dart`
 
-## `search_bar.dart`
+Reusable rounded text field inspired by Cupertino input styling.
 
-Reusable and purely presentational search bar.
+Main API:
+- `OdTextField`
 
-Responsibilities:
-- display the search icon
-- display the text field
-- display the clear action as an external button when the field is focused or non-empty
-- expose typed callbacks to the parent
+Props:
+- `placeholder`: placeholder text.
+- `controller`: optional external controller. The widget creates one internally when omitted.
+- `obscureText`: hides the text for passwords or secrets.
+- `keyboardType`: configures the keyboard type.
+- `errorMessage`: optional inline error message displayed under the field.
+- `leadingIcon`: optional icon inside the field.
+- `onClear`: optional callback enabling the clear action when text is not empty.
+- `onChanged`: input callback.
 
-This widget should not:
-- make API calls
-- know which page it is rendered in
-- contain search business logic
+Behavior:
+- Uses a dark rounded container and white input text.
+- Uses the app accent color for the cursor.
+- Highlights the field in red when `errorMessage` is present.
+
+### `base/od_error_message.dart`
+
+Reusable error presentation widget with two visual variants.
+
+Main API:
+- `OdErrorMessage`
+- `ErrorMessageVariant`
+
+Props:
+- `message`: required main message.
+- `subtitle`: optional secondary text for the banner variant.
+- `variant`: either `inline` or `banner`.
+
+Behavior:
+- `inline` is intended for field-level validation.
+- `banner` is intended for section or page-level feedback.
+
+### `base/od_toast.dart`
+
+Singleton toast overlay for temporary feedback messages.
+
+Main API:
+- `OdToast.show`
+- `ToastType`
+
+Arguments:
+- `context`
+- `message`
+- `type`
+- `duration`
+
+Behavior:
+- Only one toast can be visible at a time.
+- Showing a new toast removes the currently displayed one first.
+- Appears with slide-up and fade animations.
+
+### `base/od_modal.dart`
+
+Reusable bottom sheet helper with a blurred backdrop and rounded top corners.
+
+Main API:
+- `OdModal.show`
+
+Arguments:
+- `context`
+- `title`
+- `child`
+- `showHandle`
+- `isDismissible`
+
+Behavior:
+- Uses a custom popup route.
+- Keeps the sheet slightly below the screen edge for a native floating-sheet feel.
+- Supports tap-outside dismissal and drag-down dismissal when enabled.
+
+### `base/od_switch.dart`
+
+Reusable Cupertino switch row.
+
+Main API:
+- `OdSwitch`
+
+Props:
+- `value`
+- `onChanged`
+- `label`
+
+Behavior:
+- Keeps native Cupertino switch dimensions.
+- Uses the OverDrive red accent for the active track.
+- When `label` is present, the widget renders a 44px high row.
+
+## Shared Primitives
+
+### `glass_pill.dart`
+
+Reusable translucent pill surface used by compact controls.
+
+Main API:
+- `GlassPill`
+
+Props:
+- `child`
+- `highlighted`
+- `disabled`
+- `padding`
+- `backgroundColor`
+- `borderColor`
+- `borderRadius`
+
+Typical usage:
+- menu trigger
+- search surface
+- future compact floating controls
+
+### `search_bar.dart`
+
+Presentational search bar with externalized state and callbacks.
 
 Main API:
 - `SearchBar`
 - `SearchBarProps`
 
-Available props:
+`SearchBarProps` fields:
 - `controller`
 - `onSearch`
 - `onClear`
@@ -57,42 +166,39 @@ Available props:
 - `focusNode`
 - `textInputAction`
 
-<br>
+Behavior:
+- Displays a clear action when the field is focused or non-empty.
+- Does not perform searches by itself.
+- Does not own search business logic.
 
-## `menu_overlay.dart`
+### `menu_overlay.dart`
 
-Navigation overlay displayed above pages.
+Floating top-level menu overlay used above pages.
 
-Responsibilities:
-- display the `OD` logo
-- display the `Menu` button
-- open/close the floating panel
-- provide quick navigation actions
-- display backend health status through `HealthService`
-
-This file contains several related widgets:
+Main API:
 - `MenuOverlay`
+
+Related widgets in the same file:
 - `MenuButton`
 - `MenuPanel`
 - `MenuAction`
 - `MenuEntry`
 
-<br>
+Behavior:
+- Displays the `OD` brand mark and the menu trigger.
+- Opens a floating panel with navigation and backend health actions.
+- Uses `HealthService` for the health check action.
 
-## `calendar/monthly_calendar.dart`
+## Calendar Widgets
 
-Reusable monthly calendar decoupled from pages.
+### `calendar/monthly_calendar.dart`
 
-Responsibilities:
-- display a full month view
-- handle vertical navigation between months with `PageView`
-- expose a typed API for the selected date and callbacks
-- stay intentionally minimal in its rendering
+Reusable monthly calendar view decoupled from page logic.
 
 Main API:
 - `MonthlyCalendar`
 
-Available props:
+Props:
 - `selectedDate`
 - `initialMonth`
 - `eventsByDate`
@@ -105,21 +211,14 @@ Available props:
 - `weekdayLabels`
 - `monthLabelBuilder`
 
-Note:
-- this widget remains purely presentational and does not embed any demo data
+Behavior:
+- Uses a vertical `PageView` to navigate months.
+- Supports external selection control.
+- Remains presentational and demo-data free.
 
-<br>
+### `calendar/event_calendar.dart`
 
-## `calendar/event_calendar.dart`
-
-Reusable event list decoupled from pages.
-
-Responsibilities:
-- display events inside OverDrive-styled cards
-- visually differentiate past, ongoing, and upcoming events
-- expose a typed API based on a list of `CalendarScheduleEvent`
-- remain presentational so it can be reused on other screens
-- expose shared calendar event models used by other calendar widgets
+Reusable list of schedule cards and related calendar models.
 
 Main API:
 - `EventCalendar`
@@ -127,7 +226,7 @@ Main API:
 - `CalendarScheduleEvent`
 - `CalendarScheduleStatus`
 
-Available props:
+Props on `EventCalendar`:
 - `events`
 - `today`
 - `selectedDate`
@@ -135,64 +234,53 @@ Available props:
 - `emptyTitle`
 - `emptySubtitle`
 
-Note:
-- this widget does not embed any hardcoded event list
+Behavior:
+- Distinguishes past, ongoing and upcoming events.
+- Supports empty-state rendering.
+- Stays presentation-focused so it can be reused on multiple pages.
 
-<br>
+## Championship Widgets
 
-## `championships/championship_icon.dart`
+### `championships/championship_icon.dart`
 
-Reusable championship tile inspired by sports app grids.
-
-Responsibilities:
-- display a circular dark championship icon container based on `GlassPill`
-- render a centered asset logo or emoji fallback
-- display the championship name below the icon
-- optionally display a small muted subtitle
-- optionally display a favorite star prefix before the title
-- expose a simple tap callback
+Reusable championship tile with centered logo content.
 
 Main API:
 - `ChampionshipIcon`
 
-Available props:
+Props:
 - `name`
 - `logoAsset`
 - `subtitle`
 - `isFavorite`
 - `onTap`
 
-<br>
+Behavior:
+- Supports both asset logos and emoji fallback content.
+- Reuses `GlassPill` for the circular icon surface.
 
-## `championships/championship_standings_widget.dart`
+### `championships/championship_standings_widget.dart`
 
-Reusable championship standings card with an optional segmented switch between sections.
-
-Responsibilities:
-- display a standings title
-- optionally switch between multiple standings sections inside the same card
-- display column headers such as driver or constructor, wins, and points
-- display a main row title with an optional subtitle
-- support avatar initials or remote images for each standings row
+Reusable standings card with optional section switching.
 
 Main API:
 - `ChampionshipStandingsWidget`
 - `ChampionshipStandingsSection`
 - `ChampionshipStandingEntry`
 
-Available props on `ChampionshipStandingsWidget`:
+Props on `ChampionshipStandingsWidget`:
 - `title`
 - `sections`
 - `initialSectionIndex`
 
-Available props on `ChampionshipStandingsSection`:
+Props on `ChampionshipStandingsSection`:
 - `label`
 - `entries`
 - `leadingColumnLabel`
 - `middleColumnLabel`
 - `trailingColumnLabel`
 
-Available props on `ChampionshipStandingEntry`:
+Props on `ChampionshipStandingEntry`:
 - `position`
 - `title`
 - `trailingValue`
@@ -202,23 +290,15 @@ Available props on `ChampionshipStandingEntry`:
 - `avatarLabel`
 - `avatarColor`
 
-Note:
-- this widget remains presentational and should not embed demo data directly
+Behavior:
+- Switches cleanly between multiple standings sections.
+- Supports text avatars or remote images.
+- Keeps all standings rendering presentational.
 
-<br>
+## Maintenance Checklist
 
-## Directory Rules
-
-- prefer reusable and well-isolated widgets
-- keep props explicitly typed
-- avoid injecting business logic into UI primitives
-- extract shared styling into a common widget when multiple components look alike
-
-<br>
-
-## Recommended Checklist
-
-Before adding a new widget here, ask:
-- can this component be reused elsewhere?
-- does it stay presentational or at least well decoupled?
-- should part of its styling be factored into something like `GlassPill`?
+Before adding or editing a widget here, verify:
+- Can this UI be reused elsewhere?
+- Are state ownership and callbacks clearly typed?
+- Can optional behavior be explained with a short inline comment?
+- Should the visual treatment be extracted into a smaller shared primitive?

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 
 @immutable
+/// A single row item used in a standings section.
 class ChampionshipStandingEntry {
   const ChampionshipStandingEntry({
     required this.position,
@@ -35,6 +36,7 @@ class ChampionshipStandingEntry {
 }
 
 @immutable
+/// A group of standings entries with column labels.
 class ChampionshipStandingsSection {
   const ChampionshipStandingsSection({
     required this.label,
@@ -51,6 +53,7 @@ class ChampionshipStandingsSection {
   final List<ChampionshipStandingEntry> entries;
 }
 
+/// A standings card that can switch between multiple sections.
 class ChampionshipStandingsWidget extends StatefulWidget {
   const ChampionshipStandingsWidget({
     required this.title,
@@ -68,6 +71,7 @@ class ChampionshipStandingsWidget extends StatefulWidget {
       _ChampionshipStandingsWidgetState();
 }
 
+/// The state that tracks the selected standings section.
 class _ChampionshipStandingsWidgetState
     extends State<ChampionshipStandingsWidget> {
   late int _selectedSectionIndex;
@@ -147,6 +151,7 @@ class _ChampionshipStandingsWidgetState
   }
 }
 
+/// A small segmented switch used to choose the active standings section.
 class _StandingsSwitch extends StatelessWidget {
   const _StandingsSwitch({
     required this.sections,
@@ -202,6 +207,7 @@ class _StandingsSwitch extends StatelessWidget {
   }
 }
 
+/// The header row that displays the standings column names.
 class _StandingsHeader extends StatelessWidget {
   const _StandingsHeader({required this.section});
 
@@ -246,6 +252,7 @@ class _StandingsHeader extends StatelessWidget {
   }
 }
 
+/// The list of entries for the active standings section.
 class _StandingsList extends StatelessWidget {
   const _StandingsList({required this.section, super.key});
 
@@ -268,6 +275,7 @@ class _StandingsList extends StatelessWidget {
   }
 }
 
+/// A single standings row with rank, avatar and values.
 class _StandingRow extends StatelessWidget {
   const _StandingRow({required this.entry, required this.showMiddleValue});
 
@@ -334,6 +342,7 @@ class _StandingRow extends StatelessWidget {
   }
 }
 
+/// A small avatar used in standings rows.
 class _EntryAvatar extends StatelessWidget {
   const _EntryAvatar({required this.entry});
 
