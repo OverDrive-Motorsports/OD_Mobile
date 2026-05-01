@@ -262,6 +262,7 @@ class MenuPanel extends StatelessWidget {
   }
 }
 
+
 /// A simple data object that describes one menu action.
 class MenuEntry {
   const MenuEntry({
