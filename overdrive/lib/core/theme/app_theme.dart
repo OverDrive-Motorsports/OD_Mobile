@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -15,23 +15,30 @@ class AppColors {
   AppColors._();
 
   static const Color black = Color(0xFF000000);
-  static const Color background = Color(0xFF0A0A0A);
-  static const Color surface = Color(0xFF161616);
-  static const Color surfaceElevated = Color(0xFF1C1C1E);
-  static const Color surfaceBorder = Color(0x1FFFFFFF);
-  static const Color inputSurface = Color(0xFF2C2C2E);
-  static const Color toastSurface = Color(0xFF3A3A3C);
-  static const Color handle = Color(0xFF48484A);
+  static const Color white = Color(0xFFFFFFFF);
+  static const Color gold = Color(0xFFC9A84C);
+  static const Color red = Color(0xFFE8002D);
+  static const Color blue = Color(0xFF0A84FF);
+  static const Color green = Color(0xFF32D74B);
+
+  static const Color grayOpaque = Color(0xFF262628);
+  static const Color graySurface = Color(0xFF161616);
+  static const Color grayText = Color(0x8CFFFFFF);
+
+  static const Color background = black;
+  static const Color surface = graySurface;
+  static const Color surfaceElevated = grayOpaque;
+  static const Color inputSurface = grayOpaque;
+  static const Color toastSurface = grayOpaque;
+  static const Color handle = grayText;
   static const Color divider = Color(0x14FFFFFF);
-  static const Color textPrimary = Color(0xFFFFFFFF);
-  static const Color textSecondary = Color(0x8CFFFFFF);
-  static const Color textMuted = Color(0x66FFFFFF);
-  static const Color accent = Color(0xFFC9A84C);
-  static const Color motorsportRed = Color(0xFFE8002D);
-  static const Color success = Color(0xFF2F8F4E);
-  static const Color error = Color(0xFFB53A3A);
-  static const Color successBright = Color(0xFF32D74B);
-  static const Color info = Color(0xFF0A84FF);
+  static const Color border = Color(0x1FFFFFFF);
+  static const Color overlay = Color(0x99000000);
+  static const Color scrim = Color(0x1F000000);
+
+  static const Color textPrimary = white;
+  static const Color textSecondary = grayText;
+  static const Color textMuted = Color(0xA8FFFFFF);
 }
 
 class AppTextStyles {
@@ -72,10 +79,10 @@ class AppTheme {
 
   static ThemeData get darkTheme {
     const colorScheme = ColorScheme.dark(
-      primary: AppColors.accent,
+      primary: AppColors.gold,
       onPrimary: AppColors.black,
       surface: AppColors.surface,
-      error: AppColors.error,
+      error: AppColors.red,
     );
 
     return ThemeData(
@@ -93,7 +100,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accent,
+          backgroundColor: AppColors.gold,
           foregroundColor: AppColors.black,
           elevation: 0,
           shape: const StadiumBorder(),

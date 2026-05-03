@@ -89,9 +89,7 @@ class _OdModalRoute<T> extends PopupRoute<T> {
                 opacity: fadeAnimation,
                 child: BackdropFilter(
                   filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                  child: ColoredBox(
-                    color: Colors.black.withValues(alpha: 0.60),
-                  ),
+                  child: const ColoredBox(color: AppColors.overlay),
                 ),
               ),
             ),
@@ -203,7 +201,7 @@ class _OdModalSheetState extends State<_OdModalSheet> {
                       top: Radius.circular(_topRadius),
                     ),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.06),
+                      color: AppColors.white.withValues(alpha: 0.06),
                     ),
                   ),
                   child: Padding(

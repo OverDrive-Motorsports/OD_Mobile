@@ -49,8 +49,8 @@ class ChampionshipIcon extends StatelessWidget {
                 Positioned.fill(
                   child: GlassPill(
                     padding: EdgeInsets.zero,
-                    backgroundColor: const Color(0xFF2C2C2E),
-                    borderColor: Colors.white.withValues(alpha: 0.06),
+                    backgroundColor: AppColors.inputSurface,
+                    borderColor: AppColors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(999),
                     child: const SizedBox.expand(),
                   ),

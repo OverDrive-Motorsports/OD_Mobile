@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -11,11 +11,14 @@ import 'package:flutter/material.dart';
 
 import '../shared/placeholder_page.dart';
 
+const String _tvPageTitle = 'TV';
+
+/// Temporary TV screen backed by the shared placeholder shell.
 class TvPage extends StatelessWidget {
   const TvPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const PlaceholderPage(title: 'TV');
+    return const PlaceholderPage(title: _tvPageTitle);
   }
 }

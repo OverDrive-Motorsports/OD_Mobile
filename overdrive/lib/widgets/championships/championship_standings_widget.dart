@@ -108,10 +108,10 @@ class _ChampionshipStandingsWidgetState
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.82),
+        color: AppColors.surfaceElevated.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.12),
+          color: AppColors.white.withValues(alpha: 0.12),
           width: 1,
         ),
       ),
@@ -168,7 +168,7 @@ class _StandingsSwitch extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: AppColors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -184,7 +184,7 @@ class _StandingsSwitch extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   decoration: BoxDecoration(
                     color: selectedIndex == index
-                        ? Colors.white.withValues(alpha: 0.28)
+                        ? AppColors.white.withValues(alpha: 0.28)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(999),
                   ),
@@ -193,9 +193,7 @@ class _StandingsSwitch extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodyBold().copyWith(
                       fontSize: 12,
-                      color: selectedIndex == index
-                          ? AppColors.textPrimary
-                          : AppColors.textPrimary,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -333,7 +331,7 @@ class _StandingRow extends StatelessWidget {
             entry.trailingValue,
             textAlign: TextAlign.right,
             style: AppTextStyles.bodyBold(
-              color: AppColors.accent,
+              color: AppColors.gold,
             ).copyWith(fontSize: 14),
           ),
         ),

@@ -11,11 +11,14 @@ import 'package:flutter/material.dart';
 
 import '../shared/placeholder_page.dart';
 
+const String _calendarPageTitle = 'Calendar';
+
+/// Temporary calendar screen backed by the shared placeholder shell.
 class CalendarPage extends StatelessWidget {
   const CalendarPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const PlaceholderPage(title: 'Calendar');
+    return const PlaceholderPage(title: _calendarPageTitle);
   }
 }

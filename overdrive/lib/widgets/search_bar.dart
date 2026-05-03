@@ -144,7 +144,7 @@ class _SearchBarState extends State<SearchBar> {
                         focusNode: _focusNode,
                         enabled: isEnabled,
                         autofocus: widget.props.autofocus,
-                        cursorColor: AppColors.accent,
+                        cursorColor: AppColors.gold,
                         textInputAction: widget.props.textInputAction,
                         style: AppTextStyles.bodyBold().copyWith(
                           fontSize: 14,
@@ -191,16 +191,16 @@ class _SearchBarState extends State<SearchBar> {
                           width: 46,
                           height: 46,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.16),
+                            color: AppColors.white.withValues(alpha: 0.16),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.28),
+                              color: AppColors.white.withValues(alpha: 0.28),
                             ),
                           ),
                           child: const Icon(
                             Icons.close_rounded,
                             size: 28,
-                            color: Colors.white,
+                            color: AppColors.white,
                           ),
                         ),
                       ),

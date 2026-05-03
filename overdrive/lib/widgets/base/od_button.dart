@@ -142,9 +142,9 @@ class _ButtonStyle {
 
   factory _ButtonStyle.button() {
     return _ButtonStyle(
-      backgroundColor: Colors.white.withValues(alpha: 0.05),
-      foregroundColor: Colors.white,
-      borderColor: Colors.white.withValues(alpha: 0.18),
+      backgroundColor: AppColors.white.withValues(alpha: 0.05),
+      foregroundColor: AppColors.white,
+      borderColor: AppColors.white.withValues(alpha: 0.18),
     );
   }
 }

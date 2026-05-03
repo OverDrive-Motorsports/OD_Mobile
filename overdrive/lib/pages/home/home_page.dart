@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/menu_overlay.dart';
 
-/// The empty home screen used as the current app entry page.
+/// The home screen shell used as the current app entry point.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 

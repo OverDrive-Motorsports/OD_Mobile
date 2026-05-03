@@ -113,7 +113,7 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -312,10 +312,14 @@ class _HeaderButton extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: enabled ? 0.08 : 0.04),
+            color: enabled
+                ? AppColors.white.withValues(alpha: 0.08)
+                : AppColors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Colors.white.withValues(alpha: enabled ? 0.12 : 0.06),
+              color: enabled
+                  ? AppColors.white.withValues(alpha: 0.12)
+                  : AppColors.white.withValues(alpha: 0.06),
             ),
           ),
           child: Icon(
@@ -418,13 +422,15 @@ class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = isToday
-        ? AppColors.accent
-        : Colors.white.withValues(alpha: 0.08);
+        ? AppColors.gold
+        : AppColors.white.withValues(alpha: 0.08);
     final backgroundColor = isSelected
-        ? Colors.white.withValues(alpha: 0.10)
-        : Colors.white.withValues(alpha: isCurrentMonth ? 0.04 : 0.02);
+        ? AppColors.white.withValues(alpha: 0.10)
+        : isCurrentMonth
+        ? AppColors.white.withValues(alpha: 0.04)
+        : AppColors.white.withValues(alpha: 0.02);
     final textColor = isToday
-        ? AppColors.accent
+        ? AppColors.gold
         : isCurrentMonth
         ? AppColors.textPrimary
         : AppColors.textSecondary;
@@ -532,9 +538,11 @@ class _CalendarLoadingGrid extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: AppColors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.08),
+              ),
             ),
           );
         },

@@ -13,7 +13,7 @@ import '../../core/theme/app_theme.dart';
 
 /// A small marker used by the monthly calendar to show event dots.
 class CalendarEventMarker {
-  const CalendarEventMarker({this.color = AppColors.accent, this.label});
+  const CalendarEventMarker({this.color = AppColors.gold, this.label});
 
   final Color color;
   final String? label;
@@ -30,7 +30,7 @@ class CalendarScheduleEvent {
     required this.startDate,
     required this.endDate,
     this.location,
-    this.accentColor = AppColors.accent,
+    this.accentColor = AppColors.gold,
   }) : assert(!endDate.isBefore(startDate));
 
   final String id;
@@ -318,10 +318,10 @@ class _EventCalendarEmptyState extends StatelessWidget {
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF181818), Color(0xFF111111)],
+          colors: [AppColors.surface, AppColors.black],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -375,18 +375,18 @@ class _EventCardStyle {
           backgroundGradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF161616), Color(0xFF101010)],
+            colors: [AppColors.surface, AppColors.black],
           ),
           borderColor: isSelected
               ? accentColor.withValues(alpha: 0.55)
-              : AppColors.surfaceBorder,
+              : AppColors.border,
           borderWidth: isSelected ? 1.4 : 1,
           titleColor: AppColors.textSecondary,
           dateColor: AppColors.textSecondary,
           metaColor: AppColors.textMuted,
-          badgeBackgroundColor: Colors.white.withValues(alpha: 0.05),
+          badgeBackgroundColor: AppColors.white.withValues(alpha: 0.05),
           badgeForegroundColor: AppColors.textSecondary,
-          badgeBorderColor: Colors.white.withValues(alpha: 0.08),
+          badgeBorderColor: AppColors.white.withValues(alpha: 0.08),
           shadow: isSelected
               ? BoxShadow(
                   color: accentColor.withValues(alpha: 0.12),
@@ -397,21 +397,24 @@ class _EventCardStyle {
         );
       case CalendarScheduleStatus.ongoing:
         return _EventCardStyle(
-          backgroundGradient: const LinearGradient(
+          backgroundGradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF3A090C), Color(0xFF260507)],
+            colors: [
+              AppColors.surfaceElevated.withValues(alpha: 0.40),
+              AppColors.red.withValues(alpha: 0.30),
+            ],
           ),
-          borderColor: AppColors.error.withValues(alpha: 0.95),
+          borderColor: AppColors.red.withValues(alpha: 0.95),
           borderWidth: isSelected ? 1.8 : 1.4,
           titleColor: AppColors.textPrimary,
-          dateColor: const Color(0xFFF1C9C9),
-          metaColor: const Color(0xFFE2B0B0),
-          badgeBackgroundColor: AppColors.error.withValues(alpha: 0.22),
+          dateColor: AppColors.white,
+          metaColor: AppColors.textSecondary,
+          badgeBackgroundColor: AppColors.red.withValues(alpha: 0.22),
           badgeForegroundColor: AppColors.textPrimary,
-          badgeBorderColor: AppColors.error.withValues(alpha: 0.38),
+          badgeBorderColor: AppColors.red.withValues(alpha: 0.38),
           shadow: BoxShadow(
-            color: AppColors.error.withValues(alpha: 0.18),
+            color: AppColors.red.withValues(alpha: 0.18),
             blurRadius: 28,
             offset: const Offset(0, 12),
           ),
@@ -421,11 +424,11 @@ class _EventCardStyle {
           backgroundGradient: const LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [Color(0xFF171717), Color(0xFF0F0F0F)],
+            colors: [AppColors.surface, AppColors.black],
           ),
           borderColor: isSelected
               ? accentColor.withValues(alpha: 0.55)
-              : AppColors.surfaceBorder,
+              : AppColors.border,
           borderWidth: isSelected ? 1.4 : 1,
           titleColor: AppColors.textPrimary,
           dateColor: AppColors.textSecondary,
