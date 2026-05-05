@@ -34,7 +34,7 @@ class OverDriveApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'OverDrive',
-      initialRoute: AppRoutes.home,
+      initialRoute: AppRoutes.login,
       onGenerateRoute: buildAppRoute,
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,

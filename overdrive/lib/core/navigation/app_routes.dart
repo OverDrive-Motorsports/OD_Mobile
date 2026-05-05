@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../pages/auth/login_page.dart';
+import '../../pages/auth/register_page.dart';
 import '../../pages/calendar/calendar_page.dart';
 import '../../pages/championship/championship_page.dart';
 import '../../pages/home/home_page.dart';
@@ -11,6 +13,8 @@ import '../../pages/tv/tv_page.dart';
 
 /// Central route names used by the whole app.
 abstract final class AppRoutes {
+  static const login = '/login';
+  static const register = '/register';
   static const home = '/';
   static const calendar = '/calendar';
   static const championship = '/championship';
@@ -35,6 +39,8 @@ class MenuPageLink {
 }
 
 final Map<String, WidgetBuilder> appRoutes = <String, WidgetBuilder>{
+  AppRoutes.login: (_) => const LoginPage(),
+  AppRoutes.register: (_) => const RegisterPage(),
   AppRoutes.home: (_) => const HomePage(),
   AppRoutes.calendar: (_) => const CalendarPage(),
   AppRoutes.championship: (_) => const ChampionshipPage(),

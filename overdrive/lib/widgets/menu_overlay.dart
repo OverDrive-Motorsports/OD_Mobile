@@ -157,7 +157,11 @@ class _MenuOverlayState extends State<MenuOverlay>
         Positioned(
           top: topPadding + 7,
           left: 12,
-          child: Text('OD', style: AppTextStyles.display()),
+          child: Image.asset(
+            'assets/logoOD/OD_white&gold.png',
+            height: 34,
+            fit: BoxFit.contain,
+          ),
         ),
         Positioned(
           top: topPadding + 8,

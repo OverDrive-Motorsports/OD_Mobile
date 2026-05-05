@@ -544,6 +544,7 @@ class _CalendarLoadingGrid extends StatelessWidget {
                 color: AppColors.white.withValues(alpha: 0.08),
               ),
             ),
+            child: const SizedBox.expand(),
           );
         },
       ),
