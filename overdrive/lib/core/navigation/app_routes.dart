@@ -10,6 +10,7 @@ import '../../pages/search/search_page.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/telemetry/telemetry_page.dart';
 import '../../pages/tv/tv_page.dart';
+import '../../services/championship/championship_mock_data.dart';
 
 /// Central route names used by the whole app.
 abstract final class AppRoutes {
@@ -18,6 +19,9 @@ abstract final class AppRoutes {
   static const home = '/';
   static const calendar = '/calendar';
   static const championship = '/championship';
+  static const championshipFormula1 = '/championship/formula-1';
+  static const championshipWec = '/championship/wec';
+  static const championshipMotoGp = '/championship/motogp';
   static const profile = '/profile';
   static const search = '/search';
   static const settings = '/settings';
@@ -43,7 +47,13 @@ final Map<String, WidgetBuilder> appRoutes = <String, WidgetBuilder>{
   AppRoutes.register: (_) => const RegisterPage(),
   AppRoutes.home: (_) => const HomePage(),
   AppRoutes.calendar: (_) => const CalendarPage(),
-  AppRoutes.championship: (_) => const ChampionshipPage(),
+  AppRoutes.championship: (_) =>
+      ChampionshipPage(data: championshipFormula1Mock),
+  AppRoutes.championshipFormula1: (_) =>
+      ChampionshipPage(data: championshipFormula1Mock),
+  AppRoutes.championshipWec: (_) => ChampionshipPage(data: championshipWecMock),
+  AppRoutes.championshipMotoGp: (_) =>
+      ChampionshipPage(data: championshipMotoGpMock),
   AppRoutes.profile: (_) => const ProfilePage(data: profilePagePreviewData),
   AppRoutes.search: (_) => const SearchPage(),
   AppRoutes.settings: (_) => const SettingsPage(),
@@ -77,9 +87,19 @@ const List<MenuPageLink> menuPageLinks = <MenuPageLink>[
     icon: Icons.calendar_month_outlined,
   ),
   MenuPageLink(
-    routeName: AppRoutes.championship,
-    label: 'Championship',
+    routeName: AppRoutes.championshipFormula1,
+    label: 'F1',
+    icon: Icons.flag_outlined,
+  ),
+  MenuPageLink(
+    routeName: AppRoutes.championshipWec,
+    label: 'WEC',
     icon: Icons.emoji_events_outlined,
+  ),
+  MenuPageLink(
+    routeName: AppRoutes.championshipMotoGp,
+    label: 'MotoGP',
+    icon: Icons.two_wheeler_outlined,
   ),
   MenuPageLink(
     routeName: AppRoutes.profile,

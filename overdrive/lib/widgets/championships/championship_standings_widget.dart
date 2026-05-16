@@ -44,12 +44,16 @@ class ChampionshipStandingsSection {
     this.leadingColumnLabel = 'Nom',
     this.middleColumnLabel,
     this.trailingColumnLabel = 'PTS',
+    this.middleColumnWidth = 32,
+    this.trailingColumnWidth = 42,
   });
 
   final String label;
   final String leadingColumnLabel;
   final String? middleColumnLabel;
   final String trailingColumnLabel;
+  final double middleColumnWidth;
+  final double trailingColumnWidth;
   final List<ChampionshipStandingEntry> entries;
 }
 
@@ -226,7 +230,7 @@ class _StandingsHeader extends StatelessWidget {
         ),
         if (section.middleColumnLabel != null)
           SizedBox(
-            width: 32,
+            width: section.middleColumnWidth,
             child: Text(
               section.middleColumnLabel!,
               textAlign: TextAlign.center,
@@ -236,7 +240,7 @@ class _StandingsHeader extends StatelessWidget {
             ),
           ),
         SizedBox(
-          width: 42,
+          width: section.trailingColumnWidth,
           child: Text(
             section.trailingColumnLabel,
             textAlign: TextAlign.right,
@@ -264,6 +268,7 @@ class _StandingsList extends StatelessWidget {
         for (var index = 0; index < section.entries.length; index++) ...[
           _StandingRow(
             entry: section.entries[index],
+            section: section,
             showMiddleValue: section.middleColumnLabel != null,
           ),
           if (index < section.entries.length - 1) const SizedBox(height: 10),
@@ -275,9 +280,14 @@ class _StandingsList extends StatelessWidget {
 
 /// A single standings row with rank, avatar and values.
 class _StandingRow extends StatelessWidget {
-  const _StandingRow({required this.entry, required this.showMiddleValue});
+  const _StandingRow({
+    required this.entry,
+    required this.section,
+    required this.showMiddleValue,
+  });
 
   final ChampionshipStandingEntry entry;
+  final ChampionshipStandingsSection section;
   final bool showMiddleValue;
 
   @override
@@ -318,7 +328,7 @@ class _StandingRow extends StatelessWidget {
         ),
         if (showMiddleValue)
           SizedBox(
-            width: 32,
+            width: section.middleColumnWidth,
             child: Text(
               entry.middleValue ?? '-',
               textAlign: TextAlign.center,
@@ -326,9 +336,11 @@ class _StandingRow extends StatelessWidget {
             ),
           ),
         SizedBox(
-          width: 42,
+          width: section.trailingColumnWidth,
           child: Text(
             entry.trailingValue,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,
             style: AppTextStyles.bodyBold(
               color: AppColors.gold,

@@ -31,6 +31,8 @@ class CalendarScheduleEvent {
     required this.endDate,
     this.location,
     this.accentColor = AppColors.gold,
+    this.displayStatusOverride,
+    this.displayStatusLabelOverride,
   }) : assert(!endDate.isBefore(startDate));
 
   final String id;
@@ -40,6 +42,8 @@ class CalendarScheduleEvent {
   final DateTime endDate;
   final String? location;
   final Color accentColor;
+  final CalendarScheduleStatus? displayStatusOverride;
+  final String? displayStatusLabelOverride;
 
   CalendarScheduleStatus statusAt(DateTime referenceDate) {
     final currentDate = DateUtils.dateOnly(referenceDate);
@@ -71,6 +75,7 @@ class EventCalendar extends StatelessWidget {
     this.today,
     this.selectedDate,
     this.onEventTap,
+    this.useFlatSurfaces = false,
     this.emptyTitle = 'Aucun evenement sur cette periode',
     this.emptySubtitle = 'Les prochains rendez-vous apparaitront ici.',
     super.key,
@@ -80,6 +85,7 @@ class EventCalendar extends StatelessWidget {
   final DateTime? today;
   final DateTime? selectedDate;
   final ValueChanged<CalendarScheduleEvent>? onEventTap;
+  final bool useFlatSurfaces;
   final String emptyTitle;
   final String emptySubtitle;
 
@@ -98,6 +104,7 @@ class EventCalendar extends StatelessWidget {
       return _EventCalendarEmptyState(
         title: emptyTitle,
         subtitle: emptySubtitle,
+        useFlatSurfaces: useFlatSurfaces,
       );
     }
 
@@ -106,10 +113,13 @@ class EventCalendar extends StatelessWidget {
         for (int index = 0; index < sortedEvents.length; index++) ...[
           _EventCalendarCard(
             event: sortedEvents[index],
-            status: sortedEvents[index].statusAt(referenceDate),
+            status:
+                sortedEvents[index].displayStatusOverride ??
+                sortedEvents[index].statusAt(referenceDate),
             isSelected:
                 currentSelection != null &&
                 sortedEvents[index].containsDate(currentSelection),
+            useFlatSurfaces: useFlatSurfaces,
             onTap: onEventTap == null
                 ? null
                 : () => onEventTap!(sortedEvents[index]),
@@ -127,12 +137,14 @@ class _EventCalendarCard extends StatelessWidget {
     required this.event,
     required this.status,
     required this.isSelected,
+    required this.useFlatSurfaces,
     this.onTap,
   });
 
   final CalendarScheduleEvent event;
   final CalendarScheduleStatus status;
   final bool isSelected;
+  final bool useFlatSurfaces;
   final VoidCallback? onTap;
 
   @override
@@ -141,6 +153,7 @@ class _EventCalendarCard extends StatelessWidget {
       status: status,
       accentColor: event.accentColor,
       isSelected: isSelected,
+      useFlatSurfaces: useFlatSurfaces,
     );
 
     return Material(
@@ -153,6 +166,7 @@ class _EventCalendarCard extends StatelessWidget {
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
           decoration: BoxDecoration(
+            color: style.backgroundColor,
             gradient: style.backgroundGradient,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
@@ -207,7 +221,9 @@ class _EventCalendarCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         _StatusPill(
-                          label: _statusLabel(status),
+                          label:
+                              event.displayStatusLabelOverride ??
+                              _statusLabel(status),
                           backgroundColor: style.badgeBackgroundColor,
                           foregroundColor: style.badgeForegroundColor,
                           borderColor: style.badgeBorderColor,
@@ -304,10 +320,15 @@ class _StatusPill extends StatelessWidget {
 
 /// An empty state shown when there are no events to display.
 class _EventCalendarEmptyState extends StatelessWidget {
-  const _EventCalendarEmptyState({required this.title, required this.subtitle});
+  const _EventCalendarEmptyState({
+    required this.title,
+    required this.subtitle,
+    required this.useFlatSurfaces,
+  });
 
   final String title;
   final String subtitle;
+  final bool useFlatSurfaces;
 
   @override
   Widget build(BuildContext context) {
@@ -315,11 +336,14 @@ class _EventCalendarEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [AppColors.surface, AppColors.black],
-        ),
+        color: useFlatSurfaces ? AppColors.surface : null,
+        gradient: useFlatSurfaces
+            ? null
+            : const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.surface, AppColors.black],
+              ),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: AppColors.border),
       ),
@@ -341,7 +365,8 @@ class _EventCalendarEmptyState extends StatelessWidget {
 /// A style object used internally by the event card.
 class _EventCardStyle {
   const _EventCardStyle({
-    required this.backgroundGradient,
+    this.backgroundGradient,
+    this.backgroundColor,
     required this.borderColor,
     required this.borderWidth,
     required this.titleColor,
@@ -353,7 +378,8 @@ class _EventCardStyle {
     this.shadow,
   });
 
-  final Gradient backgroundGradient;
+  final Gradient? backgroundGradient;
+  final Color? backgroundColor;
   final Color borderColor;
   final double borderWidth;
   final Color titleColor;
@@ -368,15 +394,19 @@ class _EventCardStyle {
     required CalendarScheduleStatus status,
     required Color accentColor,
     required bool isSelected,
+    required bool useFlatSurfaces,
   }) {
     switch (status) {
       case CalendarScheduleStatus.past:
         return _EventCardStyle(
-          backgroundGradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.surface, AppColors.black],
-          ),
+          backgroundGradient: useFlatSurfaces
+              ? null
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.surface, AppColors.black],
+                ),
+          backgroundColor: useFlatSurfaces ? AppColors.surface : null,
           borderColor: isSelected
               ? accentColor.withValues(alpha: 0.55)
               : AppColors.border,
@@ -397,14 +427,17 @@ class _EventCardStyle {
         );
       case CalendarScheduleStatus.ongoing:
         return _EventCardStyle(
-          backgroundGradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [
-              AppColors.surfaceElevated.withValues(alpha: 0.40),
-              AppColors.red.withValues(alpha: 0.30),
-            ],
-          ),
+          backgroundGradient: useFlatSurfaces
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.surfaceElevated.withValues(alpha: 0.40),
+                    AppColors.red.withValues(alpha: 0.30),
+                  ],
+                ),
+          backgroundColor: useFlatSurfaces ? AppColors.surfaceElevated : null,
           borderColor: AppColors.red.withValues(alpha: 0.95),
           borderWidth: isSelected ? 1.8 : 1.4,
           titleColor: AppColors.textPrimary,
@@ -421,11 +454,14 @@ class _EventCardStyle {
         );
       case CalendarScheduleStatus.upcoming:
         return _EventCardStyle(
-          backgroundGradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [AppColors.surface, AppColors.black],
-          ),
+          backgroundGradient: useFlatSurfaces
+              ? null
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.surface, AppColors.black],
+                ),
+          backgroundColor: useFlatSurfaces ? AppColors.surface : null,
           borderColor: isSelected
               ? accentColor.withValues(alpha: 0.55)
               : AppColors.border,

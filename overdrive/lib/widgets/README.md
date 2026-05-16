@@ -259,6 +259,40 @@ Behavior:
 - Supports both asset logos and emoji fallback content.
 - Reuses `GlassPill` for the circular icon surface.
 
+### `championships/championship_top3.dart`
+
+Compact live podium card used by championship live pages.
+
+Main API:
+- `ChampionshipTop3`
+
+Props:
+- `entries`
+- `accentColor`
+- `label`
+
+Behavior:
+- Displays the first 3 live entries in a compact 3-column layout.
+- Supports optional per-category labels for multi-class live timing.
+- Gives the leader a stronger visual emphasis than P2 and P3.
+
+### `championships/championship_schedule.dart`
+
+Reusable weekend program card.
+
+Main API:
+- `ChampionshipSchedule`
+
+Props:
+- `sessions`
+- `now`
+- `title`
+
+Behavior:
+- Automatically identifies the next upcoming session.
+- Displays session badges for completed, next, live, and upcoming states.
+- Opens the shared `OdModal` with the session name when a row is tapped.
+
 ### `championships/championship_standings_widget.dart`
 
 Reusable standings card with optional section switching.
@@ -294,6 +328,21 @@ Behavior:
 - Switches cleanly between multiple standings sections.
 - Supports text avatars or remote images.
 - Keeps all standings rendering presentational.
+
+### `championships/championship_replay_btn.dart`
+
+Reusable replay call-to-action card.
+
+Main API:
+- `ChampionshipReplayBtn`
+
+Props:
+- `replays`
+- `onTap`
+
+Behavior:
+- Renders a compact replay library entry card.
+- Keeps navigation handling outside the widget.
 
 ## Maintenance Checklist
 

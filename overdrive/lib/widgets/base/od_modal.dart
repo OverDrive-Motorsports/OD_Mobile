@@ -176,65 +176,79 @@ class _OdModalSheetState extends State<_OdModalSheet> {
 
     return Padding(
       padding: EdgeInsets.only(bottom: viewInsets),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 160),
-        curve: Curves.easeOut,
-        transform: Matrix4.translationValues(0, bottomOffset + _dragOffset, 0),
-        child: GestureDetector(
-          onVerticalDragUpdate: widget.isDismissible ? _handleDragUpdate : null,
-          onVerticalDragEnd: widget.isDismissible ? _handleDragEnd : null,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              maxWidth: 680,
-              maxHeight: MediaQuery.sizeOf(context).height * 0.82,
-            ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(_topRadius),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 160),
+          curve: Curves.easeOut,
+          transform: Matrix4.translationValues(
+            0,
+            bottomOffset + _dragOffset,
+            0,
+          ),
+          child: GestureDetector(
+            onVerticalDragUpdate: widget.isDismissible
+                ? _handleDragUpdate
+                : null,
+            onVerticalDragEnd: widget.isDismissible ? _handleDragEnd : null,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: 680,
+                maxHeight: MediaQuery.sizeOf(context).height * 0.82,
               ),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated.withValues(alpha: 0.94),
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(_topRadius),
-                    ),
-                    border: Border.all(
-                      color: AppColors.white.withValues(alpha: 0.06),
-                    ),
+              child: SizedBox(
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(_topRadius),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.showHandle) ...[
-                          Container(
-                            width: 36,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: AppColors.handle,
-                              borderRadius: BorderRadius.circular(999),
-                            ),
-                          ),
-                          const SizedBox(height: 14),
-                        ],
-                        if (widget.title != null) ...[
-                          Text(
-                            widget.title!,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.bodyBold().copyWith(
-                              fontSize: 16,
-                            ),
-                          ),
-                          const SizedBox(height: 18),
-                        ],
-                        Flexible(
-                          fit: FlexFit.loose,
-                          child: SingleChildScrollView(child: widget.child),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated.withValues(
+                          alpha: 0.94,
                         ),
-                      ],
+                        borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(_topRadius),
+                        ),
+                        border: Border.all(
+                          color: AppColors.white.withValues(alpha: 0.06),
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            if (widget.showHandle) ...[
+                              Container(
+                                width: 36,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: AppColors.handle,
+                                  borderRadius: BorderRadius.circular(999),
+                                ),
+                              ),
+                              const SizedBox(height: 14),
+                            ],
+                            if (widget.title != null) ...[
+                              Text(
+                                widget.title!,
+                                textAlign: TextAlign.center,
+                                style: AppTextStyles.bodyBold().copyWith(
+                                  fontSize: 16,
+                                ),
+                              ),
+                              const SizedBox(height: 18),
+                            ],
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: SingleChildScrollView(child: widget.child),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
