@@ -187,7 +187,7 @@ Related widgets in the same file:
 
 Behavior:
 - Displays the `OD` brand mark and the menu trigger.
-- Opens a floating panel with navigation and backend health actions.
+- Opens a floating panel with a `Home` navigation action and backend health action.
 - Uses `HealthService` for the health check action.
 
 ## Calendar Widgets

@@ -13,6 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:overdrive/core/navigation/app_routes.dart';
 import 'package:overdrive/pages/calendar/calendar_page.dart';
 import 'package:overdrive/pages/championship/championship_page.dart';
+import 'package:overdrive/pages/home/home_page.dart';
 import 'package:overdrive/pages/profile/profile_page.dart';
 import 'package:overdrive/pages/replay/replay_page.dart';
 import 'package:overdrive/pages/search/search_page.dart';
@@ -25,18 +26,59 @@ import '../helpers/test_app.dart';
 
 void main() {
   group('Routed pages', () {
-    testWidgets('menu overlay navigates between app routes', (
+    testWidgets('menu overlay only exposes home navigation and health action', (
       WidgetTester tester,
     ) async {
-      await pumpRoutedTestApp(tester);
+      await pumpRoutedTestApp(tester, initialRoute: AppRoutes.calendar);
 
       await tester.tap(find.text('Menu'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('F1'));
+
+      final menuPanel = find.byType(MenuPanel);
+
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('Home')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('Health')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('Calendar')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('F1')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('WEC')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('MotoGP')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('Profil')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('Settings')),
+        findsNothing,
+      );
+      expect(
+        find.descendant(of: menuPanel, matching: find.text('Telemetry')),
+        findsNothing,
+      );
+
+      await tester.tap(
+        find.descendant(of: menuPanel, matching: find.text('Home')),
+      );
       await tester.pumpAndSettle();
 
-      expect(find.byType(ChampionshipPage), findsOneWidget);
-      expect(find.text('TV Live'), findsOneWidget);
+      expect(find.byType(HomePage), findsOneWidget);
     });
 
     testWidgets('placeholder-backed routes render their injected titles', (

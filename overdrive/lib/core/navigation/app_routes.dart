@@ -91,44 +91,4 @@ const List<MenuPageLink> menuPageLinks = <MenuPageLink>[
     label: 'Home',
     icon: Icons.home_outlined,
   ),
-  MenuPageLink(
-    routeName: AppRoutes.calendar,
-    label: 'Calendar',
-    icon: Icons.calendar_month_outlined,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.championshipFormula1,
-    label: 'F1',
-    icon: Icons.flag_outlined,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.championshipWec,
-    label: 'WEC',
-    icon: Icons.emoji_events_outlined,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.championshipMotoGp,
-    label: 'MotoGP',
-    icon: Icons.two_wheeler_outlined,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.profile,
-    label: 'Profil',
-    icon: Icons.person_outline_rounded,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.search,
-    label: 'Search',
-    icon: Icons.search_rounded,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.settings,
-    label: 'Settings',
-    icon: Icons.settings_outlined,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.telemetry,
-    label: 'Telemetry',
-    icon: Icons.speed_outlined,
-  ),
 ];
