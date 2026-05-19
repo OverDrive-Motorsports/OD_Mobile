@@ -30,6 +30,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
+/// Subtle home background treatment behind the global menu overlay.
 class _HomeBackdrop extends StatelessWidget {
   const _HomeBackdrop();
 

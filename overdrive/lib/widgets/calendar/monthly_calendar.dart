@@ -502,21 +502,6 @@ class _MonthlyEventDots extends StatelessWidget {
   }
 }
 
-Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
-  Map<DateTime, List<CalendarEventMarker>> input,
-) {
-  final normalized = <DateTime, List<CalendarEventMarker>>{};
-
-  for (final MapEntry<DateTime, List<CalendarEventMarker>> entry
-      in input.entries) {
-    normalized[_dateOnly(entry.key)] = List<CalendarEventMarker>.unmodifiable(
-      entry.value,
-    );
-  }
-
-  return normalized;
-}
-
 /// A placeholder grid shown while the calendar is loading.
 class _CalendarLoadingGrid extends StatelessWidget {
   const _CalendarLoadingGrid();
@@ -552,6 +537,23 @@ class _CalendarLoadingGrid extends StatelessWidget {
   }
 }
 
+/// Normalizes event map keys to date-only values for reliable lookup.
+Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
+  Map<DateTime, List<CalendarEventMarker>> input,
+) {
+  final normalized = <DateTime, List<CalendarEventMarker>>{};
+
+  for (final MapEntry<DateTime, List<CalendarEventMarker>> entry
+      in input.entries) {
+    normalized[_dateOnly(entry.key)] = List<CalendarEventMarker>.unmodifiable(
+      entry.value,
+    );
+  }
+
+  return normalized;
+}
+
+/// Builds the 42 visible day cells for a month grid.
 List<DateTime> _buildMonthDays(DateTime month) {
   final firstDay = DateTime(month.year, month.month);
   final leadingDays = firstDay.weekday - DateTime.monday;
@@ -563,16 +565,20 @@ List<DateTime> _buildMonthDays(DateTime month) {
   );
 }
 
+/// Returns the number of calendar months between two month-only dates.
 int _monthsBetween(DateTime start, DateTime end) =>
     (end.year - start.year) * 12 + end.month - start.month;
 
+/// Returns the first day of the month for the provided date.
 DateTime _monthOnly(DateTime? date) {
   final safeDate = date ?? DateTime.now();
   return DateTime(safeDate.year, safeDate.month);
 }
 
+/// Normalizes a date to midnight using Flutter's date-only helper.
 DateTime _dateOnly(DateTime date) => DateUtils.dateOnly(date);
 
+/// Compares two dates while ignoring their time components.
 bool _isSameDate(DateTime left, DateTime right) =>
     left.year == right.year &&
     left.month == right.month &&

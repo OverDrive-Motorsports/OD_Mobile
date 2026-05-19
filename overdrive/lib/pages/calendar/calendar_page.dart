@@ -63,6 +63,7 @@ class CalendarPage extends StatefulWidget {
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
+/// Loads calendar data and coordinates filtering, selection, and archives.
 class _CalendarPageState extends State<CalendarPage> {
   final CalendarService _calendarService = CalendarService.instance;
 
@@ -83,6 +84,7 @@ class _CalendarPageState extends State<CalendarPage> {
     _loadCalendarData();
   }
 
+  /// Loads championships and schedule entries from the calendar service.
   Future<void> _loadCalendarData() async {
     try {
       final responses = await Future.wait<dynamic>(<Future<dynamic>>[
@@ -120,6 +122,7 @@ class _CalendarPageState extends State<CalendarPage> {
     }
   }
 
+  /// Returns entries matching the selected championship filter.
   List<CalendarRaceEntry> _entriesForChampionship(String championshipId) {
     if (championshipId == _allChampionshipsFilterId) {
       return _allEntries;
@@ -132,6 +135,7 @@ class _CalendarPageState extends State<CalendarPage> {
         .toList(growable: false);
   }
 
+  /// Applies a championship filter and keeps the selected date meaningful.
   void _handleChampionshipSelected(String championshipId) {
     if (championshipId == _selectedChampionshipId) {
       return;
@@ -149,14 +153,17 @@ class _CalendarPageState extends State<CalendarPage> {
     });
   }
 
+  /// Applies date selection from the reusable monthly calendar widget.
   void _handleDateSelected(DateTime date) {
     setState(() => _selectedDate = DateUtils.dateOnly(date));
   }
 
+  /// Toggles archived event visibility in the schedule section.
   void _togglePastEvents() {
     setState(() => _showPastEvents = !_showPastEvents);
   }
 
+  /// Builds loading, error, archive, and upcoming schedule content.
   List<Widget> _buildScheduleContent(_CalendarViewData viewData) {
     if (_loadingError != null) {
       return <Widget>[
@@ -295,6 +302,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 }
 
+/// Derived calendar data consumed by the route-level layout.
 class _CalendarViewData {
   const _CalendarViewData._({
     required this.eventsByDate,
@@ -312,6 +320,7 @@ class _CalendarViewData {
   final List<CalendarScheduleEvent> pastEvents;
   final bool selectedDateHasPastEvent;
 
+  /// Splits raw race entries into marker, bounds, upcoming, and archive views.
   factory _CalendarViewData.fromEntries({
     required List<CalendarRaceEntry> entries,
     required DateTime selectedDate,
@@ -343,6 +352,7 @@ class _CalendarViewData {
   }
 }
 
+/// Small status card used for loading and error states.
 class _CalendarInfoCard extends StatelessWidget {
   const _CalendarInfoCard({required this.title, required this.subtitle});
 
@@ -374,6 +384,7 @@ class _CalendarInfoCard extends StatelessWidget {
   }
 }
 
+/// Title and subtitle block used above calendar sections.
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title, required this.subtitle});
 
@@ -396,6 +407,7 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
+/// Inline control that expands or collapses archived events.
 class _PastEventsInlineToggle extends StatelessWidget {
   const _PastEventsInlineToggle({
     required this.pastEventsCount,
@@ -470,6 +482,7 @@ class _PastEventsInlineToggle extends StatelessWidget {
   }
 }
 
+/// Horizontal filter chip for championship selection.
 class _ChampionshipFilterChip extends StatelessWidget {
   const _ChampionshipFilterChip({
     required this.label,
@@ -526,10 +539,12 @@ class _ChampionshipFilterChip extends StatelessWidget {
   }
 }
 
+/// Builds the localized month label displayed by the calendar header.
 String _buildMonthLabel(DateTime month) {
   return '${_calendarMonthNames[month.month - 1]} ${month.year}';
 }
 
+/// Formats a date for the schedule summary line.
 String _formatLongDate(DateTime date) {
   return '${date.day} ${_calendarMonthNamesLowercase[date.month - 1]}';
 }

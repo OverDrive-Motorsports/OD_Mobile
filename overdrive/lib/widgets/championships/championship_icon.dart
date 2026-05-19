@@ -97,7 +97,7 @@ class _LogoContent extends StatelessWidget {
       return Text(
         logoAsset,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 34, height: 1),
+        style: AppTextStyles.body().copyWith(fontSize: 34, height: 1),
       );
     }
 
@@ -107,10 +107,10 @@ class _LogoContent extends StatelessWidget {
       height: 40,
       fit: BoxFit.contain,
       errorBuilder: (_, _, _) {
-        return const Text(
+        return Text(
           '🏁',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 34, height: 1),
+          style: AppTextStyles.body().copyWith(fontSize: 34, height: 1),
         );
       },
     );

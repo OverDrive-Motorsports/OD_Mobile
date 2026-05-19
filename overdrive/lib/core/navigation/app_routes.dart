@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## app_routes.dart - Central route names, page builders, and menu entries.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 
 import '../../pages/auth/login_page.dart';
@@ -61,6 +70,7 @@ final Map<String, WidgetBuilder> appRoutes = <String, WidgetBuilder>{
   AppRoutes.tv: (_) => const TvPage(),
 };
 
+/// Builds an app route without transition animation for menu-style navigation.
 Route<dynamic>? buildAppRoute(RouteSettings settings) {
   final builder = appRoutes[settings.name];
   if (builder == null) {
@@ -120,10 +130,5 @@ const List<MenuPageLink> menuPageLinks = <MenuPageLink>[
     routeName: AppRoutes.telemetry,
     label: 'Telemetry',
     icon: Icons.speed_outlined,
-  ),
-  MenuPageLink(
-    routeName: AppRoutes.tv,
-    label: 'TV',
-    icon: Icons.live_tv_outlined,
   ),
 ];

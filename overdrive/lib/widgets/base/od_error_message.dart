@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
+/// Visual variants supported by the shared error message widget.
 enum ErrorMessageVariant { inline, banner }
 
 /// A shared error widget with inline and banner layouts.

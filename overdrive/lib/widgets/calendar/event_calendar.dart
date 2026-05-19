@@ -19,6 +19,7 @@ class CalendarEventMarker {
   final String? label;
 }
 
+/// Relative display state for one scheduled calendar event.
 enum CalendarScheduleStatus { past, ongoing, upcoming }
 
 /// A data model for one scheduled event in the calendar.
@@ -484,6 +485,7 @@ class _EventCardStyle {
   }
 }
 
+/// Formats a start/end range for compact event-card display.
 String _formatDateRange(DateTime startDate, DateTime endDate) {
   final start = DateUtils.dateOnly(startDate);
   final end = DateUtils.dateOnly(endDate);
@@ -499,10 +501,12 @@ String _formatDateRange(DateTime startDate, DateTime endDate) {
   return '${_formatSingleDate(start)} - ${_formatSingleDate(end)}';
 }
 
+/// Formats a single date with the short localized month label.
 String _formatSingleDate(DateTime date) {
   return '${date.day} ${_monthLabel(date.month)}';
 }
 
+/// Returns the localized month label used by event cards.
 String _monthLabel(int month) {
   const monthLabels = <String>[
     'janvier',
@@ -522,6 +526,7 @@ String _monthLabel(int month) {
   return monthLabels[month - 1];
 }
 
+/// Maps a schedule status to the label displayed in the status pill.
 String _statusLabel(CalendarScheduleStatus status) {
   switch (status) {
     case CalendarScheduleStatus.past:

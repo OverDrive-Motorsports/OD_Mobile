@@ -37,6 +37,9 @@ dependencies:
   flutter_dotenv: ^5.1.0
   dio: ^5.9.2
   google_fonts: ^6.2.1
+  webview_flutter: ^4.13.1
+  webview_flutter_android: ^4.10.4
+  webview_flutter_wkwebview: ^3.23.1
 
 dev_dependencies:
   flutter_test:

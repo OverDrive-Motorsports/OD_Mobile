@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import '../shared/placeholder_page.dart';
 
+/// Lightweight replay route that displays the injected replay section title.
 class ReplayPage extends StatelessWidget {
   const ReplayPage({super.key, required this.title});
 

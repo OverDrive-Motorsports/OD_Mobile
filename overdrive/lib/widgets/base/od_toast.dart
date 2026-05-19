@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
+/// Semantic toast styles mapped to shared app colors and icons.
 enum ToastType { error, success, info }
 
 /// A helper used to show a single shared toast at a time.

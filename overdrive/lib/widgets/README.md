@@ -9,6 +9,7 @@ Pages should compose these widgets instead of rebuilding the same UI patterns.
 - Keep business logic outside UI primitives whenever possible.
 - Prefer small, composable files over page-specific one-off rendering.
 - Reuse shared visual primitives such as `GlassPill` or the base widget library before adding new styles.
+- Use `AppColors` and `AppTextStyles` from `app_theme.dart` for shared color and typography choices.
 
 ## Base Widgets
 
@@ -343,6 +344,39 @@ Props:
 Behavior:
 - Renders a compact replay library entry card.
 - Keeps navigation handling outside the widget.
+
+## TV Widgets
+
+### `tv/tv_live_player.dart`
+
+Embedded live player used by the TV page.
+
+Main API:
+- `TvLivePlayer`
+
+Props:
+- `stream`
+
+Behavior:
+- Builds and loads a YouTube embed in a `WebView`.
+- Shows a loading overlay while the player is preparing.
+- Falls back to a themed unavailable state when no valid video URL exists.
+
+### `tv/tv_stream_selector_sheet.dart`
+
+Bottom-sheet stream picker used by the TV page.
+
+Main API:
+- `TvStreamSelectorSheet`
+
+Props:
+- `options`
+- `selectedId`
+- `onSelected`
+
+Behavior:
+- Renders selectable stream cards in a compact grid.
+- Delegates the selected stream back to the page through `onSelected`.
 
 ## Maintenance Checklist
 

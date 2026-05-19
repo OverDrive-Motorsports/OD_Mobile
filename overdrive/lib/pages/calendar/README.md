@@ -2,18 +2,24 @@
 
 ## Purpose
 
-`calendar_page.dart` currently exposes a placeholder route for the calendar section.
+`calendar_page.dart` renders the calendar screen from the temporary calendar service.
+It combines championship filters, a reusable monthly calendar, and event cards.
 
 ## Responsibilities
 
-- Register a stable screen entry for navigation.
-- Reuse the shared placeholder shell until full calendar content is mounted.
+- Load championship and schedule data from `CalendarService`.
+- Keep filter, selected date, loading, and archive state local to the route.
+- Compose reusable calendar widgets instead of embedding all rendering in the page.
+- Keep date labels and display formatting close to the page-level locale choices.
 
 ## Dependencies
 
-- `PlaceholderPage` from `pages/shared`.
+- `CalendarService` from `services/calendar`.
+- `MonthlyCalendar` and `EventCalendar` from `widgets/calendar`.
+- `GlassPill` for compact filter and archive controls.
+- `MenuOverlay` for top-level navigation.
 
 ## Extension Notes
 
-- Replace the placeholder with real calendar composition when the feature is ready.
-- Prefer reusing the shared calendar widgets already available under `lib/widgets/calendar`.
+- Replace the mock backend with the real schedule source behind `CalendarService`.
+- Keep future filters declarative and avoid duplicating event-card rendering in the page.

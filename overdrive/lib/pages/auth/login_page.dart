@@ -18,6 +18,7 @@ import '../../widgets/base/od_text_field.dart';
 import '../../widgets/base/od_toast.dart';
 import 'auth_page_shell.dart';
 
+/// Temporary login route used until the real authentication backend is wired.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -25,6 +26,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+/// Manages the temporary sign-in form, validation, and login navigation.
 class _LoginPageState extends State<LoginPage> {
   final FakeAuthService _authService = FakeAuthService.instance;
   final TextEditingController _emailController = TextEditingController(
@@ -46,6 +48,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  /// Opens registration and hydrates the login fields with returned credentials.
   Future<void> _openRegisterPage() async {
     final result = await Navigator.of(context).pushNamed(AppRoutes.register);
 
@@ -67,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  /// Validates and submits the sign-in form through the temporary auth service.
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
 
@@ -109,6 +113,7 @@ class _LoginPageState extends State<LoginPage> {
     Navigator.of(context).pushReplacementNamed(AppRoutes.home);
   }
 
+  /// Returns a field-level error when the email is empty or malformed.
   String? _validateEmail(String value) {
     if (value.isEmpty) {
       return 'Enter your email address.';
@@ -122,6 +127,7 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
+  /// Returns a field-level error when the password cannot be submitted.
   String? _validatePassword(String value) {
     if (value.isEmpty) {
       return 'Enter your password.';

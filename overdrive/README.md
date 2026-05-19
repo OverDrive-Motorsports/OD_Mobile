@@ -1,62 +1,82 @@
-# OverDrive
+# OverDrive Flutter App
 
-A minimalist Flutter application focused on a `Home` page and several placeholder pages accessible from the menu.
-
-## Detailed Documentation
-
-- `ARCHITECTURE_LIB.md`
+The `overdrive/` module contains the Flutter mobile application for OverDrive.
+It provides authentication screens, shared navigation, reusable UI primitives,
+and data-driven motorsport pages.
 
 ## Current Structure
 
-- `lib/main.dart` directly launches `HomePage` and configures the global theme  
-- `lib/pages/home/home_page.dart` displays the home screen shell with a solid black background and the floating menu overlay  
-- `lib/widgets/menu_overlay.dart` displays `OD`, the `Menu` button, navigation shortcuts, and the `Health` action  
-- `lib/widgets/calendar/` contains reusable calendar widgets and models kept independent from page-level demo data  
-- `lib/pages/shared/placeholder_page.dart` provides a reusable placeholder screen with a centered title  
-- `lib/pages/profile/profile_page.dart` displays the `Profile` page  
-- `lib/pages/settings/settings_page.dart` displays the `Settings` page  
-- `lib/pages/calendar/calendar_page.dart` displays the `Calendar` page  
-- `lib/pages/championship/championship_page.dart` displays the `Championship` page  
-- `lib/pages/tv/tv_page.dart` displays the `TV` page  
-- `lib/pages/telemetry/telemetry_page.dart` displays the `Telemetry` page  
-- `lib/pages/search/search_page.dart` displays the `Search` page  
-- `lib/services/health_service.dart` handles the only backend interaction: `GET /health`  
-- `lib/core/theme/app_theme.dart` centralizes the theme, colors, and styles  
+- `lib/main.dart` starts the app, loads the optional environment file, and uses the shared dark theme.
+- `lib/core/navigation/app_routes.dart` centralizes route names, page builders, and menu entries.
+- `lib/core/theme/app_theme.dart` centralizes app colors, typography, and Flutter theme configuration.
+- `lib/pages/auth/` contains the temporary local login and registration flow.
+- `lib/pages/home/` hosts the current home shell and shared menu overlay.
+- `lib/pages/calendar/` composes championship filters, the monthly calendar, and event cards.
+- `lib/pages/championship/` renders adaptive championship pages from data models and mocks.
+- `lib/pages/profile/`, `lib/pages/settings/`, `lib/pages/search/`, and `lib/pages/tv/` provide the main app surfaces.
+- `lib/pages/replay/` and `lib/pages/telemetry/` currently reuse the shared placeholder route.
+- `lib/widgets/` contains shared base widgets, calendar widgets, TV widgets, championship widgets, and navigation primitives.
+- `lib/services/` contains temporary mock services and the retained backend health check.
+
+## Theme Convention
+
+Pages and widgets should use `AppColors` and `AppTextStyles` from
+`lib/core/theme/app_theme.dart` for visual colors and typography. Do not add new
+theme tokens without confirming the need first.
 
 ## Header Convention
 
-All Dart files in `lib/` now start with the following standard header, adapted to each file:
+Active Dart files in `lib/` use the standard OverDrive header adapted to each
+file:
 
 ```dart
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## [FileName] - [Brief description of the file's purpose]
+ ## file_name.dart - Brief description of the file purpose.
  ##
  */
+```
 
 ## Backend
 
-The only backend interaction retained is:
+The retained backend interaction is:
 
 - `GET /health`
 
-The backend URL is read from API_BASE_URL if defined. Otherwise, the application uses:
+The backend URL is read from `API_BASE_URL` when defined. Otherwise, the
+application uses:
 
 - `http://10.0.2.2:8080` on Android
 - `http://localhost:8080` elsewhere
 
-## Tests
+## Environment
 
-The existing widget test verifies that the home screen correctly displays OD and the Menu button.
+Supported environment files:
+
+- `.env` for development
+- `.env.prod` for production
+
+Required variables:
+
+- `API_BASE_URL`
+- `APP_ENV`
+
+Run with the production environment file:
+
+```bash
+flutter run --dart-define=ENV_FILE=.env.prod
+```
 
 ## Code Quality
 
-Useful commands :
+Useful commands:
 
 ```bash
 dart format lib
 flutter analyze
 ```
+
+There is no dedicated test suite in this module at the moment.

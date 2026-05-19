@@ -14,6 +14,7 @@ import '../../services/championship/championship_enums.dart';
 import '../../services/championship/championship_session.dart';
 import '../base/od_modal.dart';
 
+/// Weekend program card for championship sessions.
 class ChampionshipSchedule extends StatelessWidget {
   const ChampionshipSchedule({
     super.key,
@@ -35,9 +36,9 @@ class ChampionshipSchedule extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
-        color: const Color(0xFF111111),
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF1E1E1E), width: 1),
+        border: Border.all(color: AppColors.border, width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,7 +56,7 @@ class ChampionshipSchedule extends StatelessWidget {
               now: now,
             ),
             if (index < sessions.length - 1)
-              const Divider(height: 14, color: Color(0xFF111111)),
+              const Divider(height: 14, color: AppColors.surface),
           ],
         ],
       ),
@@ -63,6 +64,7 @@ class ChampionshipSchedule extends StatelessWidget {
   }
 }
 
+/// Interactive row showing one session name, timing, and status badge.
 class _ScheduleRow extends StatelessWidget {
   const _ScheduleRow({
     required this.session,
@@ -78,11 +80,11 @@ class _ScheduleRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final isCompleted = session.status == SessionStatus.completed;
     final titleColor = isCompleted
-        ? const Color(0xFF333333)
+        ? AppColors.white.withValues(alpha: 0.20)
         : AppColors.textPrimary;
     final metaColor = isCompleted
-        ? const Color(0xFF333333)
-        : const Color(0xFF555555);
+        ? AppColors.white.withValues(alpha: 0.20)
+        : AppColors.textSecondary;
     final countdown = isNextUpcoming
         ? _formatCountdown(session.scheduledAt.difference(now))
         : null;
@@ -142,6 +144,7 @@ class _ScheduleRow extends StatelessWidget {
     );
   }
 
+  /// Opens a lightweight modal placeholder for the tapped session.
   Future<void> _openSessionToast(BuildContext context) {
     return OdModal.show<void>(
       context,
@@ -151,6 +154,7 @@ class _ScheduleRow extends StatelessWidget {
   }
 }
 
+/// Badge renderer for completed, next, live, and upcoming sessions.
 class _SessionBadge extends StatelessWidget {
   const _SessionBadge({required this.session, required this.isNextUpcoming});
 
@@ -179,13 +183,13 @@ class _SessionBadge extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
-          color: const Color(0xFF161616),
+          color: AppColors.surfaceElevated,
           borderRadius: BorderRadius.circular(999),
         ),
         child: Text(
           'Termine',
           style: AppTextStyles.body(
-            color: const Color(0xFF333333),
+            color: AppColors.white.withValues(alpha: 0.20),
           ).copyWith(fontSize: 11),
         ),
       );
@@ -194,20 +198,19 @@ class _SessionBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
-        color: const Color(0x10C9A84C),
+        color: AppColors.gold.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0x20C9A84C)),
+        border: Border.all(color: AppColors.gold.withValues(alpha: 0.12)),
       ),
       child: Text(
         session.status == SessionStatus.live ? 'LIVE' : 'A venir',
-        style: AppTextStyles.body(
-          color: const Color(0xFFC9A84C),
-        ).copyWith(fontSize: 11),
+        style: AppTextStyles.body(color: AppColors.gold).copyWith(fontSize: 11),
       ),
     );
   }
 }
 
+/// Formats the session date with an optional countdown suffix.
 String _formatSessionDate(DateTime date, {String? countdown}) {
   const weekdays = <String>['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
   final weekday = weekdays[date.weekday - 1];
@@ -222,6 +225,7 @@ String _formatSessionDate(DateTime date, {String? countdown}) {
   return '$base · $countdown';
 }
 
+/// Formats the remaining time before the next upcoming session.
 String _formatCountdown(Duration duration) {
   if (duration.isNegative) {
     return 'maintenant';

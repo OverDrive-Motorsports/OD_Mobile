@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/championship/championship_live_entry.dart';
 
+/// Compact card that highlights the first three live standings entries.
 class ChampionshipTop3 extends StatelessWidget {
   const ChampionshipTop3({
     super.key,
@@ -39,16 +40,16 @@ class ChampionshipTop3 extends StatelessWidget {
           Text(
             label!.toUpperCase(),
             style: AppTextStyles.label(
-              color: const Color(0xFF555555),
+              color: AppColors.textSecondary,
             ).copyWith(letterSpacing: 1.1),
           ),
           const SizedBox(height: 10),
         ],
         Container(
           decoration: BoxDecoration(
-            color: const Color(0xFF111111),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: const Color(0xFF1E1E1E)),
+            border: Border.all(color: AppColors.border),
           ),
           clipBehavior: Clip.antiAlias,
           child: IntrinsicHeight(
@@ -67,7 +68,7 @@ class ChampionshipTop3 extends StatelessWidget {
                     const VerticalDivider(
                       width: 1,
                       thickness: 1,
-                      color: Color(0xFF1E1E1E),
+                      color: AppColors.border,
                     ),
                 ],
               ],
@@ -79,6 +80,7 @@ class ChampionshipTop3 extends StatelessWidget {
   }
 }
 
+/// One column of the top-3 card, with a stronger treatment for the leader.
 class _Top3Cell extends StatelessWidget {
   const _Top3Cell({
     required this.entry,
@@ -95,13 +97,11 @@ class _Top3Cell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final surfaceColor = isLeader
-        ? const Color(0xFF110F08)
-        : const Color(0xFF111111);
-    final barColor = isLeader ? accentColor : const Color(0xFF1E1E1E);
-    final nameColor = isLeader
-        ? AppColors.textPrimary
-        : const Color(0xFFD0D0D0);
-    final secondaryColor = isLeader ? accentColor : const Color(0xFF555555);
+        ? AppColors.gold.withValues(alpha: 0.08)
+        : AppColors.surface;
+    final barColor = isLeader ? accentColor : AppColors.border;
+    final nameColor = isLeader ? AppColors.textPrimary : AppColors.textMuted;
+    final secondaryColor = isLeader ? accentColor : AppColors.textSecondary;
 
     return ColoredBox(
       color: surfaceColor,

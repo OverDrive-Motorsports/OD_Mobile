@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-@immutable
 /// A single row item used in a standings section.
+@immutable
 class ChampionshipStandingEntry {
   const ChampionshipStandingEntry({
     required this.position,
@@ -35,8 +35,8 @@ class ChampionshipStandingEntry {
   final Color avatarColor;
 }
 
-@immutable
 /// A group of standings entries with column labels.
+@immutable
 class ChampionshipStandingsSection {
   const ChampionshipStandingsSection({
     required this.label,

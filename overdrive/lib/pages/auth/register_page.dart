@@ -17,6 +17,7 @@ import '../../widgets/base/od_text_field.dart';
 import '../../widgets/base/od_toast.dart';
 import 'auth_page_shell.dart';
 
+/// Temporary registration route used to simulate local account creation.
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -24,6 +25,7 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPageState();
 }
 
+/// Manages the temporary account creation form and validation lifecycle.
 class _RegisterPageState extends State<RegisterPage> {
   final FakeAuthService _authService = FakeAuthService.instance;
   final TextEditingController _nameController = TextEditingController();
@@ -48,6 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+  /// Validates the form and returns created credentials to the login page.
   Future<void> _submit() async {
     FocusScope.of(context).unfocus();
 
@@ -105,6 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
+  /// Returns a field-level error when the display name is invalid.
   String? _validateName(String value) {
     if (value.isEmpty) {
       return 'Enter your name or username.';
@@ -117,6 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
+  /// Returns a field-level error when the email is empty or malformed.
   String? _validateEmail(String value) {
     if (value.isEmpty) {
       return 'Enter your email address.';
@@ -130,6 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
+  /// Returns a field-level error when the password is too weak for sign-up.
   String? _validatePassword(String value) {
     if (value.isEmpty) {
       return 'Choose a password.';
@@ -142,6 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
+  /// Returns a field-level error when confirmation is missing or mismatched.
   String? _validateConfirmPassword(String password, String confirmPassword) {
     if (confirmPassword.isEmpty) {
       return 'Confirm your password.';
@@ -154,6 +161,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return null;
   }
 
+  /// Clears form validation errors after the user edits or clears a field.
   void _clearErrors({bool clearPage = true}) {
     setState(() {
       _nameError = null;

@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/glass_pill.dart';
 
+/// Shared page frame for login and registration screens.
 class AuthPageShell extends StatelessWidget {
   const AuthPageShell({
     required this.formChild,
@@ -135,6 +136,7 @@ class AuthPageShell extends StatelessWidget {
   }
 }
 
+/// Small footer link used to switch between auth flows.
 class AuthFooterLink extends StatelessWidget {
   const AuthFooterLink({
     required this.prompt,
@@ -171,6 +173,7 @@ class AuthFooterLink extends StatelessWidget {
   }
 }
 
+/// Optional informational card used by auth screens.
 class AuthInfoCard extends StatelessWidget {
   const AuthInfoCard({
     required this.title,

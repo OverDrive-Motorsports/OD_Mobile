@@ -165,6 +165,7 @@ class _SettingsPageState extends State<SettingsPage> {
     _toggleValues = _createInitialToggleValues();
   }
 
+  /// Creates the initial local state from declarative toggle definitions.
   Map<SettingsToggleKey, bool> _createInitialToggleValues() {
     final definitions = <SettingsToggleDefinition>[
       ..._notificationSettings,
@@ -177,6 +178,7 @@ class _SettingsPageState extends State<SettingsPage> {
     };
   }
 
+  /// Shows feedback for the simulated settings save action.
   void _saveSettings() {
     FocusScope.of(context).unfocus();
     OdToast.show(
@@ -186,6 +188,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /// Restores all toggles to their declarative default values.
   void _resetSettings() {
     setState(() {
       _toggleValues
@@ -201,6 +204,7 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /// Opens a modal explaining how settings persistence will be connected.
   void _openStorageInfo() {
     OdModal.show<void>(
       context,
@@ -225,10 +229,12 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
+  /// Updates a single toggle in local state.
   void _handleToggleChanged(SettingsToggleKey key, bool value) {
     setState(() => _toggleValues[key] = value);
   }
 
+  /// Dispatches footer actions to their local handlers.
   void _handleAction(SettingsActionType actionType) {
     switch (actionType) {
       case SettingsActionType.save:
@@ -243,6 +249,7 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  /// Builds switch rows for one settings section.
   List<Widget> _buildToggleSectionChildren(
     List<SettingsToggleDefinition> definitions,
   ) {
@@ -260,6 +267,7 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
   }
 
+  /// Builds the footer action buttons from their declarative definitions.
   List<Widget> _buildActionSectionChildren() {
     return <Widget>[
       for (var index = 0; index < _settingsActions.length; index++) ...[

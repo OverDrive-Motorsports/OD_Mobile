@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/championship/championship_circuit.dart';
 
+/// Replay call-to-action card used from championship pages.
 class ChampionshipReplayBtn extends StatelessWidget {
   const ChampionshipReplayBtn({
     super.key,
@@ -32,9 +33,9 @@ class ChampionshipReplayBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: const Color(0xFF111111),
+            color: AppColors.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF1E1E1E)),
+            border: Border.all(color: AppColors.border),
           ),
           child: Row(
             children: [
@@ -42,12 +43,12 @@ class ChampionshipReplayBtn extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF161616),
+                  color: AppColors.surfaceElevated,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.play_arrow_rounded,
-                  color: Color(0xFF666666),
+                  color: AppColors.textMuted,
                   size: 22,
                 ),
               ),
@@ -64,7 +65,7 @@ class ChampionshipReplayBtn extends StatelessWidget {
                     Text(
                       replays.label,
                       style: AppTextStyles.body(
-                        color: const Color(0xFF555555),
+                        color: AppColors.textSecondary,
                       ).copyWith(fontSize: 13),
                     ),
                   ],
@@ -73,7 +74,7 @@ class ChampionshipReplayBtn extends StatelessWidget {
               const SizedBox(width: 8),
               const Icon(
                 Icons.chevron_right_rounded,
-                color: Color(0xFF333333),
+                color: AppColors.textMuted,
                 size: 20,
               ),
             ],

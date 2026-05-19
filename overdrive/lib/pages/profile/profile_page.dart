@@ -179,6 +179,7 @@ class _ProfilePageState extends State<ProfilePage> {
   ProfilePageData get _resolvedData => widget.data ?? profilePagePreviewData;
   ProfilePageContent get _content => _profilePageContent;
 
+  /// Builds a two-character fallback avatar label from the current pseudo.
   String get _profileInitials {
     final compactPseudo = _resolvedData.user.pseudo.replaceAll(
       RegExp(r'\s+'),
@@ -192,6 +193,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return compactPseudo.substring(0, initialsLength).toUpperCase();
   }
 
+  /// Opens one of the informational modals used by profile actions.
   void _showModal(BuildContext context, ProfileModalContent content) {
     OdModal.show<void>(
       context,
@@ -213,6 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  /// Routes profile actions to modal or toast feedback while data is mocked.
   void _handleAction(BuildContext context, ProfileActionType actionType) {
     switch (actionType) {
       case ProfileActionType.addProvider:

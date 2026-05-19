@@ -26,12 +26,13 @@ import '../../widgets/championships/championship_standings_widget.dart'
 import '../../widgets/championships/championship_top3.dart';
 import '../../widgets/menu_overlay.dart';
 
-const Color _pageBackground = Color(0xFF0A0A0A);
-const Color _cardBackground = Color(0xFF111111);
-const Color _cardBorder = Color(0xFF1E1E1E);
-const Color _mutedLabel = Color(0xFF555555);
-const Color _mutedText = Color(0xFF666666);
+const Color _pageBackground = AppColors.background;
+const Color _cardBackground = AppColors.surface;
+const Color _cardBorder = AppColors.border;
+const Color _mutedLabel = AppColors.textSecondary;
+const Color _mutedText = AppColors.textMuted;
 
+/// Adaptive championship screen rendered from a single data payload.
 class ChampionshipPage extends StatelessWidget {
   const ChampionshipPage({super.key, required this.data});
 
@@ -75,6 +76,7 @@ class ChampionshipPage extends StatelessWidget {
     );
   }
 
+  /// Builds the visible content blocks in the order used by the page.
   List<Widget> _buildSections(BuildContext context, DateTime now) {
     final blocks = <Widget>[];
     final primaryBlock = _buildPrimaryBlock(now);
@@ -128,6 +130,7 @@ class ChampionshipPage extends StatelessWidget {
     ];
   }
 
+  /// Resolves the state-specific leading card shown below the hero.
   Widget? _buildPrimaryBlock(DateTime now) {
     final liveGroups = data.liveGroups;
     if (liveGroups != null && liveGroups.isNotEmpty) {
@@ -149,6 +152,7 @@ class ChampionshipPage extends StatelessWidget {
   }
 }
 
+/// Hero block containing the championship headline and metadata line.
 class _PageHero extends StatelessWidget {
   const _PageHero({
     required this.data,
@@ -210,6 +214,7 @@ class _PageHero extends StatelessWidget {
   }
 }
 
+/// Secondary hero line adapted to live, event-weekend, or off-season state.
 class _HeroSubtitle extends StatelessWidget {
   const _HeroSubtitle({required this.data, required this.now});
 
@@ -235,13 +240,13 @@ class _HeroSubtitle extends StatelessWidget {
 
     return Row(
       children: [
-        Icon(icon, color: const Color(0xFF878787), size: 16),
+        Icon(icon, color: AppColors.textSecondary, size: 16),
         const SizedBox(width: 8),
         Expanded(
           child: Text(
             text,
             style: AppTextStyles.body(
-              color: const Color(0xFF878787),
+              color: AppColors.textSecondary,
             ).copyWith(fontSize: 14),
           ),
         ),
@@ -250,6 +255,7 @@ class _HeroSubtitle extends StatelessWidget {
   }
 }
 
+/// Small labeled section wrapper used by the championship content blocks.
 class _Section extends StatelessWidget {
   const _Section({required this.label, required this.child});
 
@@ -277,6 +283,7 @@ class _Section extends StatelessWidget {
   }
 }
 
+/// Vertical spacer between championship sections.
 class _SectionDivider extends StatelessWidget {
   const _SectionDivider();
 
@@ -286,6 +293,7 @@ class _SectionDivider extends StatelessWidget {
   }
 }
 
+/// Live-session overview with top-three groups and quick action buttons.
 class _LiveOverviewCard extends StatelessWidget {
   const _LiveOverviewCard({required this.groups, required this.accentColor});
 
@@ -328,6 +336,82 @@ class _LiveOverviewCard extends StatelessWidget {
   }
 }
 
+/// Row of quick actions shown on live championship pages.
+class _LiveActionButtons extends StatelessWidget {
+  const _LiveActionButtons({required this.accentColor});
+
+  final Color accentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _LiveActionButton(
+            icon: Icons.live_tv_outlined,
+            label: 'TV Live',
+            onTap: () => Navigator.of(context).pushNamed(AppRoutes.tv),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _LiveActionButton(
+            icon: Icons.insights_outlined,
+            label: 'Telemetrie',
+            onTap: () => Navigator.of(context).pushNamed(AppRoutes.telemetry),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Single quick action button for live TV or telemetry navigation.
+class _LiveActionButton extends StatelessWidget {
+  const _LiveActionButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(10),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          decoration: BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: AppColors.border),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: _mutedText, size: 16),
+              const SizedBox(width: 6),
+              Text(
+                label,
+                style: AppTextStyles.body(
+                  color: _mutedText,
+                ).copyWith(fontSize: 15),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Off-season card showing the next known event and countdown.
 class _NextEventCard extends StatelessWidget {
   const _NextEventCard({required this.nextEvent, required this.now});
 
@@ -389,6 +473,7 @@ class _NextEventCard extends StatelessWidget {
   }
 }
 
+/// One numeric cell in the next-event countdown row.
 class _CountdownCell extends StatelessWidget {
   const _CountdownCell({required this.value, required this.label});
 
@@ -411,6 +496,7 @@ class _CountdownCell extends StatelessWidget {
   }
 }
 
+/// Visual separator between countdown cells.
 class _CountdownDot extends StatelessWidget {
   const _CountdownDot();
 
@@ -421,13 +507,14 @@ class _CountdownDot extends StatelessWidget {
       child: Text(
         '·',
         style: AppTextStyles.body(
-          color: const Color(0xFF2A2A2A),
+          color: AppColors.white.withValues(alpha: 0.16),
         ).copyWith(fontSize: 24),
       ),
     );
   }
 }
 
+/// Weekend card summarizing circuit length, laps, and weather.
 class _CircuitWeatherCard extends StatelessWidget {
   const _CircuitWeatherCard({required this.circuit, required this.weather});
 
@@ -492,6 +579,7 @@ class _CircuitWeatherCard extends StatelessWidget {
   }
 }
 
+/// Divider used between circuit/weather metrics.
 class _MetricDivider extends StatelessWidget {
   const _MetricDivider();
 
@@ -501,6 +589,7 @@ class _MetricDivider extends StatelessWidget {
   }
 }
 
+/// One metric displayed inside the circuit/weather card.
 class _MetricColumn extends StatelessWidget {
   const _MetricColumn({required this.label, required this.value, this.icon});
 
@@ -529,7 +618,7 @@ class _MetricColumn extends StatelessWidget {
               child: Text(
                 value,
                 style: AppTextStyles.bodyBold(
-                  color: const Color(0xFFD3D3D3),
+                  color: AppColors.textMuted,
                 ).copyWith(fontSize: 16, height: 1.1),
               ),
             )
@@ -540,12 +629,12 @@ class _MetricColumn extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, size: 14, color: const Color(0xFFD3D3D3)),
+                  Icon(icon, size: 14, color: AppColors.textMuted),
                   const SizedBox(width: 3),
                   Text(
                     value,
                     style: AppTextStyles.bodyBold(
-                      color: const Color(0xFFD3D3D3),
+                      color: AppColors.textMuted,
                     ).copyWith(fontSize: 16),
                   ),
                 ],
@@ -557,6 +646,7 @@ class _MetricColumn extends StatelessWidget {
   }
 }
 
+/// Adapts season standings tables to the reusable standings widget.
 class _StandingsBlock extends StatelessWidget {
   const _StandingsBlock({required this.tables});
 
@@ -580,79 +670,7 @@ class _StandingsBlock extends StatelessWidget {
   }
 }
 
-class _LiveActionButtons extends StatelessWidget {
-  const _LiveActionButtons({required this.accentColor});
-
-  final Color accentColor;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _LiveActionButton(
-            icon: Icons.live_tv_outlined,
-            label: 'TV Live',
-            onTap: () => Navigator.of(context).pushNamed(AppRoutes.tv),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _LiveActionButton(
-            icon: Icons.insights_outlined,
-            label: 'Telemetrie',
-            onTap: () => Navigator.of(context).pushNamed(AppRoutes.telemetry),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _LiveActionButton extends StatelessWidget {
-  const _LiveActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: const Color(0xFF141414),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: const Color(0xFF222222)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: _mutedText, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: AppTextStyles.body(
-                  color: _mutedText,
-                ).copyWith(fontSize: 15),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
+/// Adapts live timing groups to the reusable standings widget.
 class _LiveStandingsBlock extends StatelessWidget {
   const _LiveStandingsBlock({required this.groups, required this.title});
 
@@ -670,6 +688,7 @@ class _LiveStandingsBlock extends StatelessWidget {
   }
 }
 
+/// Immutable countdown pieces derived from a duration.
 class _EventCountdown {
   const _EventCountdown({
     required this.days,
@@ -691,6 +710,7 @@ class _EventCountdown {
   final int minutes;
 }
 
+/// Resolves the hero headline from explicit copy or championship state.
 String _resolveHeadline(ChampionshipData data) {
   if (data.headline != null && data.headline!.trim().isNotEmpty) {
     return data.headline!;
@@ -703,6 +723,7 @@ String _resolveHeadline(ChampionshipData data) {
   };
 }
 
+/// Builds the live metadata line shown under the hero headline.
 String _buildLiveMetaLine(ChampionshipData data) {
   final parts = <String>[];
   if (data.circuit != null) {
@@ -715,6 +736,7 @@ String _buildLiveMetaLine(ChampionshipData data) {
   return parts.join(' · ');
 }
 
+/// Builds the event-weekend metadata line shown under the hero headline.
 String _buildEventMetaLine(ChampionshipData data) {
   final parts = <String>[];
   if (data.circuit != null) {
@@ -724,6 +746,7 @@ String _buildEventMetaLine(ChampionshipData data) {
   return parts.join(' · ');
 }
 
+/// Builds the off-season metadata line shown under the hero headline.
 String _buildOffSeasonMetaLine(ChampionshipData data, DateTime now) {
   final nextEvent = data.nextEvent;
   if (nextEvent == null) {
@@ -735,6 +758,7 @@ String _buildOffSeasonMetaLine(ChampionshipData data, DateTime now) {
   return 'Prochain event dans $days jours';
 }
 
+/// Builds the title used for live timing standings.
 String _buildLiveStandingsTitle(ChampionshipData data) {
   final currentLap = _resolveCurrentLap(data.liveGroups);
   final totalLaps = data.circuit?.totalLaps;
@@ -750,6 +774,7 @@ String _buildLiveStandingsTitle(ChampionshipData data) {
   return 'Classement';
 }
 
+/// Finds the highest lap currently present in live timing groups.
 int? _resolveCurrentLap(List<ChampionshipLiveGroup>? groups) {
   if (groups == null || groups.isEmpty) {
     return null;
@@ -765,6 +790,7 @@ int? _resolveCurrentLap(List<ChampionshipLiveGroup>? groups) {
   return maxLap == 0 ? null : maxLap;
 }
 
+/// Groups raw standings tables into cards understood by the UI layer.
 List<_StandingCardData> _buildStandingCards(
   List<ChampionshipStandingTable> tables,
 ) {
@@ -798,6 +824,7 @@ List<_StandingCardData> _buildStandingCards(
   ];
 }
 
+/// Converts one season standings table into a reusable standings section.
 standings_ui.ChampionshipStandingsSection _buildStandingSection(
   ChampionshipStandingTable table,
 ) {
@@ -817,6 +844,7 @@ standings_ui.ChampionshipStandingsSection _buildStandingSection(
   );
 }
 
+/// Splits a standing label into its section and optional category parts.
 _StandingLabelParts _parseStandingLabel(String label) {
   final segments = label.split('—').map((segment) => segment.trim()).toList();
 
@@ -830,6 +858,7 @@ _StandingLabelParts _parseStandingLabel(String label) {
   return _StandingLabelParts(sectionLabel: label.trim());
 }
 
+/// Converts one live timing group into a reusable standings section.
 standings_ui.ChampionshipStandingsSection _buildLiveStandingSection(
   ChampionshipLiveGroup group,
   List<ChampionshipLiveGroup> groups,
@@ -860,6 +889,7 @@ standings_ui.ChampionshipStandingsSection _buildLiveStandingSection(
   );
 }
 
+/// View data for one standings card rendered on the championship page.
 class _StandingCardData {
   const _StandingCardData({required this.title, required this.sections});
 
@@ -867,6 +897,7 @@ class _StandingCardData {
   final List<standings_ui.ChampionshipStandingsSection> sections;
 }
 
+/// Parsed parts of a standings label.
 class _StandingLabelParts {
   const _StandingLabelParts({required this.sectionLabel, this.category});
 
