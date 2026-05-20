@@ -8,7 +8,6 @@
  */
 
 import 'package:flutter/material.dart';
-
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/tv/tv_mock_data.dart';

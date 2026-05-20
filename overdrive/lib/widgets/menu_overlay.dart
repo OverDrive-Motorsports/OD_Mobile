@@ -8,9 +8,7 @@
  */
 
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
 import '../core/navigation/app_routes.dart';
 import '../core/theme/app_theme.dart';
 import '../services/health_service.dart';

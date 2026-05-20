@@ -8,7 +8,6 @@
  */
 
 import 'package:flutter/material.dart';
-
 import '../shared/placeholder_page.dart';
 
 const String _telemetryPageTitle = 'Telemetry';
