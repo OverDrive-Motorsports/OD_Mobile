@@ -9,8 +9,9 @@ A minimalist Flutter application focused on a `Home` page and several placeholde
 ## Current Structure
 
 - `lib/main.dart` directly launches `HomePage` and configures the global theme  
-- `lib/pages/home/home_page.dart` displays the home screen with a solid black background  
+- `lib/pages/home/home_page.dart` displays the home screen shell with a solid black background and the floating menu overlay  
 - `lib/widgets/menu_overlay.dart` displays `OD`, the `Menu` button, navigation shortcuts, and the `Health` action  
+- `lib/widgets/calendar/` contains reusable calendar widgets and models kept independent from page-level demo data  
 - `lib/pages/shared/placeholder_page.dart` provides a reusable placeholder screen with a centered title  
 - `lib/pages/profile/profile_page.dart` displays the `Profile` page  
 - `lib/pages/settings/settings_page.dart` displays the `Settings` page  

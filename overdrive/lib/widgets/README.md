@@ -10,7 +10,6 @@ Pages should compose these widgets instead of rebuilding the same UI patterns.
 - Prefer small, composable files over page-specific one-off rendering.
 - Reuse shared visual primitives such as `GlassPill` or the base widget library before adding new styles.
 - Use `AppColors` and `AppTextStyles` from `app_theme.dart` for shared color and typography choices.
-
 ## Base Widgets
 
 ### `base/od_button.dart`
