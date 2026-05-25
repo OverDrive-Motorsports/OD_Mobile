@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -8,12 +8,13 @@
  */
 
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-
+import '../core/navigation/app_routes.dart';
 import '../core/theme/app_theme.dart';
 import '../services/health_service.dart';
+import 'glass_pill.dart';
 
+/// A floating top menu shown above the current page.
 class MenuOverlay extends StatefulWidget {
   const MenuOverlay({super.key});
 
@@ -21,6 +22,7 @@ class MenuOverlay extends StatefulWidget {
   State<MenuOverlay> createState() => _MenuOverlayState();
 }
 
+/// The state that controls the menu open and close animations.
 class _MenuOverlayState extends State<MenuOverlay>
     with SingleTickerProviderStateMixin {
   final HealthService _healthService = HealthService();
@@ -75,8 +77,18 @@ class _MenuOverlayState extends State<MenuOverlay>
   }
 
   void _goHome() {
+    _navigateTo(AppRoutes.home);
+  }
+
+  void _navigateTo(String routeName) {
     _closeMenu();
-    Navigator.of(context).popUntil((route) => route.isFirst);
+
+    final currentRouteName = ModalRoute.of(context)?.settings.name;
+    if (currentRouteName == routeName) {
+      return;
+    }
+
+    Navigator.of(context).pushReplacementNamed(routeName);
   }
 
   Future<void> _showHealthStatus() async {
@@ -95,7 +107,7 @@ class _MenuOverlayState extends State<MenuOverlay>
 
       _showMessage(
         message: 'Backend health: ${health.status} (${health.timestampLabel})',
-        backgroundColor: AppColors.success,
+        backgroundColor: AppColors.green,
       );
     } on HealthServiceException catch (exception) {
       if (!mounted) {
@@ -104,7 +116,7 @@ class _MenuOverlayState extends State<MenuOverlay>
 
       _showMessage(
         message: 'Backend indisponible: ${exception.message}',
-        backgroundColor: AppColors.error,
+        backgroundColor: AppColors.red,
       );
     } finally {
       if (mounted) {
@@ -127,6 +139,8 @@ class _MenuOverlayState extends State<MenuOverlay>
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.paddingOf(context).top;
+    final currentRouteName =
+        ModalRoute.of(context)?.settings.name ?? AppRoutes.home;
 
     return Stack(
       children: [
@@ -135,13 +149,17 @@ class _MenuOverlayState extends State<MenuOverlay>
             child: GestureDetector(
               onTap: _closeMenu,
               behavior: HitTestBehavior.translucent,
-              child: Container(color: Colors.black.withValues(alpha: 0.12)),
+              child: const ColoredBox(color: AppColors.scrim),
             ),
           ),
         Positioned(
           top: topPadding + 7,
           left: 12,
-          child: Text('OD', style: AppTextStyles.display()),
+          child: Image.asset(
+            'assets/logoOD/OD_white&gold.png',
+            height: 34,
+            fit: BoxFit.contain,
+          ),
         ),
         Positioned(
           top: topPadding + 8,
@@ -158,9 +176,11 @@ class _MenuOverlayState extends State<MenuOverlay>
               child: IgnorePointer(
                 ignoring: !_isOpen,
                 child: MenuPanel(
+                  currentRouteName: currentRouteName,
                   isLoadingHealth: _isLoadingHealth,
                   onHealthTap: _showHealthStatus,
                   onHomeTap: _goHome,
+                  onNavigate: _navigateTo,
                 ),
               ),
             ),
@@ -171,6 +191,7 @@ class _MenuOverlayState extends State<MenuOverlay>
   }
 }
 
+/// A compact pill button used to open and close the menu.
 class MenuButton extends StatelessWidget {
   const MenuButton({required this.isOpen, required this.onTap, super.key});
 
@@ -181,20 +202,12 @@ class MenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-        decoration: BoxDecoration(
-          color: isOpen
-              ? Colors.white.withValues(alpha: 0.24)
-              : Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
-        ),
+      child: GlassPill(
+        highlighted: isOpen,
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.menu_rounded, size: 16, color: Colors.white),
+            const Icon(Icons.menu_rounded, size: 16, color: AppColors.white),
             const SizedBox(width: 6),
             Text(
               'Menu',
@@ -207,25 +220,39 @@ class MenuButton extends StatelessWidget {
   }
 }
 
+/// A floating panel that groups the menu actions.
 class MenuPanel extends StatelessWidget {
   const MenuPanel({
+    required this.currentRouteName,
     required this.isLoadingHealth,
     required this.onHealthTap,
     required this.onHomeTap,
+    required this.onNavigate,
     super.key,
   });
 
+  final String currentRouteName;
   final bool isLoadingHealth;
   final VoidCallback onHealthTap;
   final VoidCallback onHomeTap;
+  final ValueChanged<String> onNavigate;
 
   @override
   Widget build(BuildContext context) {
     final actions = <MenuEntry>[
-      MenuEntry(icon: Icons.home_outlined, label: 'Home', onTap: onHomeTap),
+      for (final pageLink in menuPageLinks)
+        MenuEntry(
+          icon: pageLink.icon,
+          label: pageLink.label,
+          isActive: currentRouteName == pageLink.routeName,
+          onTap: pageLink.routeName == AppRoutes.home
+              ? onHomeTap
+              : () => onNavigate(pageLink.routeName),
+        ),
       MenuEntry(
         icon: Icons.monitor_heart_outlined,
         label: isLoadingHealth ? 'Health...' : 'Health',
+        isActive: false,
         onTap: onHealthTap,
       ),
     ];
@@ -235,16 +262,16 @@ class MenuPanel extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          width: 212,
+          width: 228,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xDB1C1C1E), Color(0xCF111113)],
+              colors: [AppColors.surfaceElevated, AppColors.surface],
             ),
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+            border: Border.all(color: AppColors.white.withValues(alpha: 0.22)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -253,6 +280,7 @@ class MenuPanel extends StatelessWidget {
                 MenuAction(
                   icon: action.icon,
                   label: action.label,
+                  isActive: action.isActive,
                   onTap: action.onTap,
                 ),
                 if (action != actions.last) const SizedBox(height: 8),
@@ -265,43 +293,57 @@ class MenuPanel extends StatelessWidget {
   }
 }
 
+/// A simple data object that describes one menu action.
 class MenuEntry {
   const MenuEntry({
     required this.icon,
     required this.label,
+    required this.isActive,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
+  final bool isActive;
   final VoidCallback onTap;
 }
 
+/// A visual row used inside the menu panel.
 class MenuAction extends StatelessWidget {
   const MenuAction({
     required this.icon,
     required this.label,
+    required this.isActive,
     required this.onTap,
     super.key,
   });
 
   final IconData icon;
   final String label;
+  final bool isActive;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final backgroundColor = isActive
+        ? AppColors.white.withValues(alpha: 0.14)
+        : AppColors.white.withValues(alpha: 0.08);
+    final borderColor = isActive
+        ? AppColors.white.withValues(alpha: 0.18)
+        : Colors.transparent;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
         decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
+          color: backgroundColor,
           borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: borderColor),
         ),
         child: Row(
           children: [
-            Icon(icon, size: 20, color: Colors.white),
+            Icon(icon, size: 20, color: AppColors.white),
             const SizedBox(width: 10),
             Expanded(
               child: Text(

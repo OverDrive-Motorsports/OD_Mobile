@@ -1,4 +1,4 @@
-# OverDrive
+# OverDrive Flutter App
 
 A minimalist Flutter application focused on a `Home` page and several placeholder pages accessible from the menu.
 
@@ -9,8 +9,9 @@ A minimalist Flutter application focused on a `Home` page and several placeholde
 ## Current Structure
 
 - `lib/main.dart` directly launches `HomePage` and configures the global theme  
-- `lib/pages/home/home_page.dart` displays the home screen with a solid black background  
+- `lib/pages/home/home_page.dart` displays the home screen shell with a solid black background and the floating menu overlay  
 - `lib/widgets/menu_overlay.dart` displays `OD`, the `Menu` button, navigation shortcuts, and the `Health` action  
+- `lib/widgets/calendar/` contains reusable calendar widgets and models kept independent from page-level demo data  
 - `lib/pages/shared/placeholder_page.dart` provides a reusable placeholder screen with a centered title  
 - `lib/pages/profile/profile_page.dart` displays the `Profile` page  
 - `lib/pages/settings/settings_page.dart` displays the `Settings` page  
@@ -44,12 +45,26 @@ The only backend interaction retained is:
 
 The backend URL is read from API_BASE_URL if defined. Otherwise, the application uses:
 
-- `http://10.0.2.2:8080` sur Android
-- `http://localhost:8080` ailleurs
+- `http://10.0.2.2:8080` on Android
+- `http://localhost:8080` elsewhere
 
-## Tests
+## Environment
 
-The existing widget test verifies that the home screen correctly displays OD and the Menu button.
+Supported environment files:
+
+- `.env` for development
+- `.env.prod` for production
+
+Required variables:
+
+- `API_BASE_URL`
+- `APP_ENV`
+
+Run with the production environment file:
+
+```bash
+flutter run --dart-define=ENV_FILE=.env.prod
+```
 
 ## Code Quality
 
