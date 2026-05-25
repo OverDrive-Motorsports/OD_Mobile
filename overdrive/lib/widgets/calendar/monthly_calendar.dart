@@ -113,7 +113,7 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
@@ -312,10 +312,14 @@ class _HeaderButton extends StatelessWidget {
           width: 36,
           height: 36,
           decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: enabled ? 0.08 : 0.04),
+            color: enabled
+                ? AppColors.white.withValues(alpha: 0.08)
+                : AppColors.white.withValues(alpha: 0.04),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: Colors.white.withValues(alpha: enabled ? 0.12 : 0.06),
+              color: enabled
+                  ? AppColors.white.withValues(alpha: 0.12)
+                  : AppColors.white.withValues(alpha: 0.06),
             ),
           ),
           child: Icon(
@@ -418,13 +422,15 @@ class _DayCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final borderColor = isToday
-        ? AppColors.accent
-        : Colors.white.withValues(alpha: 0.08);
+        ? AppColors.gold
+        : AppColors.white.withValues(alpha: 0.08);
     final backgroundColor = isSelected
-        ? Colors.white.withValues(alpha: 0.10)
-        : Colors.white.withValues(alpha: isCurrentMonth ? 0.04 : 0.02);
+        ? AppColors.white.withValues(alpha: 0.10)
+        : isCurrentMonth
+        ? AppColors.white.withValues(alpha: 0.04)
+        : AppColors.white.withValues(alpha: 0.02);
     final textColor = isToday
-        ? AppColors.accent
+        ? AppColors.gold
         : isCurrentMonth
         ? AppColors.textPrimary
         : AppColors.textSecondary;
@@ -496,21 +502,6 @@ class _MonthlyEventDots extends StatelessWidget {
   }
 }
 
-Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
-  Map<DateTime, List<CalendarEventMarker>> input,
-) {
-  final normalized = <DateTime, List<CalendarEventMarker>>{};
-
-  for (final MapEntry<DateTime, List<CalendarEventMarker>> entry
-      in input.entries) {
-    normalized[_dateOnly(entry.key)] = List<CalendarEventMarker>.unmodifiable(
-      entry.value,
-    );
-  }
-
-  return normalized;
-}
-
 /// A placeholder grid shown while the calendar is loading.
 class _CalendarLoadingGrid extends StatelessWidget {
   const _CalendarLoadingGrid();
@@ -532,10 +523,13 @@ class _CalendarLoadingGrid extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           return DecoratedBox(
             decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.05),
+              color: AppColors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.08),
+              ),
             ),
+            child: const SizedBox.expand(),
           );
         },
       ),
@@ -543,6 +537,23 @@ class _CalendarLoadingGrid extends StatelessWidget {
   }
 }
 
+/// Normalizes event map keys to date-only values for reliable lookup.
+Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
+  Map<DateTime, List<CalendarEventMarker>> input,
+) {
+  final normalized = <DateTime, List<CalendarEventMarker>>{};
+
+  for (final MapEntry<DateTime, List<CalendarEventMarker>> entry
+      in input.entries) {
+    normalized[_dateOnly(entry.key)] = List<CalendarEventMarker>.unmodifiable(
+      entry.value,
+    );
+  }
+
+  return normalized;
+}
+
+/// Builds the 42 visible day cells for a month grid.
 List<DateTime> _buildMonthDays(DateTime month) {
   final firstDay = DateTime(month.year, month.month);
   final leadingDays = firstDay.weekday - DateTime.monday;
@@ -554,16 +565,20 @@ List<DateTime> _buildMonthDays(DateTime month) {
   );
 }
 
+/// Returns the number of calendar months between two month-only dates.
 int _monthsBetween(DateTime start, DateTime end) =>
     (end.year - start.year) * 12 + end.month - start.month;
 
+/// Returns the first day of the month for the provided date.
 DateTime _monthOnly(DateTime? date) {
   final safeDate = date ?? DateTime.now();
   return DateTime(safeDate.year, safeDate.month);
 }
 
+/// Normalizes a date to midnight using Flutter's date-only helper.
 DateTime _dateOnly(DateTime date) => DateUtils.dateOnly(date);
 
+/// Compares two dates while ignoring their time components.
 bool _isSameDate(DateTime left, DateTime right) =>
     left.year == right.year &&
     left.month == right.month &&

@@ -29,7 +29,7 @@ class OdSwitch extends StatelessWidget {
     final switchWidget = CupertinoSwitch(
       value: value,
       onChanged: onChanged,
-      activeTrackColor: AppColors.motorsportRed,
+      activeTrackColor: AppColors.red,
     );
 
     if (label == null) {

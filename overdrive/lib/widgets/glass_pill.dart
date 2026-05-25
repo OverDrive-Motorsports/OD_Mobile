@@ -9,6 +9,8 @@
 
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_theme.dart';
+
 /// A small translucent pill container used by compact controls.
 class GlassPill extends StatelessWidget {
   const GlassPill({
@@ -35,17 +37,17 @@ class GlassPill extends StatelessWidget {
     final resolvedBackgroundColor =
         backgroundColor ??
         (disabled
-            ? Colors.white.withValues(alpha: 0.08)
+            ? AppColors.white.withValues(alpha: 0.08)
             : highlighted
-            ? Colors.white.withValues(alpha: 0.24)
-            : Colors.white.withValues(alpha: 0.16));
+            ? AppColors.white.withValues(alpha: 0.24)
+            : AppColors.white.withValues(alpha: 0.16));
     final resolvedBorderColor =
         borderColor ??
         (disabled
-            ? Colors.white.withValues(alpha: 0.16)
+            ? AppColors.white.withValues(alpha: 0.16)
             : highlighted
-            ? Colors.white.withValues(alpha: 0.36)
-            : Colors.white.withValues(alpha: 0.28));
+            ? AppColors.white.withValues(alpha: 0.36)
+            : AppColors.white.withValues(alpha: 0.28));
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 150),

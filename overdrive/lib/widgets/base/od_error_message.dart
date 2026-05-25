@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
+/// Visual variants supported by the shared error message widget.
 enum ErrorMessageVariant { inline, banner }
 
 /// A shared error widget with inline and banner layouts.
@@ -54,7 +55,7 @@ class _InlineErrorMessage extends StatelessWidget {
           child: Icon(
             Icons.warning_amber_rounded,
             size: 14,
-            color: AppColors.motorsportRed,
+            color: AppColors.red,
           ),
         ),
         const SizedBox(width: 6),
@@ -62,7 +63,7 @@ class _InlineErrorMessage extends StatelessWidget {
           child: Text(
             message,
             style: AppTextStyles.caption(
-              color: AppColors.motorsportRed,
+              color: AppColors.red,
             ).copyWith(fontSize: 12, height: 1.25),
           ),
         ),
@@ -90,7 +91,9 @@ class _BannerErrorMessage extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surfaceElevated,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.06),
+              ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,7 +103,7 @@ class _BannerErrorMessage extends StatelessWidget {
                   child: Icon(
                     Icons.warning_amber_rounded,
                     size: 18,
-                    color: AppColors.motorsportRed,
+                    color: AppColors.red,
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -129,7 +132,7 @@ class _BannerErrorMessage extends StatelessWidget {
             left: 0,
             top: 0,
             bottom: 0,
-            child: Container(width: 3, color: AppColors.motorsportRed),
+            child: Container(width: 3, color: AppColors.red),
           ),
         ],
       ),

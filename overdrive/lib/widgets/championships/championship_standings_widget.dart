@@ -11,8 +11,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-@immutable
 /// A single row item used in a standings section.
+@immutable
 class ChampionshipStandingEntry {
   const ChampionshipStandingEntry({
     required this.position,
@@ -35,8 +35,8 @@ class ChampionshipStandingEntry {
   final Color avatarColor;
 }
 
-@immutable
 /// A group of standings entries with column labels.
+@immutable
 class ChampionshipStandingsSection {
   const ChampionshipStandingsSection({
     required this.label,
@@ -44,12 +44,16 @@ class ChampionshipStandingsSection {
     this.leadingColumnLabel = 'Nom',
     this.middleColumnLabel,
     this.trailingColumnLabel = 'PTS',
+    this.middleColumnWidth = 32,
+    this.trailingColumnWidth = 42,
   });
 
   final String label;
   final String leadingColumnLabel;
   final String? middleColumnLabel;
   final String trailingColumnLabel;
+  final double middleColumnWidth;
+  final double trailingColumnWidth;
   final List<ChampionshipStandingEntry> entries;
 }
 
@@ -108,10 +112,10 @@ class _ChampionshipStandingsWidgetState
     return Container(
       padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
       decoration: BoxDecoration(
-        color: AppColors.surface.withValues(alpha: 0.82),
+        color: AppColors.surfaceElevated.withValues(alpha: 0.82),
         borderRadius: BorderRadius.circular(22),
         border: Border.all(
-          color: Colors.white.withValues(alpha: 0.12),
+          color: AppColors.white.withValues(alpha: 0.12),
           width: 1,
         ),
       ),
@@ -168,7 +172,7 @@ class _StandingsSwitch extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(2),
       decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.08),
+        color: AppColors.white.withValues(alpha: 0.08),
         borderRadius: BorderRadius.circular(999),
       ),
       child: Row(
@@ -184,7 +188,7 @@ class _StandingsSwitch extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 5),
                   decoration: BoxDecoration(
                     color: selectedIndex == index
-                        ? Colors.white.withValues(alpha: 0.28)
+                        ? AppColors.white.withValues(alpha: 0.28)
                         : Colors.transparent,
                     borderRadius: BorderRadius.circular(999),
                   ),
@@ -193,9 +197,7 @@ class _StandingsSwitch extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppTextStyles.bodyBold().copyWith(
                       fontSize: 12,
-                      color: selectedIndex == index
-                          ? AppColors.textPrimary
-                          : AppColors.textPrimary,
+                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -228,7 +230,7 @@ class _StandingsHeader extends StatelessWidget {
         ),
         if (section.middleColumnLabel != null)
           SizedBox(
-            width: 32,
+            width: section.middleColumnWidth,
             child: Text(
               section.middleColumnLabel!,
               textAlign: TextAlign.center,
@@ -238,7 +240,7 @@ class _StandingsHeader extends StatelessWidget {
             ),
           ),
         SizedBox(
-          width: 42,
+          width: section.trailingColumnWidth,
           child: Text(
             section.trailingColumnLabel,
             textAlign: TextAlign.right,
@@ -266,6 +268,7 @@ class _StandingsList extends StatelessWidget {
         for (var index = 0; index < section.entries.length; index++) ...[
           _StandingRow(
             entry: section.entries[index],
+            section: section,
             showMiddleValue: section.middleColumnLabel != null,
           ),
           if (index < section.entries.length - 1) const SizedBox(height: 10),
@@ -277,9 +280,14 @@ class _StandingsList extends StatelessWidget {
 
 /// A single standings row with rank, avatar and values.
 class _StandingRow extends StatelessWidget {
-  const _StandingRow({required this.entry, required this.showMiddleValue});
+  const _StandingRow({
+    required this.entry,
+    required this.section,
+    required this.showMiddleValue,
+  });
 
   final ChampionshipStandingEntry entry;
+  final ChampionshipStandingsSection section;
   final bool showMiddleValue;
 
   @override
@@ -320,7 +328,7 @@ class _StandingRow extends StatelessWidget {
         ),
         if (showMiddleValue)
           SizedBox(
-            width: 32,
+            width: section.middleColumnWidth,
             child: Text(
               entry.middleValue ?? '-',
               textAlign: TextAlign.center,
@@ -328,12 +336,14 @@ class _StandingRow extends StatelessWidget {
             ),
           ),
         SizedBox(
-          width: 42,
+          width: section.trailingColumnWidth,
           child: Text(
             entry.trailingValue,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,
             style: AppTextStyles.bodyBold(
-              color: AppColors.accent,
+              color: AppColors.gold,
             ).copyWith(fontSize: 14),
           ),
         ),

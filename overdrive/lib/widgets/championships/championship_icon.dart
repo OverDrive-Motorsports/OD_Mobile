@@ -49,8 +49,8 @@ class ChampionshipIcon extends StatelessWidget {
                 Positioned.fill(
                   child: GlassPill(
                     padding: EdgeInsets.zero,
-                    backgroundColor: const Color(0xFF2C2C2E),
-                    borderColor: Colors.white.withValues(alpha: 0.06),
+                    backgroundColor: AppColors.inputSurface,
+                    borderColor: AppColors.white.withValues(alpha: 0.06),
                     borderRadius: BorderRadius.circular(999),
                     child: const SizedBox.expand(),
                   ),
@@ -97,7 +97,7 @@ class _LogoContent extends StatelessWidget {
       return Text(
         logoAsset,
         textAlign: TextAlign.center,
-        style: const TextStyle(fontSize: 34, height: 1),
+        style: AppTextStyles.body().copyWith(fontSize: 34, height: 1),
       );
     }
 
@@ -107,10 +107,10 @@ class _LogoContent extends StatelessWidget {
       height: 40,
       fit: BoxFit.contain,
       errorBuilder: (_, _, _) {
-        return const Text(
+        return Text(
           '🏁',
           textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 34, height: 1),
+          style: AppTextStyles.body().copyWith(fontSize: 34, height: 1),
         );
       },
     );

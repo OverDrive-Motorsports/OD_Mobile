@@ -1,4 +1,4 @@
-# OverDrive
+# OverDrive Flutter App
 
 A minimalist Flutter application focused on a `Home` page and several placeholder pages accessible from the menu.
 
@@ -48,9 +48,23 @@ The backend URL is read from API_BASE_URL if defined. Otherwise, the application
 - `http://10.0.2.2:8080` on Android
 - `http://localhost:8080` elsewhere
 
-## Tests
+## Environment
 
-The existing widget test verifies that the home screen correctly displays OD and the Menu button.
+Supported environment files:
+
+- `.env` for development
+- `.env.prod` for production
+
+Required variables:
+
+- `API_BASE_URL`
+- `APP_ENV`
+
+Run with the production environment file:
+
+```bash
+flutter run --dart-define=ENV_FILE=.env.prod
+```
 
 ## Code Quality
 

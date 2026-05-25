@@ -105,9 +105,9 @@ class _OdTextFieldState extends State<OdTextField> {
   Widget build(BuildContext context) {
     final hasText = _controller.text.isNotEmpty;
     final borderColor = _hasError
-        ? AppColors.motorsportRed
+        ? AppColors.red
         : _focusNode.hasFocus
-        ? Colors.white.withValues(alpha: 0.18)
+        ? AppColors.white.withValues(alpha: 0.18)
         : Colors.transparent;
 
     return Column(
@@ -126,14 +126,14 @@ class _OdTextFieldState extends State<OdTextField> {
             focusNode: _focusNode,
             obscureText: widget.obscureText,
             keyboardType: widget.keyboardType,
-            cursorColor: AppColors.accent,
+            cursorColor: AppColors.gold,
             style: AppTextStyles.body().copyWith(
               fontSize: 15,
-              color: Colors.white,
+              color: AppColors.textPrimary,
             ),
             placeholder: widget.placeholder,
             placeholderStyle: AppTextStyles.body(
-              color: Colors.white38,
+              color: AppColors.white.withValues(alpha: 0.38),
             ).copyWith(fontSize: 15),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
             decoration: const BoxDecoration(
@@ -147,7 +147,7 @@ class _OdTextFieldState extends State<OdTextField> {
                     child: Icon(
                       widget.leadingIcon,
                       size: 18,
-                      color: Colors.white60,
+                      color: AppColors.white.withValues(alpha: 0.60),
                     ),
                   ),
             suffix: widget.onClear != null && hasText
@@ -159,13 +159,13 @@ class _OdTextFieldState extends State<OdTextField> {
                         width: 22,
                         height: 22,
                         decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.12),
+                          color: AppColors.white.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
                           Icons.close_rounded,
                           size: 14,
-                          color: Colors.white70,
+                          color: AppColors.white,
                         ),
                       ),
                     ),

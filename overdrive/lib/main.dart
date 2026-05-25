@@ -9,8 +9,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'pages/home/home_page.dart';
+
 import 'core/theme/app_theme.dart';
+import 'core/navigation/app_routes.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -33,7 +34,8 @@ class OverDriveApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'OverDrive',
-      home: const HomePage(),
+      initialRoute: AppRoutes.login,
+      onGenerateRoute: buildAppRoute,
       theme: AppTheme.darkTheme,
       themeMode: ThemeMode.dark,
     );

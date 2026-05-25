@@ -13,12 +13,13 @@ import '../../core/theme/app_theme.dart';
 
 /// A small marker used by the monthly calendar to show event dots.
 class CalendarEventMarker {
-  const CalendarEventMarker({this.color = AppColors.accent, this.label});
+  const CalendarEventMarker({this.color = AppColors.gold, this.label});
 
   final Color color;
   final String? label;
 }
 
+/// Relative display state for one scheduled calendar event.
 enum CalendarScheduleStatus { past, ongoing, upcoming }
 
 /// A data model for one scheduled event in the calendar.
@@ -30,7 +31,9 @@ class CalendarScheduleEvent {
     required this.startDate,
     required this.endDate,
     this.location,
-    this.accentColor = AppColors.accent,
+    this.accentColor = AppColors.gold,
+    this.displayStatusOverride,
+    this.displayStatusLabelOverride,
   }) : assert(!endDate.isBefore(startDate));
 
   final String id;
@@ -40,6 +43,8 @@ class CalendarScheduleEvent {
   final DateTime endDate;
   final String? location;
   final Color accentColor;
+  final CalendarScheduleStatus? displayStatusOverride;
+  final String? displayStatusLabelOverride;
 
   CalendarScheduleStatus statusAt(DateTime referenceDate) {
     final currentDate = DateUtils.dateOnly(referenceDate);
@@ -71,6 +76,7 @@ class EventCalendar extends StatelessWidget {
     this.today,
     this.selectedDate,
     this.onEventTap,
+    this.useFlatSurfaces = false,
     this.emptyTitle = 'Aucun evenement sur cette periode',
     this.emptySubtitle = 'Les prochains rendez-vous apparaitront ici.',
     super.key,
@@ -80,6 +86,7 @@ class EventCalendar extends StatelessWidget {
   final DateTime? today;
   final DateTime? selectedDate;
   final ValueChanged<CalendarScheduleEvent>? onEventTap;
+  final bool useFlatSurfaces;
   final String emptyTitle;
   final String emptySubtitle;
 
@@ -98,6 +105,7 @@ class EventCalendar extends StatelessWidget {
       return _EventCalendarEmptyState(
         title: emptyTitle,
         subtitle: emptySubtitle,
+        useFlatSurfaces: useFlatSurfaces,
       );
     }
 
@@ -106,10 +114,13 @@ class EventCalendar extends StatelessWidget {
         for (int index = 0; index < sortedEvents.length; index++) ...[
           _EventCalendarCard(
             event: sortedEvents[index],
-            status: sortedEvents[index].statusAt(referenceDate),
+            status:
+                sortedEvents[index].displayStatusOverride ??
+                sortedEvents[index].statusAt(referenceDate),
             isSelected:
                 currentSelection != null &&
                 sortedEvents[index].containsDate(currentSelection),
+            useFlatSurfaces: useFlatSurfaces,
             onTap: onEventTap == null
                 ? null
                 : () => onEventTap!(sortedEvents[index]),
@@ -127,12 +138,14 @@ class _EventCalendarCard extends StatelessWidget {
     required this.event,
     required this.status,
     required this.isSelected,
+    required this.useFlatSurfaces,
     this.onTap,
   });
 
   final CalendarScheduleEvent event;
   final CalendarScheduleStatus status;
   final bool isSelected;
+  final bool useFlatSurfaces;
   final VoidCallback? onTap;
 
   @override
@@ -141,6 +154,7 @@ class _EventCalendarCard extends StatelessWidget {
       status: status,
       accentColor: event.accentColor,
       isSelected: isSelected,
+      useFlatSurfaces: useFlatSurfaces,
     );
 
     return Material(
@@ -153,6 +167,7 @@ class _EventCalendarCard extends StatelessWidget {
           curve: Curves.easeOutCubic,
           padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
           decoration: BoxDecoration(
+            color: style.backgroundColor,
             gradient: style.backgroundGradient,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
@@ -207,7 +222,9 @@ class _EventCalendarCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 10),
                         _StatusPill(
-                          label: _statusLabel(status),
+                          label:
+                              event.displayStatusLabelOverride ??
+                              _statusLabel(status),
                           backgroundColor: style.badgeBackgroundColor,
                           foregroundColor: style.badgeForegroundColor,
                           borderColor: style.badgeBorderColor,
@@ -304,10 +321,15 @@ class _StatusPill extends StatelessWidget {
 
 /// An empty state shown when there are no events to display.
 class _EventCalendarEmptyState extends StatelessWidget {
-  const _EventCalendarEmptyState({required this.title, required this.subtitle});
+  const _EventCalendarEmptyState({
+    required this.title,
+    required this.subtitle,
+    required this.useFlatSurfaces,
+  });
 
   final String title;
   final String subtitle;
+  final bool useFlatSurfaces;
 
   @override
   Widget build(BuildContext context) {
@@ -315,13 +337,16 @@ class _EventCalendarEmptyState extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFF181818), Color(0xFF111111)],
-        ),
+        color: useFlatSurfaces ? AppColors.surface : null,
+        gradient: useFlatSurfaces
+            ? null
+            : const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [AppColors.surface, AppColors.black],
+              ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.surfaceBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -341,7 +366,8 @@ class _EventCalendarEmptyState extends StatelessWidget {
 /// A style object used internally by the event card.
 class _EventCardStyle {
   const _EventCardStyle({
-    required this.backgroundGradient,
+    this.backgroundGradient,
+    this.backgroundColor,
     required this.borderColor,
     required this.borderWidth,
     required this.titleColor,
@@ -353,7 +379,8 @@ class _EventCardStyle {
     this.shadow,
   });
 
-  final Gradient backgroundGradient;
+  final Gradient? backgroundGradient;
+  final Color? backgroundColor;
   final Color borderColor;
   final double borderWidth;
   final Color titleColor;
@@ -368,25 +395,29 @@ class _EventCardStyle {
     required CalendarScheduleStatus status,
     required Color accentColor,
     required bool isSelected,
+    required bool useFlatSurfaces,
   }) {
     switch (status) {
       case CalendarScheduleStatus.past:
         return _EventCardStyle(
-          backgroundGradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF161616), Color(0xFF101010)],
-          ),
+          backgroundGradient: useFlatSurfaces
+              ? null
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.surface, AppColors.black],
+                ),
+          backgroundColor: useFlatSurfaces ? AppColors.surface : null,
           borderColor: isSelected
               ? accentColor.withValues(alpha: 0.55)
-              : AppColors.surfaceBorder,
+              : AppColors.border,
           borderWidth: isSelected ? 1.4 : 1,
           titleColor: AppColors.textSecondary,
           dateColor: AppColors.textSecondary,
           metaColor: AppColors.textMuted,
-          badgeBackgroundColor: Colors.white.withValues(alpha: 0.05),
+          badgeBackgroundColor: AppColors.white.withValues(alpha: 0.05),
           badgeForegroundColor: AppColors.textSecondary,
-          badgeBorderColor: Colors.white.withValues(alpha: 0.08),
+          badgeBorderColor: AppColors.white.withValues(alpha: 0.08),
           shadow: isSelected
               ? BoxShadow(
                   color: accentColor.withValues(alpha: 0.12),
@@ -397,35 +428,44 @@ class _EventCardStyle {
         );
       case CalendarScheduleStatus.ongoing:
         return _EventCardStyle(
-          backgroundGradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF3A090C), Color(0xFF260507)],
-          ),
-          borderColor: AppColors.error.withValues(alpha: 0.95),
+          backgroundGradient: useFlatSurfaces
+              ? null
+              : LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.surfaceElevated.withValues(alpha: 0.40),
+                    AppColors.red.withValues(alpha: 0.30),
+                  ],
+                ),
+          backgroundColor: useFlatSurfaces ? AppColors.surfaceElevated : null,
+          borderColor: AppColors.red.withValues(alpha: 0.95),
           borderWidth: isSelected ? 1.8 : 1.4,
           titleColor: AppColors.textPrimary,
-          dateColor: const Color(0xFFF1C9C9),
-          metaColor: const Color(0xFFE2B0B0),
-          badgeBackgroundColor: AppColors.error.withValues(alpha: 0.22),
+          dateColor: AppColors.white,
+          metaColor: AppColors.textSecondary,
+          badgeBackgroundColor: AppColors.red.withValues(alpha: 0.22),
           badgeForegroundColor: AppColors.textPrimary,
-          badgeBorderColor: AppColors.error.withValues(alpha: 0.38),
+          badgeBorderColor: AppColors.red.withValues(alpha: 0.38),
           shadow: BoxShadow(
-            color: AppColors.error.withValues(alpha: 0.18),
+            color: AppColors.red.withValues(alpha: 0.18),
             blurRadius: 28,
             offset: const Offset(0, 12),
           ),
         );
       case CalendarScheduleStatus.upcoming:
         return _EventCardStyle(
-          backgroundGradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xFF171717), Color(0xFF0F0F0F)],
-          ),
+          backgroundGradient: useFlatSurfaces
+              ? null
+              : const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [AppColors.surface, AppColors.black],
+                ),
+          backgroundColor: useFlatSurfaces ? AppColors.surface : null,
           borderColor: isSelected
               ? accentColor.withValues(alpha: 0.55)
-              : AppColors.surfaceBorder,
+              : AppColors.border,
           borderWidth: isSelected ? 1.4 : 1,
           titleColor: AppColors.textPrimary,
           dateColor: AppColors.textSecondary,
@@ -445,6 +485,7 @@ class _EventCardStyle {
   }
 }
 
+/// Formats a start/end range for compact event-card display.
 String _formatDateRange(DateTime startDate, DateTime endDate) {
   final start = DateUtils.dateOnly(startDate);
   final end = DateUtils.dateOnly(endDate);
@@ -460,10 +501,12 @@ String _formatDateRange(DateTime startDate, DateTime endDate) {
   return '${_formatSingleDate(start)} - ${_formatSingleDate(end)}';
 }
 
+/// Formats a single date with the short localized month label.
 String _formatSingleDate(DateTime date) {
   return '${date.day} ${_monthLabel(date.month)}';
 }
 
+/// Returns the localized month label used by event cards.
 String _monthLabel(int month) {
   const monthLabels = <String>[
     'janvier',
@@ -483,6 +526,7 @@ String _monthLabel(int month) {
   return monthLabels[month - 1];
 }
 
+/// Maps a schedule status to the label displayed in the status pill.
 String _statusLabel(CalendarScheduleStatus status) {
   switch (status) {
     case CalendarScheduleStatus.past:

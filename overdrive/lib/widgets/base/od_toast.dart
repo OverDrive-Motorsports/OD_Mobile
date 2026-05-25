@@ -13,6 +13,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
+/// Semantic toast styles mapped to shared app colors and icons.
 enum ToastType { error, success, info }
 
 /// A helper used to show a single shared toast at a time.
@@ -149,7 +150,7 @@ class _OdToastEntryState extends State<_OdToastEntry>
                     color: AppColors.toastSurface,
                     borderRadius: BorderRadius.circular(999),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.08),
+                      color: AppColors.white.withValues(alpha: 0.08),
                     ),
                   ),
                   child: Padding(
@@ -192,15 +193,15 @@ class _ToastStyle {
     return switch (type) {
       ToastType.error => const _ToastStyle(
         icon: Icons.close_rounded,
-        color: AppColors.motorsportRed,
+        color: AppColors.red,
       ),
       ToastType.success => const _ToastStyle(
         icon: Icons.check_rounded,
-        color: AppColors.successBright,
+        color: AppColors.green,
       ),
       ToastType.info => const _ToastStyle(
         icon: Icons.info_outline_rounded,
-        color: AppColors.info,
+        color: AppColors.blue,
       ),
     };
   }
