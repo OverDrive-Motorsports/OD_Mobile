@@ -1,0 +1,59 @@
+/**
+##
+## OverDrive 2026
+## All Technical rights reserved
+##
+## live_race_page.dart - Live race information and updates.
+##
+*/
+
+import 'package:flutter/material.dart';
+
+import '../../core/theme/app_theme.dart';
+
+class LiveRacePage extends StatelessWidget {
+	const LiveRacePage({super.key});
+
+	@override
+	Widget build(BuildContext context) {
+		return Scaffold(
+		backgroundColor: AppColors.background,
+		appBar: AppBar(
+			backgroundColor: AppColors.surface,
+			leading: IconButton(
+			icon: const Icon(Icons.arrow_back_rounded),
+			onPressed: () => Navigator.of(context).pop(),
+			),
+			title: Text(
+			'Live Race',
+			style: AppTextStyles.display(
+				color: AppColors.textPrimary,
+			),
+			),
+			elevation: 0,
+		),
+		body: Center(
+			child: Column(
+			mainAxisAlignment: MainAxisAlignment.center,
+			children: [
+				Icon(
+				Icons.live_tv_rounded,
+				size: 64,
+				color: AppColors.textMuted,
+				),
+				const SizedBox(height: 16),
+				Text(
+				'Live Race',
+				style: AppTextStyles.display(),
+				),
+				const SizedBox(height: 8),
+				Text(
+				'Live race screen content coming soon',
+				style: AppTextStyles.body(color: AppColors.textSecondary),
+				),
+			],
+			),
+		),
+		);
+	}
+}

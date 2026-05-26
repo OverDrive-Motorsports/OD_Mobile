@@ -9,9 +9,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 
+import 'config/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'core/navigation/app_routes.dart';
+import 'services/auth_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,13 +33,20 @@ class OverDriveApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'OverDrive',
-      initialRoute: AppRoutes.login,
-      onGenerateRoute: buildAppRoute,
-      theme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+    return ChangeNotifierProvider(
+      create: (_) => AuthService(),
+      child: Consumer<AuthService>(
+        builder: (context, authService, _) {
+          final router = createRouter(authService);
+          return MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'OverDrive',
+            routerConfig: router,
+            theme: AppTheme.darkTheme,
+            themeMode: ThemeMode.dark,
+          );
+        },
+      ),
     );
   }
 }
