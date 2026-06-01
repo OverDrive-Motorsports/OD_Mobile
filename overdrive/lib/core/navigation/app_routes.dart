@@ -38,6 +38,12 @@ abstract final class AppRoutes {
   static const tv = '/tv';
 }
 
+/// Builds a GoRouter location to open a specific championship.
+String championshipLocationById(String championshipId) {
+  final encodedId = Uri.encodeQueryComponent(championshipId);
+  return '${AppRoutes.championship}?id=$encodedId';
+}
+
 /// Menu pages exposed in the overlay navigation.
 class MenuPageLink {
   const MenuPageLink({

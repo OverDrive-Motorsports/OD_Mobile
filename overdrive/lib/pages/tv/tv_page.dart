@@ -8,6 +8,7 @@
  */
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/tv/tv_mock_data.dart';
@@ -52,7 +53,7 @@ class _TvPageState extends State<TvPage> {
 
   /// Leaves the TV experience and returns to the home route.
   void _goBack() {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.home);
+    context.go(AppRoutes.home);
   }
 
   @override

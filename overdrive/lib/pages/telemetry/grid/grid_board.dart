@@ -12,6 +12,7 @@ class GridBoard extends StatefulWidget {
     required this.rows,
     required this.cellSize,
     required this.gap,
+    this.onItemsChanged,
   });
 
   final List<GridItem> items;
@@ -19,6 +20,7 @@ class GridBoard extends StatefulWidget {
   final int rows;
   final double cellSize;
   final double gap;
+  final ValueChanged<List<GridItem>>? onItemsChanged;
 
   @override
   State<GridBoard> createState() => _GridBoardState();
@@ -47,36 +49,109 @@ class _GridBoardState extends State<GridBoard> {
     }
   }
 
-  int offsetToCol(double dx, int colSpan) {
-    return (dx / cellStep).floor().clamp(0, widget.cols - colSpan).toInt();
+  void _emitItemsChanged() {
+    widget.onItemsChanged?.call(List<GridItem>.from(_items));
   }
 
-  int offsetToRow(double dy, int rowSpan) {
-    return (dy / cellStep).floor().clamp(0, widget.rows - rowSpan).toInt();
+  bool _isPlacementValid({
+    required String itemId,
+    required int col,
+    required int row,
+    required int colSpan,
+    required int rowSpan,
+  }) {
+    final right = col + colSpan;
+    final bottom = row + rowSpan;
+
+    if (col < 0 || row < 0 || right > widget.cols || bottom > widget.rows) {
+      return false;
+    }
+
+    for (final other in _items) {
+      if (other.id == itemId) {
+        continue;
+      }
+
+      final overlaps =
+          col < other.col + other.colSpan &&
+          right > other.col &&
+          row < other.row + other.rowSpan &&
+          bottom > other.row;
+
+      if (overlaps) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   void _onMove(String id, int newCol, int newRow) {
+    var didMove = false;
+
     setState(() {
       final index = _items.indexWhere((e) => e.id == id);
       if (index == -1) {
         return;
       }
-      _items[index] = _items[index].copyWith(col: newCol, row: newRow);
+
+      final item = _items[index];
+      if (!_isPlacementValid(
+        itemId: id,
+        col: newCol,
+        row: newRow,
+        colSpan: item.colSpan,
+        rowSpan: item.rowSpan,
+      )) {
+        return;
+      }
+
+      _items[index] = item.copyWith(col: newCol, row: newRow);
+      didMove = true;
     });
+
+    if (didMove) {
+      _emitItemsChanged();
+    }
   }
 
   void _onResize(String id, int newColSpan, int newRowSpan) {
+    var didResize = false;
+
     setState(() {
       final index = _items.indexWhere((e) => e.id == id);
       if (index == -1) {
         return;
       }
+
       final item = _items[index];
+      final clampedColSpan = newColSpan
+          .clamp(1, widget.cols - item.col)
+          .toInt();
+      final clampedRowSpan = newRowSpan
+          .clamp(1, widget.rows - item.row)
+          .toInt();
+
+      if (!_isPlacementValid(
+        itemId: id,
+        col: item.col,
+        row: item.row,
+        colSpan: clampedColSpan,
+        rowSpan: clampedRowSpan,
+      )) {
+        return;
+      }
+
       _items[index] = item.copyWith(
-        colSpan: newColSpan.clamp(1, widget.cols - item.col).toInt(),
-        rowSpan: newRowSpan.clamp(1, widget.rows - item.row).toInt(),
+        colSpan: clampedColSpan,
+        rowSpan: clampedRowSpan,
       );
+      didResize = true;
     });
+
+    if (didResize) {
+      _emitItemsChanged();
+    }
   }
 
   @override

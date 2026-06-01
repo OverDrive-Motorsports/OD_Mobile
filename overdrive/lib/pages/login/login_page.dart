@@ -102,15 +102,15 @@ class LoginPage extends StatefulWidget {
 						fillColor: AppColors.surface,
 						border: OutlineInputBorder(
 						borderRadius: BorderRadius.circular(8),
-						borderSide: const BorderSide(color: AppColors.surfaceBorder),
+						borderSide: const BorderSide(color: AppColors.border),
 						),
 						enabledBorder: OutlineInputBorder(
 						borderRadius: BorderRadius.circular(8),
-						borderSide: const BorderSide(color: AppColors.surfaceBorder),
+						borderSide: const BorderSide(color: AppColors.border),
 						),
 						focusedBorder: OutlineInputBorder(
 						borderRadius: BorderRadius.circular(8),
-						borderSide: const BorderSide(color: AppColors.accent),
+						borderSide: const BorderSide(color: AppColors.gold),
 						),
 						contentPadding: const EdgeInsets.symmetric(
 						horizontal: 16,
@@ -132,15 +132,15 @@ class LoginPage extends StatefulWidget {
 						fillColor: AppColors.surface,
 						border: OutlineInputBorder(
 						borderRadius: BorderRadius.circular(8),
-						borderSide: const BorderSide(color: AppColors.surfaceBorder),
+						borderSide: const BorderSide(color: AppColors.border),
 						),
 						enabledBorder: OutlineInputBorder(
 						borderRadius: BorderRadius.circular(8),
-						borderSide: const BorderSide(color: AppColors.surfaceBorder),
+						borderSide: const BorderSide(color: AppColors.border),
 						),
 						focusedBorder: OutlineInputBorder(
 						borderRadius: BorderRadius.circular(8),
-						borderSide: const BorderSide(color: AppColors.accent),
+						borderSide: const BorderSide(color: AppColors.gold),
 						),
 						contentPadding: const EdgeInsets.symmetric(
 						horizontal: 16,
@@ -153,7 +153,7 @@ class LoginPage extends StatefulWidget {
 					const SizedBox(height: 16),
 					Text(
 						_errorMessage!,
-						style: AppTextStyles.body(color: AppColors.error),
+						style: AppTextStyles.body(color: AppColors.red),
 						textAlign: TextAlign.center,
 					),
 					],
@@ -164,7 +164,7 @@ class LoginPage extends StatefulWidget {
 					child: ElevatedButton(
 						onPressed: _isLoading ? null : _handleLogin,
 						style: ElevatedButton.styleFrom(
-						backgroundColor: AppColors.accent,
+						backgroundColor: AppColors.gold,
 						disabledBackgroundColor: AppColors.textMuted,
 						shape: RoundedRectangleBorder(
 							borderRadius: BorderRadius.circular(8),

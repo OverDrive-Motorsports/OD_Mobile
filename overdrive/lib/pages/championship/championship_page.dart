@@ -10,6 +10,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
@@ -350,7 +351,7 @@ class _LiveActionButtons extends StatelessWidget {
           child: _LiveActionButton(
             icon: Icons.live_tv_outlined,
             label: 'TV Live',
-            onTap: () => Navigator.of(context).pushNamed(AppRoutes.tv),
+            onTap: () => context.go(AppRoutes.tv),
           ),
         ),
         const SizedBox(width: 12),
@@ -358,7 +359,7 @@ class _LiveActionButtons extends StatelessWidget {
           child: _LiveActionButton(
             icon: Icons.insights_outlined,
             label: 'Telemetrie',
-            onTap: () => Navigator.of(context).pushNamed(AppRoutes.telemetry),
+            onTap: () => context.go(AppRoutes.telemetry),
           ),
         ),
       ],

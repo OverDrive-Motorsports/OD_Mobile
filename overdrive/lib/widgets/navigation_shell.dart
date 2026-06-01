@@ -83,7 +83,7 @@ class NavigationShell extends StatelessWidget {
         selectedIndex: navigationShell.currentIndex,
         onDestinationSelected: _onTabChanged,
         backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.accent.withAlpha(51), // ~20% opacity
+        indicatorColor: AppColors.gold.withAlpha(51), // ~20% opacity
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: List.generate(
           navItems.length,
