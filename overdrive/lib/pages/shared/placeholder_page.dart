@@ -36,7 +36,7 @@ class PlaceholderPage extends StatelessWidget {
               ),
             ),
           ),
-          const MenuOverlay(),
+          //const MenuOverlay(),
         ],
       ),
     );

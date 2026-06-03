@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
       body: Stack(
         children: <Widget>[
           Positioned.fill(child: _HomeBackdrop()),
-          MenuOverlay(),
+          //MenuOverlay(),
         ],
       ),
     );

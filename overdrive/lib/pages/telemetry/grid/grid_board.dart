@@ -28,12 +28,12 @@ class GridBoard extends StatefulWidget {
 
 class _GridBoardState extends State<GridBoard> {
   late List<GridItem> _items;
+  int _activeInteractions = 0;
 
   double get cellStep => widget.cellSize + widget.gap;
-
   double get boardWidth => widget.cols * cellStep - widget.gap;
-
   double get boardHeight => widget.rows * cellStep - widget.gap;
+  bool get _showGrid => _activeInteractions > 0;
 
   @override
   void initState() {
@@ -51,6 +51,16 @@ class _GridBoardState extends State<GridBoard> {
 
   void _emitItemsChanged() {
     widget.onItemsChanged?.call(List<GridItem>.from(_items));
+  }
+
+  void _setInteractionActive(bool isActive) {
+    setState(() {
+      if (isActive) {
+        _activeInteractions += 1;
+      } else {
+        _activeInteractions = (_activeInteractions - 1).clamp(0, 1000);
+      }
+    });
   }
 
   bool _isPlacementValid({
@@ -154,6 +164,65 @@ class _GridBoardState extends State<GridBoard> {
     }
   }
 
+  void _onDelete(String id) {
+    var didDelete = false;
+
+    setState(() {
+      final nextItems = _items
+          .where((item) => item.id != id)
+          .toList(growable: false);
+      if (nextItems.length == _items.length) {
+        return;
+      }
+      _items = List<GridItem>.from(nextItems);
+      didDelete = true;
+    });
+
+    if (didDelete) {
+      _emitItemsChanged();
+    }
+  }
+
+  void _onReset(String id) {
+    var didReset = false;
+
+    setState(() {
+      final index = _items.indexWhere((e) => e.id == id);
+      if (index == -1) {
+        return;
+      }
+
+      final item = _items[index];
+      if (!_isPlacementValid(
+        itemId: id,
+        col: item.initialCol,
+        row: item.initialRow,
+        colSpan: item.initialColSpan,
+        rowSpan: item.initialRowSpan,
+      )) {
+        return;
+      }
+
+      _items[index] = GridItem(
+        id: item.id,
+        col: item.initialCol,
+        row: item.initialRow,
+        colSpan: item.initialColSpan,
+        rowSpan: item.initialRowSpan,
+        initialCol: item.initialCol,
+        initialRow: item.initialRow,
+        initialColSpan: item.initialColSpan,
+        initialRowSpan: item.initialRowSpan,
+        child: item.child,
+      );
+      didReset = true;
+    });
+
+    if (didReset) {
+      _emitItemsChanged();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -168,8 +237,8 @@ class _GridBoardState extends State<GridBoard> {
               rows: widget.rows,
               cellSize: widget.cellSize,
               gap: widget.gap,
-              cellColor: AppColors.surface,
-              borderColor: AppColors.border,
+              borderColor: AppColors.white,
+              showGrid: _showGrid,
             ),
           ),
           for (final item in _items)
@@ -182,6 +251,9 @@ class _GridBoardState extends State<GridBoard> {
               onMove: (col, row) => _onMove(item.id, col, row),
               onResize: (colSpan, rowSpan) =>
                   _onResize(item.id, colSpan, rowSpan),
+              onDelete: () => _onDelete(item.id),
+              onReset: () => _onReset(item.id),
+              onInteractionChanged: _setInteractionActive,
             ),
         ],
       ),
@@ -195,24 +267,30 @@ class _GridBackgroundPainter extends CustomPainter {
     required this.rows,
     required this.cellSize,
     required this.gap,
-    required this.cellColor,
     required this.borderColor,
+    required this.showGrid,
   });
 
   final int cols;
   final int rows;
   final double cellSize;
   final double gap;
-  final Color cellColor;
   final Color borderColor;
+  final bool showGrid;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final fillPaint = Paint()..color = cellColor;
+    if (!showGrid) {
+      return;
+    }
+
     final borderPaint = Paint()
-      ..color = borderColor
+      ..color = borderColor.withValues(alpha: 0.06)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1;
+    final fillPaint = Paint()
+      ..color = borderColor.withValues(alpha: 0.008)
+      ..style = PaintingStyle.fill;
     final step = cellSize + gap;
 
     for (var row = 0; row < rows; row++) {
@@ -231,7 +309,7 @@ class _GridBackgroundPainter extends CustomPainter {
         oldDelegate.rows != rows ||
         oldDelegate.cellSize != cellSize ||
         oldDelegate.gap != gap ||
-        oldDelegate.cellColor != cellColor ||
-        oldDelegate.borderColor != borderColor;
+        oldDelegate.borderColor != borderColor ||
+        oldDelegate.showGrid != showGrid;
   }
 }
