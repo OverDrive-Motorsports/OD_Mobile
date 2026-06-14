@@ -25,8 +25,6 @@ import '../../widgets/championships/championship_schedule.dart';
 import '../../widgets/championships/championship_standings_widget.dart'
     as standings_ui;
 import '../../widgets/championships/championship_top3.dart';
-import '../../widgets/menu_overlay.dart';
-
 const Color _pageBackground = AppColors.background;
 const Color _cardBackground = AppColors.surface;
 const Color _cardBorder = AppColors.border;
@@ -70,7 +68,6 @@ class ChampionshipPage extends StatelessWidget {
                 ),
               ),
             ),
-            //const MenuOverlay(),
           ],
         ),
       ),

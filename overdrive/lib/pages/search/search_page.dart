@@ -9,7 +9,6 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../widgets/menu_overlay.dart';
 import '../../widgets/search_bar.dart' as od;
 
 const SearchPageContent _searchPageContent = SearchPageContent(
@@ -82,7 +81,6 @@ class _SearchPageState extends State<SearchPage> {
                 ),
               ),
             ),
-            const MenuOverlay(),
           ],
         ),
       ),

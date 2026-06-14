@@ -3,29 +3,18 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## navigation_shell.dart - Bottom navigation shell with tab bar.
+ ## navigation_shell.dart - Navigation shell with menu overlay.
  ##
  */
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/theme/app_theme.dart';
+import 'menu_overlay.dart';
 
-/// Bottom navigation item definition
-class NavItem {
-  final String label;
-  final IconData icon;
-  final String route;
+const _routesWithoutMenu = {'/tv', '/telemetry'};
 
-  NavItem({
-    required this.label,
-    required this.icon,
-    required this.route,
-  });
-}
-
-/// Navigation shell with bottom tab bar
+/// Navigation shell wrapping pages with the floating menu overlay
 class NavigationShell extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
@@ -34,65 +23,17 @@ class NavigationShell extends StatelessWidget {
     super.key,
   });
 
-  // Define navigation items in order matching the routes
-  static final List<NavItem> navItems = [
-    NavItem(
-      label: 'Home',
-      icon: Icons.home_rounded,
-      route: '/',
-    ),
-    NavItem(
-      label: 'Search',
-      icon: Icons.search_rounded,
-      route: '/search',
-    ),
-    NavItem(
-      label: 'Calendar',
-      icon: Icons.calendar_month_rounded,
-      route: '/calendar',
-    ),
-    NavItem(
-      label: 'Championship',
-      icon: Icons.sports_motorsports_rounded,
-      route: '/championship',
-    ),
-    NavItem(
-      label: 'TV',
-      icon: Icons.tv_rounded,
-      route: '/tv',
-    ),
-    NavItem(
-      label: 'Telemetry',
-      icon: Icons.analytics_rounded,
-      route: '/telemetry',
-    ),
-  ];
-
-  void _onTabChanged(int index) {
-    navigationShell.goBranch(
-      index,
-      initialLocation: index == navigationShell.currentIndex,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final currentPath = GoRouterState.of(context).uri.path;
+    final showMenu = !_routesWithoutMenu.contains(currentPath);
+
     return Scaffold(
-      body: navigationShell,
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: navigationShell.currentIndex,
-        onDestinationSelected: _onTabChanged,
-        backgroundColor: AppColors.surface,
-        indicatorColor: AppColors.gold.withAlpha(51), // ~20% opacity
-        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        destinations: List.generate(
-          navItems.length,
-          (index) => NavigationDestination(
-            icon: Icon(navItems[index].icon),
-            selectedIcon: Icon(navItems[index].icon),
-            label: navItems[index].label,
-          ),
-        ),
+      body: Stack(
+        children: [
+          navigationShell,
+          if (showMenu) const MenuOverlay(),
+        ],
       ),
     );
   }
