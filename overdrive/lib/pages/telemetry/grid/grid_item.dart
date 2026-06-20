@@ -1,5 +1,8 @@
 import 'package:flutter/widgets.dart';
 
+// Describes a widget's position and span on the freeform grid.
+// col/row are 0-based cell coordinates (grid units, not pixels).
+// colSpan/rowSpan are sizes in cells; minimum 1 each.
 class GridItem {
   final String id;
   int col;

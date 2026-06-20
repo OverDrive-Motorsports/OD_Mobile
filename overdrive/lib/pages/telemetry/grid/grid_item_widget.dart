@@ -1,9 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../widgets/telemetry/telemetry_item_actions.dart';
 import 'grid_item.dart';
 
 enum _InteractionMode { none, drag, resize }
+
+class _CornerAccentPainter extends CustomPainter {
+  const _CornerAccentPainter({required this.color});
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const radius = 10.0;
+    const legLen = 14.0;
+
+    final paint = Paint()
+      ..color = color.withValues(alpha: 0.7)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.5
+      ..strokeCap = StrokeCap.round;
+
+    // Top-left corner ⌜
+    final tl = Path()
+      ..moveTo(legLen, 0)
+      ..lineTo(radius, 0)
+      ..arcToPoint(
+        const Offset(0, radius),
+        radius: const Radius.circular(radius),
+      )
+      ..lineTo(0, legLen);
+    canvas.drawPath(tl, paint);
+
+    // Bottom-right corner ⌟
+    final br = Path()
+      ..moveTo(size.width - legLen, size.height)
+      ..lineTo(size.width - radius, size.height)
+      ..arcToPoint(
+        Offset(size.width, size.height - radius),
+        radius: const Radius.circular(radius),
+      )
+      ..lineTo(size.width, size.height - legLen);
+    canvas.drawPath(br, paint);
+  }
+
+  @override
+  bool shouldRepaint(_CornerAccentPainter old) => old.color != color;
+}
 
 class GridItemWidget extends StatefulWidget {
   const GridItemWidget({
@@ -15,6 +59,10 @@ class GridItemWidget extends StatefulWidget {
     required this.totalRows,
     required this.onMove,
     required this.onResize,
+    this.onRemove,
+    this.onReset,
+    this.onInteractionStart,
+    this.onInteractionEnd,
   });
 
   final GridItem item;
@@ -24,13 +72,16 @@ class GridItemWidget extends StatefulWidget {
   final int totalRows;
   final void Function(int col, int row) onMove;
   final void Function(int colSpan, int rowSpan) onResize;
+  final VoidCallback? onRemove;
+  final VoidCallback? onReset;
+  final VoidCallback? onInteractionStart;
+  final VoidCallback? onInteractionEnd;
 
   @override
   State<GridItemWidget> createState() => _GridItemWidgetState();
 }
 
 class _GridItemWidgetState extends State<GridItemWidget> {
-  static const double _resizeHandleVisualSize = 28;
   static const double _resizeHandleTouchSize = 44;
   static const double _dragSnapFactor = 0.55;
   static const double _resizeSnapFactor = 0.5;
@@ -65,15 +116,17 @@ class _GridItemWidgetState extends State<GridItemWidget> {
   bool get _isDragging => _interactionMode == _InteractionMode.drag;
   bool get _isResizing => _interactionMode == _InteractionMode.resize;
 
-  int _clampCol(int value, int colSpan) {
-    return value.clamp(0, widget.totalCols - colSpan).toInt();
-  }
+  int _clampCol(int value, int colSpan) =>
+      value.clamp(0, widget.totalCols - colSpan).toInt();
 
-  int _clampRow(int value, int rowSpan) {
-    return value.clamp(0, widget.totalRows - rowSpan).toInt();
-  }
+  int _clampRow(int value, int rowSpan) =>
+      value.clamp(0, widget.totalRows - rowSpan).toInt();
 
-  void _startDrag(DragStartDetails details) {
+  // ── Drag (long-press bypasses the scroll view gesture arena) ──────────────
+
+  void _startDrag(LongPressStartDetails details) {
+    HapticFeedback.mediumImpact();
+    widget.onInteractionStart?.call();
     setState(() {
       _interactionMode = _InteractionMode.drag;
       _dragDeltaX = 0;
@@ -87,24 +140,25 @@ class _GridItemWidgetState extends State<GridItemWidget> {
     });
   }
 
-  void _updateDrag(DragUpdateDetails details) {
-    if (!_isDragging) {
-      return;
-    }
-
+  void _updateDrag(LongPressMoveUpdateDetails details) {
+    if (!_isDragging) return;
+    // localOffsetFromOrigin is cumulative from long-press start — no manual accumulation needed
+    final offset = details.localOffsetFromOrigin;
     setState(() {
-      _dragDeltaX += details.delta.dx;
-      _dragDeltaY += details.delta.dy;
-
+      _dragDeltaX = offset.dx;
+      _dragDeltaY = offset.dy;
       final stepX = (_dragDeltaX / (cellStep * _dragSnapFactor)).round();
       final stepY = (_dragDeltaY / (cellStep * _dragSnapFactor)).round();
-
       _previewCol = _clampCol(_dragStartCol + stepX, widget.item.colSpan);
       _previewRow = _clampRow(_dragStartRow + stepY, widget.item.rowSpan);
     });
   }
 
-  void _startResize(DragStartDetails details) {
+  // ── Resize (long-press on bottom-right handle) ────────────────────────────
+
+  void _startResize(LongPressStartDetails details) {
+    HapticFeedback.lightImpact();
+    widget.onInteractionStart?.call();
     setState(() {
       _interactionMode = _InteractionMode.resize;
       _resizeDeltaX = 0;
@@ -118,18 +172,14 @@ class _GridItemWidgetState extends State<GridItemWidget> {
     });
   }
 
-  void _updateResize(DragUpdateDetails details) {
-    if (!_isResizing) {
-      return;
-    }
-
+  void _updateResize(LongPressMoveUpdateDetails details) {
+    if (!_isResizing) return;
+    final offset = details.localOffsetFromOrigin;
     setState(() {
-      _resizeDeltaX += details.delta.dx;
-      _resizeDeltaY += details.delta.dy;
-
+      _resizeDeltaX = offset.dx;
+      _resizeDeltaY = offset.dy;
       final stepX = (_resizeDeltaX / (cellStep * _resizeSnapFactor)).round();
       final stepY = (_resizeDeltaY / (cellStep * _resizeSnapFactor)).round();
-
       _previewColSpan = (_resizeStartColSpan + stepX)
           .clamp(1, widget.totalCols - widget.item.col)
           .toInt();
@@ -139,6 +189,8 @@ class _GridItemWidgetState extends State<GridItemWidget> {
     });
   }
 
+  // ── Common end ────────────────────────────────────────────────────────────
+
   void _endInteraction() {
     final mode = _interactionMode;
     final col = _previewCol ?? widget.item.col;
@@ -146,6 +198,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
     final colSpan = _previewColSpan ?? widget.item.colSpan;
     final rowSpan = _previewRowSpan ?? widget.item.rowSpan;
 
+    widget.onInteractionEnd?.call();
     setState(() {
       _interactionMode = _InteractionMode.none;
       _dragDeltaX = 0;
@@ -162,7 +215,6 @@ class _GridItemWidgetState extends State<GridItemWidget> {
       widget.onMove(col, row);
       return;
     }
-
     if (mode == _InteractionMode.resize) {
       widget.onResize(colSpan, rowSpan);
     }
@@ -187,10 +239,12 @@ class _GridItemWidgetState extends State<GridItemWidget> {
         ? (baseTop + _dragDeltaY).clamp(0.0, _maxTop).toDouble()
         : baseTop;
 
+    final isActive = _isDragging || _isResizing;
+
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        if (_isDragging || _isResizing)
+        if (isActive)
           Positioned(
             left: previewLeft,
             top: previewTop,
@@ -218,55 +272,48 @@ class _GridItemWidgetState extends State<GridItemWidget> {
           height: baseHeight,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onPanStart: _startDrag,
-            onPanUpdate: _updateDrag,
-            onPanEnd: (_) => _endInteraction(),
-            onPanCancel: _endInteraction,
-            child: Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Positioned.fill(child: widget.item.child),
-                Positioned(
-                  right: -8,
-                  bottom: -8,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onPanStart: _startResize,
-                    onPanUpdate: _updateResize,
-                    onPanEnd: (_) => _endInteraction(),
-                    onPanCancel: _endInteraction,
-                    child: SizedBox(
-                      width: _resizeHandleTouchSize,
-                      height: _resizeHandleTouchSize,
-                      child: Center(
-                        child: Container(
-                          width: _resizeHandleVisualSize,
-                          height: _resizeHandleVisualSize,
-                          decoration: BoxDecoration(
-                            color: AppColors.surfaceElevated,
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                              color: AppColors.gold.withValues(alpha: 0.65),
-                              width: 1.3,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.gold.withValues(alpha: 0.24),
-                                blurRadius: 10,
-                              ),
-                            ],
-                          ),
-                          child: const Icon(
-                            Icons.open_in_full,
-                            size: 14,
-                            color: AppColors.gold,
-                          ),
-                        ),
+            onLongPressStart: _startDrag,
+            onLongPressMoveUpdate: _updateDrag,
+            onLongPressEnd: (_) => _endInteraction(),
+            onLongPressCancel: _endInteraction,
+            child: AnimatedScale(
+              scale: _isDragging ? 1.04 : 1.0,
+              duration: const Duration(milliseconds: 180),
+              curve: Curves.easeOut,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(
+                    child: TelemetryItemActions(
+                      onRemove: widget.onRemove,
+                      onReset: widget.onReset,
+                      child: widget.item.child,
+                    ),
+                  ),
+                  Positioned.fill(
+                    child: IgnorePointer(
+                      child: CustomPaint(
+                        painter: _CornerAccentPainter(color: AppColors.gold),
                       ),
                     ),
                   ),
-                ),
-              ],
+                  Positioned(
+                    right: -8,
+                    bottom: -8,
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onLongPressStart: _startResize,
+                      onLongPressMoveUpdate: _updateResize,
+                      onLongPressEnd: (_) => _endInteraction(),
+                      onLongPressCancel: _endInteraction,
+                      child: const SizedBox(
+                        width: _resizeHandleTouchSize,
+                        height: _resizeHandleTouchSize,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),

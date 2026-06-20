@@ -13,6 +13,8 @@ class GridBoard extends StatefulWidget {
     required this.cellSize,
     required this.gap,
     this.onItemsChanged,
+    this.onItemRemoved,
+    this.onItemReset,
   });
 
   final List<GridItem> items;
@@ -21,6 +23,8 @@ class GridBoard extends StatefulWidget {
   final double cellSize;
   final double gap;
   final ValueChanged<List<GridItem>>? onItemsChanged;
+  final void Function(String id)? onItemRemoved;
+  final void Function(String id)? onItemReset;
 
   @override
   State<GridBoard> createState() => _GridBoardState();
@@ -28,6 +32,9 @@ class GridBoard extends StatefulWidget {
 
 class _GridBoardState extends State<GridBoard> {
   late List<GridItem> _items;
+  // Int (not bool) to correctly handle simultaneous drag + resize edge cases.
+  // Grid background fades in when count > 0 and fades out when it returns to 0.
+  int _interactionCount = 0;
 
   double get cellStep => widget.cellSize + widget.gap;
 
@@ -51,6 +58,16 @@ class _GridBoardState extends State<GridBoard> {
 
   void _emitItemsChanged() {
     widget.onItemsChanged?.call(List<GridItem>.from(_items));
+  }
+
+  void _onInteractionStart() {
+    setState(() => _interactionCount++);
+  }
+
+  void _onInteractionEnd() {
+    setState(() {
+      if (_interactionCount > 0) _interactionCount--;
+    });
   }
 
   bool _isPlacementValid({
@@ -125,12 +142,10 @@ class _GridBoardState extends State<GridBoard> {
       }
 
       final item = _items[index];
-      final clampedColSpan = newColSpan
-          .clamp(1, widget.cols - item.col)
-          .toInt();
-      final clampedRowSpan = newRowSpan
-          .clamp(1, widget.rows - item.row)
-          .toInt();
+      final clampedColSpan =
+          newColSpan.clamp(1, widget.cols - item.col).toInt();
+      final clampedRowSpan =
+          newRowSpan.clamp(1, widget.rows - item.row).toInt();
 
       if (!_isPlacementValid(
         itemId: id,
@@ -161,15 +176,19 @@ class _GridBoardState extends State<GridBoard> {
       height: boardHeight,
       child: Stack(
         children: [
-          CustomPaint(
-            size: Size(boardWidth, boardHeight),
-            painter: _GridBackgroundPainter(
-              cols: widget.cols,
-              rows: widget.rows,
-              cellSize: widget.cellSize,
-              gap: widget.gap,
-              cellColor: AppColors.surface,
-              borderColor: AppColors.border,
+          AnimatedOpacity(
+            duration: const Duration(milliseconds: 350),
+            curve: Curves.easeInOut,
+            opacity: _interactionCount > 0 ? 0.75 : 0.0,
+            child: CustomPaint(
+              size: Size(boardWidth, boardHeight),
+              painter: _GridBackgroundPainter(
+                cols: widget.cols,
+                rows: widget.rows,
+                cellSize: widget.cellSize,
+                gap: widget.gap,
+                borderColor: AppColors.border,
+              ),
             ),
           ),
           for (final item in _items)
@@ -182,6 +201,14 @@ class _GridBoardState extends State<GridBoard> {
               onMove: (col, row) => _onMove(item.id, col, row),
               onResize: (colSpan, rowSpan) =>
                   _onResize(item.id, colSpan, rowSpan),
+              onRemove: widget.onItemRemoved != null
+                  ? () => widget.onItemRemoved!(item.id)
+                  : null,
+              onReset: widget.onItemReset != null
+                  ? () => widget.onItemReset!(item.id)
+                  : null,
+              onInteractionStart: _onInteractionStart,
+              onInteractionEnd: _onInteractionEnd,
             ),
         ],
       ),
@@ -195,7 +222,6 @@ class _GridBackgroundPainter extends CustomPainter {
     required this.rows,
     required this.cellSize,
     required this.gap,
-    required this.cellColor,
     required this.borderColor,
   });
 
@@ -203,35 +229,45 @@ class _GridBackgroundPainter extends CustomPainter {
   final int rows;
   final double cellSize;
   final double gap;
-  final Color cellColor;
   final Color borderColor;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final fillPaint = Paint()..color = cellColor;
-    final borderPaint = Paint()
-      ..color = borderColor
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
     final step = cellSize + gap;
+    final borderPaint = Paint()
+      ..color = borderColor.withValues(alpha: 0.45)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.8;
 
     for (var row = 0; row < rows; row++) {
       for (var col = 0; col < cols; col++) {
         final rect = Rect.fromLTWH(col * step, row * step, cellSize, cellSize);
         final rounded = RRect.fromRectAndRadius(rect, const Radius.circular(8));
-        canvas.drawRRect(rounded, fillPaint);
         canvas.drawRRect(rounded, borderPaint);
+      }
+    }
+
+    // Sub-grid dots at half-step intersections for doubled visual density
+    final dotPaint = Paint()
+      ..color = borderColor.withValues(alpha: 0.35);
+    final halfStep = step / 2;
+
+    for (var ri = 0; ri <= rows * 2; ri++) {
+      for (var ci = 0; ci <= cols * 2; ci++) {
+        final x = ci * halfStep;
+        final y = ri * halfStep;
+        if (x <= size.width && y <= size.height) {
+          canvas.drawCircle(Offset(x, y), 1.2, dotPaint);
+        }
       }
     }
   }
 
   @override
-  bool shouldRepaint(covariant _GridBackgroundPainter oldDelegate) {
-    return oldDelegate.cols != cols ||
-        oldDelegate.rows != rows ||
-        oldDelegate.cellSize != cellSize ||
-        oldDelegate.gap != gap ||
-        oldDelegate.cellColor != cellColor ||
-        oldDelegate.borderColor != borderColor;
-  }
+  bool shouldRepaint(covariant _GridBackgroundPainter old) =>
+      old.cols != cols ||
+      old.rows != rows ||
+      old.cellSize != cellSize ||
+      old.gap != gap ||
+      old.borderColor != borderColor;
 }
