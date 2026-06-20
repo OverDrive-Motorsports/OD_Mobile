@@ -12,7 +12,6 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../pages/replay/replay_page.dart';
 import '../../services/championship/championship_circuit.dart';
@@ -25,7 +24,6 @@ import '../../widgets/championships/championship_schedule.dart';
 import '../../widgets/championships/championship_standings_widget.dart'
     as standings_ui;
 import '../../widgets/championships/championship_top3.dart';
-import '../../widgets/menu_overlay.dart';
 
 const Color _pageBackground = AppColors.background;
 const Color _cardBackground = AppColors.surface;
@@ -48,30 +46,25 @@ class ChampionshipPage extends StatelessWidget {
       backgroundColor: _pageBackground,
       body: ColoredBox(
         color: _pageBackground,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(0, 86, 0, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: _PageHero(
-                        data: data,
-                        headline: headline,
-                        now: now,
-                      ),
-                    ),
-                    const SizedBox(height: 34),
-                    ..._buildSections(context, now),
-                  ],
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(0, 20, 0, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: _PageHero(
+                    data: data,
+                    headline: headline,
+                    now: now,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 34),
+                ..._buildSections(context, now),
+              ],
             ),
-            const MenuOverlay(),
-          ],
+          ),
         ),
       ),
     );
@@ -351,7 +344,7 @@ class _LiveActionButtons extends StatelessWidget {
           child: _LiveActionButton(
             icon: Icons.live_tv_outlined,
             label: 'TV Live',
-            onTap: () => context.go(AppRoutes.tv),
+            onTap: () => context.push('/tv'),
           ),
         ),
         const SizedBox(width: 12),
@@ -359,7 +352,7 @@ class _LiveActionButtons extends StatelessWidget {
           child: _LiveActionButton(
             icon: Icons.insights_outlined,
             label: 'Telemetrie',
-            onTap: () => context.go(AppRoutes.telemetry),
+            onTap: () => context.push('/telemetry'),
           ),
         ),
       ],

@@ -39,6 +39,10 @@ class AppColors {
   static const Color textPrimary = white;
   static const Color textSecondary = grayText;
   static const Color textMuted = Color(0xA8FFFFFF);
+
+  static const Color accent = gold;
+  static const Color surfaceBorder = border;
+  static const Color error = red;
 }
 
 class AppTextStyles {

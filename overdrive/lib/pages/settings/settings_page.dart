@@ -13,7 +13,6 @@ import '../../widgets/base/od_button.dart';
 import '../../widgets/base/od_modal.dart';
 import '../../widgets/base/od_switch.dart';
 import '../../widgets/base/od_toast.dart';
-import '../../widgets/menu_overlay.dart';
 
 const SettingsModalContent _storageInfoModalContent = SettingsModalContent(
   title: 'Stockage des reglages',
@@ -287,42 +286,37 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: AppColors.black,
       body: ColoredBox(
         color: AppColors.black,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 96, 20, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _SettingsSection(
-                      title: _notificationsSectionTitle,
-                      child: _SettingsCard(
-                        children: _buildToggleSectionChildren(
-                          _notificationSettings,
-                        ),
-                      ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _SettingsSection(
+                  title: _notificationsSectionTitle,
+                  child: _SettingsCard(
+                    children: _buildToggleSectionChildren(
+                      _notificationSettings,
                     ),
-                    const SizedBox(height: 20),
-                    _SettingsSection(
-                      title: _experienceSectionTitle,
-                      child: _SettingsCard(
-                        children: _buildToggleSectionChildren(
-                          _experienceSettings,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    _SettingsSection(
-                      title: _actionsSectionTitle,
-                      child: Column(children: _buildActionSectionChildren()),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 20),
+                _SettingsSection(
+                  title: _experienceSectionTitle,
+                  child: _SettingsCard(
+                    children: _buildToggleSectionChildren(
+                      _experienceSettings,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _SettingsSection(
+                  title: _actionsSectionTitle,
+                  child: Column(children: _buildActionSectionChildren()),
+                ),
+              ],
             ),
-            const MenuOverlay(),
-          ],
+          ),
         ),
       ),
     );

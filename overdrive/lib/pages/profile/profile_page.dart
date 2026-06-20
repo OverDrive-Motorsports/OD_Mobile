@@ -12,7 +12,6 @@ import '../../core/theme/app_theme.dart';
 import '../../widgets/base/od_button.dart';
 import '../../widgets/base/od_modal.dart';
 import '../../widgets/base/od_toast.dart';
-import '../../widgets/menu_overlay.dart';
 
 /// Preview data used while the profile page is not connected to live data.
 const ProfilePageData profilePagePreviewData = ProfilePageData(
@@ -245,59 +244,54 @@ class _ProfilePageState extends State<ProfilePage> {
       backgroundColor: AppColors.black,
       body: ColoredBox(
         color: AppColors.black,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 96, 20, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _ProfileHeroCard(
-                      initials: _profileInitials,
-                      pseudo: user.pseudo,
-                      email: user.email,
-                    ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: _content.providersSectionTitle,
-                      child: _ProfileActionButton(
-                        action: _content.addProviderAction,
-                        onPressed: () => _handleAction(
-                          context,
-                          _content.addProviderAction.type,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: _content.quickActionsSectionTitle,
-                      child: Column(
-                        children: [
-                          for (
-                            var index = 0;
-                            index < _content.quickActions.length;
-                            index++
-                          ) ...[
-                            _ProfileActionButton(
-                              action: _content.quickActions[index],
-                              onPressed: () => _handleAction(
-                                context,
-                                _content.quickActions[index].type,
-                              ),
-                            ),
-                            if (index < _content.quickActions.length - 1)
-                              const SizedBox(height: 12),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ],
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _ProfileHeroCard(
+                  initials: _profileInitials,
+                  pseudo: user.pseudo,
+                  email: user.email,
                 ),
-              ),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: _content.providersSectionTitle,
+                  child: _ProfileActionButton(
+                    action: _content.addProviderAction,
+                    onPressed: () => _handleAction(
+                      context,
+                      _content.addProviderAction.type,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _ProfileSection(
+                  title: _content.quickActionsSectionTitle,
+                  child: Column(
+                    children: [
+                      for (
+                        var index = 0;
+                        index < _content.quickActions.length;
+                        index++
+                      ) ...[
+                        _ProfileActionButton(
+                          action: _content.quickActions[index],
+                          onPressed: () => _handleAction(
+                            context,
+                            _content.quickActions[index].type,
+                          ),
+                        ),
+                        if (index < _content.quickActions.length - 1)
+                          const SizedBox(height: 12),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const MenuOverlay(),
-          ],
+          ),
         ),
       ),
     );
