@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## navigation_shell.dart - Liquid glass floating bottom navigation shell.
+ ## NavigationShell - Liquid glass floating bottom navigation shell.
  ##
  */
 
@@ -16,12 +16,41 @@ import 'package:go_router/go_router.dart';
 
 import '../core/theme/app_theme.dart';
 
+// ---------------------------------------------------------------------------
+// Layout constants
+// ---------------------------------------------------------------------------
+
 const double _kBarHeight = 52.0;
+
+// ---------------------------------------------------------------------------
+// Glass theme
+//
+// edgeLightColor == edgeShadowColor collapses the directional border gradient
+// into a uniform stroke — no "lit on one side" artefact.
+// noiseOpacity: 0 removes grain that makes the surface look dirty.
+// ---------------------------------------------------------------------------
+
+const _kNavBorderColor = Color(0x1AFFFFFF);
+
+final _kNavBarTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.30,
+  blurSigma: 35.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.08,
+  vibrancyIntensity: 0.06,
+  edgeLightColor: _kNavBorderColor,
+  edgeShadowColor: _kNavBorderColor,
+);
 
 // ---------------------------------------------------------------------------
 // NavigationShell
 // ---------------------------------------------------------------------------
 
+/// Root scaffold that hosts the [StatefulNavigationShell] produced by GoRouter.
+///
+/// Renders a floating liquid-glass bottom bar. The bar shrinks (scale 0.88)
+/// while the user scrolls down and snaps back on scroll-up or scroll-end,
+/// keeping the content area uncluttered during reading.
 class NavigationShell extends StatefulWidget {
   const NavigationShell({required this.navigationShell, super.key});
 
@@ -94,17 +123,22 @@ class _NavigationShellState extends State<NavigationShell> {
 }
 
 // ---------------------------------------------------------------------------
-// _GlassBar — spring-animated liquid selector
+// _GlassBar
 // ---------------------------------------------------------------------------
 
 const _tabs = <(IconData, IconData)>[
   (CupertinoIcons.house, CupertinoIcons.house_fill),
-  (CupertinoIcons.search, CupertinoIcons.search),
   (CupertinoIcons.flag, CupertinoIcons.flag_fill),
   (CupertinoIcons.calendar, CupertinoIcons.calendar_today),
+  (CupertinoIcons.search, CupertinoIcons.search),
   (CupertinoIcons.person, CupertinoIcons.person_fill),
 ];
 
+/// Inner bar rendered inside the floating glass surface.
+///
+/// Manages spring-physics tab switching and horizontal swipe gestures.
+/// The selected-tab indicator (selector pill) is painted by [_SelectorPainter]
+/// and animated with a [SpringSimulation] driven by an unbounded controller.
 class _GlassBar extends StatefulWidget {
   const _GlassBar({required this.currentIndex, required this.onTap});
 
@@ -194,6 +228,7 @@ class _GlassBarState extends State<_GlassBar>
   @override
   Widget build(BuildContext context) {
     return CupertinoLiquidGlass(
+      theme: _kNavBarTheme,
       borderRadius: const BorderRadius.all(Radius.circular(28.0)),
       child: SizedBox(
         height: _kBarHeight,
@@ -248,7 +283,7 @@ class _GlassBarState extends State<_GlassBar>
 }
 
 // ---------------------------------------------------------------------------
-// _AnimatedTabIcon — color + icon interpolate with spring position
+// _AnimatedTabIcon
 // ---------------------------------------------------------------------------
 
 class _AnimatedTabIcon extends StatelessWidget {
@@ -281,9 +316,14 @@ class _AnimatedTabIcon extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// _SelectorPainter — velocity-stretched liquid pill (ported from package)
+// _SelectorPainter
 // ---------------------------------------------------------------------------
 
+/// Paints the velocity-stretched pill that tracks the selected tab.
+///
+/// Pill width stretches proportionally to swipe velocity (max ~1.36×),
+/// matching the elastic "liquid" feel of iOS 26 tab bars.
+/// Corner radius matches the outer glass bar (28 pt) for visual consistency.
 class _SelectorPainter extends CustomPainter {
   _SelectorPainter({
     required this.position,
@@ -313,24 +353,16 @@ class _SelectorPainter extends CustomPainter {
 
     final rrect = RRect.fromRectAndRadius(
       Rect.fromLTWH(x, 3.0, selectorWidth, size.height - 6.0),
-      const Radius.circular(16.0),
+      const Radius.circular(28.0),
     );
 
-    // 1. Bloom glow.
-    canvas.drawRRect(
-      rrect.inflate(3.0),
-      Paint()
-        ..color = AppColors.white.withValues(alpha: 0.08)
-        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 8.0),
-    );
-
-    // 2. Fill — translucent pill.
+    // Fill — translucent pill.
     canvas.drawRRect(
       rrect,
       Paint()..color = AppColors.white.withValues(alpha: 0.10),
     );
 
-    // 3. Inner highlight — faint top edge for depth.
+    // Inner highlight — faint top edge for depth.
     canvas.drawRRect(
       rrect.deflate(0.25),
       Paint()

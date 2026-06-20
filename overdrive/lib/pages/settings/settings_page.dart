@@ -1,9 +1,9 @@
-/*
+/**
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## settings_page.dart - Settings screen composed with shared OverDrive widgets.
+ ## SettingsPage - Settings screen composed with shared OverDrive widgets.
  ##
  */
 
@@ -145,16 +145,19 @@ class SettingsModalContent {
   final String dismissLabel;
 }
 
-/// Settings screen composed from shared widgets and immutable definitions.
-class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+/// Scrollable settings content.
+///
+/// Designed to be embeddable: used both by [SettingsPage] (standalone route)
+/// and by [ProfilePage] (tab inside the profile IndexedStack). Has no Scaffold
+/// so it avoids nested navigation scaffolds.
+class SettingsBody extends StatefulWidget {
+  const SettingsBody({super.key});
 
   @override
-  State<SettingsPage> createState() => _SettingsPageState();
+  State<SettingsBody> createState() => _SettingsBodyState();
 }
 
-/// State holder for local settings values and feedback actions.
-class _SettingsPageState extends State<SettingsPage> {
+class _SettingsBodyState extends State<SettingsBody> {
   late final Map<SettingsToggleKey, bool> _toggleValues;
 
   @override
@@ -163,7 +166,6 @@ class _SettingsPageState extends State<SettingsPage> {
     _toggleValues = _createInitialToggleValues();
   }
 
-  /// Creates the initial local state from declarative toggle definitions.
   Map<SettingsToggleKey, bool> _createInitialToggleValues() {
     final definitions = <SettingsToggleDefinition>[
       ..._notificationSettings,
@@ -176,7 +178,6 @@ class _SettingsPageState extends State<SettingsPage> {
     };
   }
 
-  /// Shows feedback for the simulated settings save action.
   void _saveSettings() {
     FocusScope.of(context).unfocus();
     OdToast.show(
@@ -186,7 +187,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  /// Restores all toggles to their declarative default values.
   void _resetSettings() {
     setState(() {
       _toggleValues
@@ -202,7 +202,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  /// Opens a modal explaining how settings persistence will be connected.
   void _openStorageInfo() {
     OdModal.show<void>(
       context,
@@ -227,12 +226,10 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  /// Updates a single toggle in local state.
   void _handleToggleChanged(SettingsToggleKey key, bool value) {
     setState(() => _toggleValues[key] = value);
   }
 
-  /// Dispatches footer actions to their local handlers.
   void _handleAction(SettingsActionType actionType) {
     switch (actionType) {
       case SettingsActionType.save:
@@ -247,7 +244,6 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
-  /// Builds switch rows for one settings section.
   List<Widget> _buildToggleSectionChildren(
     List<SettingsToggleDefinition> definitions,
   ) {
@@ -265,7 +261,6 @@ class _SettingsPageState extends State<SettingsPage> {
     ];
   }
 
-  /// Builds the footer action buttons from their declarative definitions.
   List<Widget> _buildActionSectionChildren() {
     return <Widget>[
       for (var index = 0; index < _settingsActions.length; index++) ...[
@@ -282,42 +277,49 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SettingsSection(
+            title: _notificationsSectionTitle,
+            child: _SettingsCard(
+              children: _buildToggleSectionChildren(_notificationSettings),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _SettingsSection(
+            title: _experienceSectionTitle,
+            child: _SettingsCard(
+              children: _buildToggleSectionChildren(_experienceSettings),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _SettingsSection(
+            title: _actionsSectionTitle,
+            child: Column(children: _buildActionSectionChildren()),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Standalone settings page — thin Scaffold wrapper around [SettingsBody].
+///
+/// Used when navigating directly to [RoutePaths.settings]; the profile page
+/// embeds [SettingsBody] directly to avoid a nested Scaffold.
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
       backgroundColor: AppColors.black,
       body: ColoredBox(
         color: AppColors.black,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _SettingsSection(
-                  title: _notificationsSectionTitle,
-                  child: _SettingsCard(
-                    children: _buildToggleSectionChildren(
-                      _notificationSettings,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _SettingsSection(
-                  title: _experienceSectionTitle,
-                  child: _SettingsCard(
-                    children: _buildToggleSectionChildren(
-                      _experienceSettings,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                _SettingsSection(
-                  title: _actionsSectionTitle,
-                  child: Column(children: _buildActionSectionChildren()),
-                ),
-              ],
-            ),
-          ),
-        ),
+        child: SafeArea(child: SettingsBody()),
       ),
     );
   }
