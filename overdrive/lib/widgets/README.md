@@ -377,6 +377,33 @@ Behavior:
 - Renders selectable stream cards in a compact grid.
 - Delegates the selected stream back to the page through `onSelected`.
 
+## Telemetry Widgets
+
+Live data cards for the customizable telemetry grid. Each widget reads from
+`TelemetrySimulator` via Provider and renders inside a `GridItemWidget`.
+
+Full widget catalogue and shared utilities are documented in
+[`telemetry/README.md`](telemetry/README.md).
+
+Quick reference:
+
+| Widget | Driver-aware | Data shown |
+|--------|-------------|------------|
+| `SpeedometerWidget` | yes | Speed arc |
+| `GearRpmWidget` | yes | Gear + RPM bar |
+| `ThrottleBrakeWidget` | yes | Throttle / brake bars |
+| `LapDeltaWidget` | yes | Lap time + sector splits |
+| `DrsErsWidget` | yes | DRS state + ERS charge |
+| `GForceWidget` | yes | Lateral + longitudinal G |
+| `SectorSplitWidget` | yes | S1 / S2 / S3 vs personal best |
+| `DriverSnapshotWidget` | yes | Driver card (gap, trend) |
+| `TireTempWidget` | yes | Per-corner tyre temps |
+| `FuelWidget` | yes | Fuel load + laps remaining |
+| `PitStrategyWidget` | yes | Compound, tyre age, pit window |
+| `EngineWidget` | yes | Engine mode + water/oil temp |
+| `WeatherWidget` | no | Track conditions (shared) |
+| `StandingsWidget` | no | All-driver P1/P2/P3 comparison |
+
 ## Maintenance Checklist
 
 Before adding or editing a widget here, verify:

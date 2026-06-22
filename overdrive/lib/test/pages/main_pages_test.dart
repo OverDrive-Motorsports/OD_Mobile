@@ -90,7 +90,7 @@ void main() {
 
       await pumpTestApp(tester, const TelemetryPage());
 
-      expect(find.text('Telemetry'), findsWidgets);
+      expect(find.text('TELEMETRIE'), findsOneWidget);
     });
 
     testWidgets('search page owns a reusable search bar controller', (

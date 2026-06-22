@@ -18,7 +18,7 @@ A minimalist Flutter application focused on a `Home` page and several placeholde
 - `lib/pages/calendar/calendar_page.dart` displays the `Calendar` page  
 - `lib/pages/championship/championship_page.dart` displays the `Championship` page  
 - `lib/pages/tv/tv_page.dart` displays the `TV` page  
-- `lib/pages/telemetry/telemetry_page.dart` displays the `Telemetry` page  
+- `lib/pages/telemetry/telemetry_page.dart` — live telemetry dashboard with a freeform 15-row drag-and-resize widget grid, powered by `TelemetrySimulator` (5 Hz mock data). 14 widget types available. See `lib/pages/telemetry/README.md` for full architecture and data reference.  
 - `lib/pages/search/search_page.dart` displays the `Search` page  
 - `lib/services/health_service.dart` handles the only backend interaction: `GET /health`  
 - `lib/core/theme/app_theme.dart` centralizes the theme, colors, and styles  

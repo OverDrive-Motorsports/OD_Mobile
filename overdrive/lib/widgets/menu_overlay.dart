@@ -8,9 +8,13 @@
  */
 
 import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../core/navigation/app_routes.dart';
 import '../core/theme/app_theme.dart';
+import '../services/championship/championship_mock_data.dart';
 import '../services/health_service.dart';
 import 'glass_pill.dart';
 
@@ -76,19 +80,38 @@ class _MenuOverlayState extends State<MenuOverlay>
     _animationController.reverse();
   }
 
-  void _goHome() {
-    _navigateTo(AppRoutes.home);
-  }
-
-  void _navigateTo(String routeName) {
+  void _navigateTo(String location) {
     _closeMenu();
 
-    final currentRouteName = ModalRoute.of(context)?.settings.name;
-    if (currentRouteName == routeName) {
+    final state = GoRouterState.of(context);
+    final target = Uri.parse(location);
+
+    if (_sameLocation(state.uri, target)) {
       return;
     }
 
-    Navigator.of(context).pushReplacementNamed(routeName);
+    context.go(location);
+  }
+
+  bool _sameLocation(Uri current, Uri target) {
+    if (current.path != target.path) {
+      return false;
+    }
+
+    final currentQuery = current.queryParameters;
+    final targetQuery = target.queryParameters;
+
+    if (currentQuery.length != targetQuery.length) {
+      return false;
+    }
+
+    for (final entry in targetQuery.entries) {
+      if (currentQuery[entry.key] != entry.value) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   Future<void> _showHealthStatus() async {
@@ -139,8 +162,7 @@ class _MenuOverlayState extends State<MenuOverlay>
   @override
   Widget build(BuildContext context) {
     final topPadding = MediaQuery.paddingOf(context).top;
-    final currentRouteName =
-        ModalRoute.of(context)?.settings.name ?? AppRoutes.home;
+    final routeState = GoRouterState.of(context);
 
     return Stack(
       children: [
@@ -176,10 +198,9 @@ class _MenuOverlayState extends State<MenuOverlay>
               child: IgnorePointer(
                 ignoring: !_isOpen,
                 child: MenuPanel(
-                  currentRouteName: currentRouteName,
+                  currentUri: routeState.uri,
                   isLoadingHealth: _isLoadingHealth,
                   onHealthTap: _showHealthStatus,
-                  onHomeTap: _goHome,
                   onNavigate: _navigateTo,
                 ),
               ),
@@ -223,38 +244,74 @@ class MenuButton extends StatelessWidget {
 /// A floating panel that groups the menu actions.
 class MenuPanel extends StatelessWidget {
   const MenuPanel({
-    required this.currentRouteName,
+    required this.currentUri,
     required this.isLoadingHealth,
     required this.onHealthTap,
-    required this.onHomeTap,
     required this.onNavigate,
     super.key,
   });
 
-  final String currentRouteName;
+  final Uri currentUri;
   final bool isLoadingHealth;
   final VoidCallback onHealthTap;
-  final VoidCallback onHomeTap;
   final ValueChanged<String> onNavigate;
 
   @override
   Widget build(BuildContext context) {
-    final actions = <MenuEntry>[
-      for (final pageLink in menuPageLinks)
-        MenuEntry(
-          icon: pageLink.icon,
-          label: pageLink.label,
-          isActive: currentRouteName == pageLink.routeName,
-          onTap: pageLink.routeName == AppRoutes.home
-              ? onHomeTap
-              : () => onNavigate(pageLink.routeName),
-        ),
-      MenuEntry(
-        icon: Icons.monitor_heart_outlined,
-        label: isLoadingHealth ? 'Health...' : 'Health',
-        isActive: false,
-        onTap: onHealthTap,
+    final beforeChampionships = <_MenuDestination>[
+      const _MenuDestination(
+        icon: Icons.home_outlined,
+        label: 'Home',
+        location: AppRoutes.home,
       ),
+      const _MenuDestination(
+        icon: Icons.search_rounded,
+        label: 'Search',
+        location: AppRoutes.search,
+      ),
+      const _MenuDestination(
+        icon: Icons.calendar_month_outlined,
+        label: 'Calendar',
+        location: AppRoutes.calendar,
+      ),
+    ];
+
+    final afterChampionships = <_MenuDestination>[
+      const _MenuDestination(
+        icon: Icons.person_outline_rounded,
+        label: 'Profile',
+        location: AppRoutes.profile,
+      ),
+      const _MenuDestination(
+        icon: Icons.settings_outlined,
+        label: 'Settings',
+        location: AppRoutes.settings,
+      ),
+    ];
+
+    final fallbackChampionshipId = championshipFormula1Mock.id;
+    final currentChampionshipId =
+        (currentUri.queryParameters['id'] ?? '').trim().isEmpty
+        ? fallbackChampionshipId
+        : (currentUri.queryParameters['id'] ?? '').trim();
+
+    final championshipDestinations = championshipMocks
+        .map(
+          (data) => _MenuDestination(
+            icon: Icons.sports_motorsports_outlined,
+            label: data.name,
+            location: championshipLocationById(data.id),
+            isActive:
+                currentUri.path == AppRoutes.championship &&
+                currentChampionshipId == data.id,
+          ),
+        )
+        .toList(growable: false);
+
+    final destinations = <_MenuDestination>[
+      ...beforeChampionships,
+      ...championshipDestinations,
+      ...afterChampionships,
     ];
 
     return ClipRRect(
@@ -262,7 +319,7 @@ class MenuPanel extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
-          width: 228,
+          width: 256,
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             gradient: const LinearGradient(
@@ -275,16 +332,28 @@ class MenuPanel extends StatelessWidget {
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              for (final action in actions) ...[
+              for (var index = 0; index < destinations.length; index++) ...[
                 MenuAction(
-                  icon: action.icon,
-                  label: action.label,
-                  isActive: action.isActive,
-                  onTap: action.onTap,
+                  icon: destinations[index].icon,
+                  label: destinations[index].label,
+                  isActive:
+                      destinations[index].isActive ||
+                      currentUri.path == destinations[index].location,
+                  onTap: () => onNavigate(destinations[index].location),
                 ),
-                if (action != actions.last) const SizedBox(height: 8),
+                if (index < destinations.length - 1) const SizedBox(height: 8),
               ],
+              const SizedBox(height: 12),
+              const Divider(color: AppColors.divider, height: 1),
+              const SizedBox(height: 10),
+              MenuAction(
+                icon: Icons.monitor_heart_outlined,
+                label: isLoadingHealth ? 'Health...' : 'Health',
+                isActive: false,
+                onTap: onHealthTap,
+              ),
             ],
           ),
         ),
@@ -293,19 +362,18 @@ class MenuPanel extends StatelessWidget {
   }
 }
 
-/// A simple data object that describes one menu action.
-class MenuEntry {
-  const MenuEntry({
+class _MenuDestination {
+  const _MenuDestination({
     required this.icon,
     required this.label,
-    required this.isActive,
-    required this.onTap,
+    required this.location,
+    this.isActive = false,
   });
 
   final IconData icon;
   final String label;
+  final String location;
   final bool isActive;
-  final VoidCallback onTap;
 }
 
 /// A visual row used inside the menu panel.
