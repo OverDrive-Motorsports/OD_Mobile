@@ -38,25 +38,6 @@ abstract final class AppRoutes {
   static const tv = '/tv';
 }
 
-/// Builds a GoRouter location to open a specific championship.
-String championshipLocationById(String championshipId) {
-  final encodedId = Uri.encodeQueryComponent(championshipId);
-  return '${AppRoutes.championship}?id=$encodedId';
-}
-
-/// Menu pages exposed in the overlay navigation.
-class MenuPageLink {
-  const MenuPageLink({
-    required this.routeName,
-    required this.label,
-    required this.icon,
-  });
-
-  final String routeName;
-  final String label;
-  final IconData icon;
-}
-
 final Map<String, WidgetBuilder> appRoutes = <String, WidgetBuilder>{
   AppRoutes.login: (_) => const LoginPage(),
   AppRoutes.register: (_) => const RegisterPage(),
@@ -91,10 +72,3 @@ Route<dynamic>? buildAppRoute(RouteSettings settings) {
   );
 }
 
-const List<MenuPageLink> menuPageLinks = <MenuPageLink>[
-  MenuPageLink(
-    routeName: AppRoutes.home,
-    label: 'Home',
-    icon: Icons.home_outlined,
-  ),
-];

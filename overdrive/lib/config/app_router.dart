@@ -1,11 +1,11 @@
 /**
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## app_router.dart - GoRouter configuration with all routes and navigation logic.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## AppRouter - GoRouter configuration with all routes and navigation logic.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -24,167 +24,126 @@ import '../services/auth_service.dart';
 import '../services/championship/championship_mock_data.dart';
 import '../widgets/navigation_shell.dart';
 
-/// Route paths
-class RoutePaths {
+// ---------------------------------------------------------------------------
+// Route paths
+// ---------------------------------------------------------------------------
+
+/// Typed path constants — single source of truth for navigation targets.
+abstract final class RoutePaths {
   static const String login = '/login';
   static const String home = '/';
-  static const String search = '/search';
-  static const String calendar = '/calendar';
   static const String championship = '/championship';
-  static const String tv = '/tv';
-  static const String telemetry = '/telemetry';
-  static const String liveRace = '/tv/live-race';
+  static const String calendar = '/calendar';
+  static const String search = '/search';
   static const String profile = '/profile';
+  static const String tv = '/tv';
+  static const String liveRace = '/tv/live-race';
+  static const String telemetry = '/telemetry';
   static const String settings = '/settings';
 }
 
-/// Creates the GoRouter for the app with authentication support
+// ---------------------------------------------------------------------------
+// Router factory
+// ---------------------------------------------------------------------------
+
+/// Creates the app's [GoRouter].
+///
+/// Auth redirect rules:
+/// - Unauthenticated users are sent to [RoutePaths.login].
+/// - Authenticated users attempting to reach login are sent to [RoutePaths.home].
 GoRouter createRouter(AuthService authService) {
   return GoRouter(
     refreshListenable: authService,
     initialLocation: RoutePaths.home,
-    redirect: (context, state) {
-      final isAuthenticated = authService.isAuthenticated;
-      final isLoggingIn = state.matchedLocation == RoutePaths.login;
-
-      // If not authenticated and not already going to login, redirect to login
-      if (!isAuthenticated && !isLoggingIn) {
-        return RoutePaths.login;
-      }
-
-      // If authenticated and trying to access login, redirect to home
-      if (isAuthenticated && isLoggingIn) {
-        return RoutePaths.home;
-      }
-
-      // No redirect needed
+    redirect: (_, state) {
+      final authenticated = authService.isAuthenticated;
+      final onLogin = state.matchedLocation == RoutePaths.login;
+      if (!authenticated && !onLogin) return RoutePaths.login;
+      if (authenticated && onLogin) return RoutePaths.home;
       return null;
     },
-    routes: <RouteBase>[
-      // Login route (not part of bottom navigation)
+    errorBuilder: (_, state) => Scaffold(
+      body: Center(child: Text('Page not found: ${state.uri}')),
+    ),
+    routes: [
+      // ── Login (outside nav shell) ─────────────────────────────────────────
       GoRoute(
         path: RoutePaths.login,
         name: 'login',
-        builder: (BuildContext context, GoRouterState state) {
-          return const LoginPage();
-        },
+        builder: (_, _) => const LoginPage(),
       ),
-      // Main navigation shell with bottom tab bar
+
+      // ── Main shell — five bottom-nav branches ─────────────────────────────
       StatefulShellRoute.indexedStack(
-        builder:
-            (
-              BuildContext context,
-              GoRouterState state,
-              StatefulNavigationShell navigationShell,
-            ) {
-              return NavigationShell(navigationShell: navigationShell);
-            },
-        branches: <StatefulShellBranch>[
-          // Home branch
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: RoutePaths.home,
-                name: 'home',
-                builder: (BuildContext context, GoRouterState state) {
-                  return const HomePage();
-                },
-              ),
-            ],
-          ),
-          // Search branch
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: RoutePaths.search,
-                name: 'search',
-                builder: (BuildContext context, GoRouterState state) {
-                  return const SearchPage();
-                },
-              ),
-            ],
-          ),
-          // Calendar branch
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: RoutePaths.calendar,
-                name: 'calendar',
-                builder: (BuildContext context, GoRouterState state) {
-                  return const CalendarPage();
-                },
-              ),
-            ],
-          ),
-          // Championship branch
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: RoutePaths.championship,
-                name: 'championship',
-                builder: (BuildContext context, GoRouterState state) {
-                  final championshipId =
-                      state.uri.queryParameters['id']?.trim() ?? '';
-                  final data = championshipId.isEmpty
-                      ? championshipFormula1Mock
-                      : championshipDataById(championshipId);
-                  return ChampionshipPage(data: data);
-                },
-              ),
-            ],
-          ),
-          // TV branch with Live Race subroute
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: RoutePaths.tv,
-                name: 'tv',
-                builder: (BuildContext context, GoRouterState state) {
-                  return const TvPage();
-                },
-                routes: <RouteBase>[
-                  GoRoute(
-                    path: 'live-race',
-                    name: 'liveRace',
-                    builder: (BuildContext context, GoRouterState state) {
-                      return const LiveRacePage();
-                    },
-                  ),
-                ],
-              ),
-            ],
-          ),
-          // Telemetry branch
-          StatefulShellBranch(
-            routes: <RouteBase>[
-              GoRoute(
-                path: RoutePaths.telemetry,
-                name: 'telemetry',
-                builder: (BuildContext context, GoRouterState state) {
-                  return const TelemetryPage();
-                },
-              ),
-            ],
+        builder: (_, _, shell) => NavigationShell(navigationShell: shell),
+        branches: [
+          // 0 — Home
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: RoutePaths.home,
+              name: 'home',
+              builder: (_, _) => const HomePage(),
+            ),
+          ]),
+          // 1 — Championship
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: RoutePaths.championship,
+              name: 'championship',
+              builder: (_, _) =>
+                  ChampionshipPage(data: championshipFormula1Mock),
+            ),
+          ]),
+          // 2 — Calendar
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: RoutePaths.calendar,
+              name: 'calendar',
+              builder: (_, _) => const CalendarPage(),
+            ),
+          ]),
+          // 3 — Search
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: RoutePaths.search,
+              name: 'search',
+              builder: (_, _) => const SearchPage(),
+            ),
+          ]),
+          // 4 — Profile
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: RoutePaths.profile,
+              name: 'profile',
+              builder: (_, _) => const ProfilePage(),
+            ),
+          ]),
+        ],
+      ),
+
+      // ── Standalone routes (no nav shell) ─────────────────────────────────
+      GoRoute(
+        path: RoutePaths.tv,
+        name: 'tv',
+        builder: (_, _) => const TvPage(),
+        routes: [
+          GoRoute(
+            path: 'live-race',
+            name: 'liveRace',
+            builder: (_, _) => const LiveRacePage(),
           ),
         ],
       ),
-      // Standalone pages reachable from overlay but not from bottom nav
       GoRoute(
-        path: RoutePaths.profile,
-        name: 'profile',
-        builder: (BuildContext context, GoRouterState state) {
-          return const ProfilePage();
-        },
+        path: RoutePaths.telemetry,
+        name: 'telemetry',
+        builder: (_, _) => const TelemetryPage(),
       ),
       GoRoute(
         path: RoutePaths.settings,
         name: 'settings',
-        builder: (BuildContext context, GoRouterState state) {
-          return const SettingsPage();
-        },
+        builder: (_, _) => const SettingsPage(),
       ),
     ],
-    errorBuilder: (context, state) =>
-        Scaffold(body: Center(child: Text('Page not found: ${state.uri}'))),
   );
 }

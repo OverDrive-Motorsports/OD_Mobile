@@ -8,9 +8,7 @@
  */
 
 import 'package:flutter/material.dart';
-
 import '../../core/theme/app_theme.dart';
-import '../../widgets/menu_overlay.dart';
 
 /// Reusable shell for pages that only need a centered title for now.
 class PlaceholderPage extends StatelessWidget {
@@ -21,23 +19,9 @@ class PlaceholderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Text(
-                  title,
-                  textAlign: TextAlign.center,
-                  style: AppTextStyles.bodyBold().copyWith(fontSize: 22),
-                ),
-              ),
-            ),
-          ),
-          const MenuOverlay(),
-        ],
+      backgroundColor: AppColors.black,
+      body: Center(
+        child: Text(title, style: AppTextStyles.display()),
       ),
     );
   }

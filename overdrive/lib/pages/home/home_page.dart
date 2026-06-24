@@ -10,7 +10,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../../widgets/menu_overlay.dart';
 
 /// The home screen shell used as the current app entry point.
 class HomePage extends StatelessWidget {
@@ -20,12 +19,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: AppColors.black,
-      body: Stack(
-        children: <Widget>[
-          Positioned.fill(child: _HomeBackdrop()),
-          MenuOverlay(),
-        ],
-      ),
+      body: _HomeBackdrop(),
     );
   }
 }

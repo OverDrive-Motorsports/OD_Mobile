@@ -1,77 +1,109 @@
-/*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## championship_page.dart - Adaptive championship screen rendered from mock data.
-##
-*/
+/**
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## ChampionshipPage - Adaptive championship screen driven by mock data.
+ ##
+ */
 
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../pages/replay/replay_page.dart';
 import '../../services/championship/championship_circuit.dart';
 import '../../services/championship/championship_data.dart';
 import '../../services/championship/championship_enums.dart';
 import '../../services/championship/championship_live_entry.dart';
+import '../../services/championship/championship_mock_data.dart';
 import '../../services/championship/championship_standing.dart';
+import '../../widgets/base/menu_overlay.dart';
 import '../../widgets/championships/championship_replay_btn.dart';
 import '../../widgets/championships/championship_schedule.dart';
 import '../../widgets/championships/championship_standings_widget.dart'
     as standings_ui;
 import '../../widgets/championships/championship_top3.dart';
-import '../../widgets/menu_overlay.dart';
 
-const Color _pageBackground = AppColors.background;
-const Color _cardBackground = AppColors.surface;
-const Color _cardBorder = AppColors.border;
-const Color _mutedLabel = AppColors.textSecondary;
-const Color _mutedText = AppColors.textMuted;
+const List<MenuOverlayItem> _championshipMenuItems = [
+  MenuOverlayItem(label: 'Formule 1', icon: Icons.sports_motorsports_outlined),
+  MenuOverlayItem(label: 'WEC', icon: Icons.directions_car_outlined),
+  MenuOverlayItem(label: 'MotoGP', icon: Icons.two_wheeler_outlined),
+];
 
 /// Adaptive championship screen rendered from a single data payload.
-class ChampionshipPage extends StatelessWidget {
+class ChampionshipPage extends StatefulWidget {
   const ChampionshipPage({super.key, required this.data});
 
   final ChampionshipData data;
 
   @override
+  State<ChampionshipPage> createState() => _ChampionshipPageState();
+}
+
+class _ChampionshipPageState extends State<ChampionshipPage> {
+  late ChampionshipData _selectedData;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedData = widget.data;
+  }
+
+  int get _selectedMenuIndex =>
+      championshipMocks.indexWhere((d) => d.id == _selectedData.id);
+
+  void _onChampionshipSelected(int index) {
+    setState(() => _selectedData = championshipMocks[index]);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
-    final headline = _resolveHeadline(data);
+    final headline = _resolveHeadline(_selectedData);
 
     return Scaffold(
-      backgroundColor: _pageBackground,
+      backgroundColor: AppColors.background,
       body: ColoredBox(
-        color: _pageBackground,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(0, 86, 0, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 18),
-                      child: _PageHero(
-                        data: data,
-                        headline: headline,
-                        now: now,
+        color: AppColors.background,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(0, 20, 0, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(right: 44),
+                        child: _PageHero(
+                          data: _selectedData,
+                          headline: headline,
+                          now: now,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 34),
-                    ..._buildSections(context, now),
-                  ],
+                      Positioned(
+                        top: 0,
+                        right: 0,
+                        child: MenuOverlayButton(
+                          items: _championshipMenuItems,
+                          selectedIndex: _selectedMenuIndex.clamp(0, _championshipMenuItems.length - 1),
+                          onSelected: _onChampionshipSelected,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+                const SizedBox(height: 34),
+                ..._buildSections(context, now),
+              ],
             ),
-            const MenuOverlay(),
-          ],
+          ),
         ),
       ),
     );
@@ -79,6 +111,7 @@ class ChampionshipPage extends StatelessWidget {
 
   /// Builds the visible content blocks in the order used by the page.
   List<Widget> _buildSections(BuildContext context, DateTime now) {
+    final data = _selectedData;
     final blocks = <Widget>[];
     final primaryBlock = _buildPrimaryBlock(now);
     if (primaryBlock != null) {
@@ -133,6 +166,7 @@ class ChampionshipPage extends StatelessWidget {
 
   /// Resolves the state-specific leading card shown below the hero.
   Widget? _buildPrimaryBlock(DateTime now) {
+    final data = _selectedData;
     final liveGroups = data.liveGroups;
     if (liveGroups != null && liveGroups.isNotEmpty) {
       return _LiveOverviewCard(
@@ -193,7 +227,7 @@ class _PageHero extends StatelessWidget {
                 Text(
                   'Tour $currentLap / $totalLaps',
                   style: AppTextStyles.body(
-                    color: _mutedLabel,
+                    color: AppColors.textSecondary,
                   ).copyWith(fontSize: 18),
                 ),
               ],
@@ -273,7 +307,7 @@ class _Section extends StatelessWidget {
           Text(
             label.toUpperCase(),
             style: AppTextStyles.label(
-              color: _mutedLabel,
+              color: AppColors.textSecondary,
             ).copyWith(letterSpacing: 1.1),
           ),
           const SizedBox(height: 12),
@@ -307,9 +341,9 @@ class _LiveOverviewCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardBackground,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _cardBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -317,7 +351,7 @@ class _LiveOverviewCard extends StatelessWidget {
           Text(
             'Direct'.toUpperCase(),
             style: AppTextStyles.label(
-              color: _mutedLabel,
+              color: AppColors.textSecondary,
             ).copyWith(letterSpacing: 1.1),
           ),
           const SizedBox(height: 14),
@@ -351,7 +385,7 @@ class _LiveActionButtons extends StatelessWidget {
           child: _LiveActionButton(
             icon: Icons.live_tv_outlined,
             label: 'TV Live',
-            onTap: () => context.go(AppRoutes.tv),
+            onTap: () => context.push('/tv'),
           ),
         ),
         const SizedBox(width: 12),
@@ -359,7 +393,7 @@ class _LiveActionButtons extends StatelessWidget {
           child: _LiveActionButton(
             icon: Icons.insights_outlined,
             label: 'Telemetrie',
-            onTap: () => context.go(AppRoutes.telemetry),
+            onTap: () => context.push('/telemetry'),
           ),
         ),
       ],
@@ -396,12 +430,12 @@ class _LiveActionButton extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(icon, color: _mutedText, size: 16),
+              Icon(icon, color: AppColors.textMuted, size: 16),
               const SizedBox(width: 6),
               Text(
                 label,
                 style: AppTextStyles.body(
-                  color: _mutedText,
+                  color: AppColors.textMuted,
                 ).copyWith(fontSize: 15),
               ),
             ],
@@ -427,9 +461,9 @@ class _NextEventCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: _cardBackground,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _cardBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -437,7 +471,7 @@ class _NextEventCard extends StatelessWidget {
           Text(
             'Prochain event'.toUpperCase(),
             style: AppTextStyles.label(
-              color: _mutedLabel,
+              color: AppColors.textSecondary,
             ).copyWith(letterSpacing: 1.1),
           ),
           const SizedBox(height: 14),
@@ -449,7 +483,7 @@ class _NextEventCard extends StatelessWidget {
           Text(
             nextEvent.location,
             style: AppTextStyles.body(
-              color: _mutedLabel,
+              color: AppColors.textSecondary,
             ).copyWith(fontSize: 15),
           ),
           const SizedBox(height: 16),
@@ -490,7 +524,7 @@ class _CountdownCell extends StatelessWidget {
         const SizedBox(height: 1),
         Text(
           label.toUpperCase(),
-          style: AppTextStyles.body(color: _mutedLabel).copyWith(fontSize: 12),
+          style: AppTextStyles.body(color: AppColors.textSecondary).copyWith(fontSize: 12),
         ),
       ],
     );
@@ -532,9 +566,9 @@ class _CircuitWeatherCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: _cardBackground,
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: _cardBorder),
+        border: Border.all(color: AppColors.border),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -542,7 +576,7 @@ class _CircuitWeatherCard extends StatelessWidget {
           Text(
             'Circuit · Meteo'.toUpperCase(),
             style: AppTextStyles.label(
-              color: _mutedLabel,
+              color: AppColors.textSecondary,
             ).copyWith(letterSpacing: 1.1),
           ),
           const SizedBox(height: 14),
@@ -586,7 +620,7 @@ class _MetricDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(width: 1, height: 48, color: _cardBorder);
+    return Container(width: 1, height: 48, color: AppColors.border);
   }
 }
 
@@ -608,7 +642,7 @@ class _MetricColumn extends StatelessWidget {
           Text(
             label,
             style: AppTextStyles.body(
-              color: _mutedLabel,
+              color: AppColors.textSecondary,
             ).copyWith(fontSize: 13),
           ),
           const SizedBox(height: 4),

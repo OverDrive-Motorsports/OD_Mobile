@@ -1,20 +1,22 @@
-/*
+/**
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## profile_page.dart - Generic profile screen driven by external data.
+ ## ProfilePage - Profile screen with tab switcher (Profile / Settings / Subscription).
  ##
  */
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
+import '../../pages/settings/settings_page.dart';
+import '../../pages/subscription/subscription_page.dart';
+import '../../widgets/base/menu_overlay.dart';
 import '../../widgets/base/od_button.dart';
 import '../../widgets/base/od_modal.dart';
 import '../../widgets/base/od_toast.dart';
-import '../../widgets/menu_overlay.dart';
 
-/// Preview data used while the profile page is not connected to live data.
+/// Fallback data rendered when no live [ProfilePageData] is injected.
 const ProfilePageData profilePagePreviewData = ProfilePageData(
   user: ProfileUserData(
     pseudo: 'Pilote OverDrive',
@@ -73,6 +75,14 @@ const ProfilePageContent _profilePageContent = ProfilePageContent(
     dismissLabel: 'Compris',
   ),
 );
+
+const List<MenuOverlayItem> _profileMenuItems = [
+  MenuOverlayItem(label: 'Profil', icon: Icons.person_outline_rounded),
+  MenuOverlayItem(label: 'Réglages', icon: Icons.settings_outlined),
+  MenuOverlayItem(label: 'Abonnement', icon: Icons.star_outline_rounded),
+];
+
+const List<String> _profileTabLabels = ['Profil', 'Réglages', 'Abonnement'];
 
 /// Immutable profile payload consumed by the page.
 class ProfilePageData {
@@ -163,7 +173,11 @@ class ProfileModalContent {
   final String dismissLabel;
 }
 
-/// Profile screen driven by external data and local action definitions.
+/// Full-screen profile page.
+///
+/// Hosts a three-tab switcher (Profile · Settings · Subscription) driven by
+/// a [MenuOverlayButton] in the header. Tabs are kept alive with [IndexedStack]
+/// so state (e.g. scroll position) is preserved when switching.
 class ProfilePage extends StatefulWidget {
   const ProfilePage({this.data, super.key});
 
@@ -173,12 +187,12 @@ class ProfilePage extends StatefulWidget {
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
-/// State holder for profile page feedback and local interactions.
 class _ProfilePageState extends State<ProfilePage> {
+  int _tab = 0;
+
   ProfilePageData get _resolvedData => widget.data ?? profilePagePreviewData;
   ProfilePageContent get _content => _profilePageContent;
 
-  /// Builds a two-character fallback avatar label from the current pseudo.
   String get _profileInitials {
     final compactPseudo = _resolvedData.user.pseudo.replaceAll(
       RegExp(r'\s+'),
@@ -192,7 +206,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return compactPseudo.substring(0, initialsLength).toUpperCase();
   }
 
-  /// Opens one of the informational modals used by profile actions.
   void _showModal(BuildContext context, ProfileModalContent content) {
     OdModal.show<void>(
       context,
@@ -214,7 +227,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  /// Routes profile actions to modal or toast feedback while data is mocked.
   void _handleAction(BuildContext context, ProfileActionType actionType) {
     switch (actionType) {
       case ProfileActionType.addProvider:
@@ -237,67 +249,95 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildProfileTab(BuildContext context) {
     final user = _resolvedData.user;
 
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 8, 20, 28),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _ProfileHeroCard(
+            initials: _profileInitials,
+            pseudo: user.pseudo,
+            email: user.email,
+          ),
+          const SizedBox(height: 20),
+          _ProfileSection(
+            title: _content.providersSectionTitle,
+            child: _ProfileActionButton(
+              action: _content.addProviderAction,
+              onPressed: () =>
+                  _handleAction(context, _content.addProviderAction.type),
+            ),
+          ),
+          const SizedBox(height: 20),
+          _ProfileSection(
+            title: _content.quickActionsSectionTitle,
+            child: Column(
+              children: [
+                for (
+                  var index = 0;
+                  index < _content.quickActions.length;
+                  index++
+                ) ...[
+                  _ProfileActionButton(
+                    action: _content.quickActions[index],
+                    onPressed: () => _handleAction(
+                      context,
+                      _content.quickActions[index].type,
+                    ),
+                  ),
+                  if (index < _content.quickActions.length - 1)
+                    const SizedBox(height: 12),
+                ],
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
       body: ColoredBox(
         color: AppColors.black,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 96, 20, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 16, 8),
+                child: Row(
                   children: [
-                    _ProfileHeroCard(
-                      initials: _profileInitials,
-                      pseudo: user.pseudo,
-                      email: user.email,
+                    Text(
+                      _profileTabLabels[_tab],
+                      style: AppTextStyles.bodyBold().copyWith(fontSize: 22),
                     ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: _content.providersSectionTitle,
-                      child: _ProfileActionButton(
-                        action: _content.addProviderAction,
-                        onPressed: () => _handleAction(
-                          context,
-                          _content.addProviderAction.type,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    _ProfileSection(
-                      title: _content.quickActionsSectionTitle,
-                      child: Column(
-                        children: [
-                          for (
-                            var index = 0;
-                            index < _content.quickActions.length;
-                            index++
-                          ) ...[
-                            _ProfileActionButton(
-                              action: _content.quickActions[index],
-                              onPressed: () => _handleAction(
-                                context,
-                                _content.quickActions[index].type,
-                              ),
-                            ),
-                            if (index < _content.quickActions.length - 1)
-                              const SizedBox(height: 12),
-                          ],
-                        ],
-                      ),
+                    const Spacer(),
+                    MenuOverlayButton(
+                      items: _profileMenuItems,
+                      selectedIndex: _tab,
+                      onSelected: (i) => setState(() => _tab = i),
                     ),
                   ],
                 ),
               ),
-            ),
-            const MenuOverlay(),
-          ],
+              Expanded(
+                child: IndexedStack(
+                  index: _tab,
+                  children: [
+                    _buildProfileTab(context),
+                    const SettingsBody(),
+                    const SubscriptionBody(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -9,7 +9,6 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../widgets/menu_overlay.dart';
 import '../../widgets/search_bar.dart' as od;
 
 const SearchPageContent _searchPageContent = SearchPageContent(
@@ -55,35 +54,30 @@ class _SearchPageState extends State<SearchPage> {
       backgroundColor: AppColors.black,
       body: ColoredBox(
         color: AppColors.black,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 96, 20, 20),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Center(
-                        child: Text(
-                          _searchPageContent.title,
-                          style: AppTextStyles.display(),
-                        ),
-                      ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      _searchPageContent.title,
+                      style: AppTextStyles.display(),
                     ),
-                    od.SearchBar(
-                      props: od.SearchBarProps(
-                        controller: _searchController,
-                        placeholder: _searchPageContent.placeholder,
-                        onSearch: (_) {},
-                        onClear: () {},
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                od.SearchBar(
+                  props: od.SearchBarProps(
+                    controller: _searchController,
+                    placeholder: _searchPageContent.placeholder,
+                    onSearch: (_) {},
+                    onClear: () {},
+                  ),
+                ),
+              ],
             ),
-            const MenuOverlay(),
-          ],
+          ),
         ),
       ),
     );

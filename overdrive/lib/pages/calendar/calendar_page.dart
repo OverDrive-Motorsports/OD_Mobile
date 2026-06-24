@@ -14,7 +14,6 @@ import '../../services/calendar/calendar_service.dart';
 import '../../widgets/calendar/event_calendar.dart';
 import '../../widgets/calendar/monthly_calendar.dart';
 import '../../widgets/glass_pill.dart';
-import '../../widgets/menu_overlay.dart';
 
 const String _allChampionshipsFilterId = 'all';
 const List<String> _calendarWeekdayLabels = <String>[
@@ -233,14 +232,12 @@ class _CalendarPageState extends State<CalendarPage> {
       backgroundColor: AppColors.black,
       body: ColoredBox(
         color: AppColors.black,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(20, 96, 20, 28),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                     const _SectionHeader(
                       title: 'Championships',
                       subtitle: 'Filtre les 10 courses par serie.',
@@ -290,12 +287,9 @@ class _CalendarPageState extends State<CalendarPage> {
                     ),
                     const SizedBox(height: 20),
                     ..._buildScheduleContent(viewData),
-                  ],
-                ),
-              ),
+              ],
             ),
-            const MenuOverlay(),
-          ],
+          ),
         ),
       ),
     );
