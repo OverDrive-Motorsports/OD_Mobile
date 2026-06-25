@@ -11,10 +11,10 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../services/auth/fake_auth_service.dart';
-import '../../widgets/base/od_button.dart';
-import '../../widgets/base/od_error_message.dart';
-import '../../widgets/base/od_text_field.dart';
-import '../../widgets/base/od_toast.dart';
+import '../../widgets/base/app_button.dart';
+import '../../widgets/base/error_message.dart';
+import '../../widgets/base/app_text_field.dart';
+import '../../widgets/base/app_toast.dart';
 import 'auth_page_shell.dart';
 
 /// Temporary registration route used to simulate local account creation.
@@ -96,7 +96,7 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    OdToast.show(
+    AppToast.show(
       context,
       message: 'Account created. You can now sign in.',
       type: ToastType.success,
@@ -191,7 +191,7 @@ class _RegisterPageState extends State<RegisterPage> {
           ),
           if (_pageError != null) ...[
             const SizedBox(height: 16),
-            OdErrorMessage(
+            ErrorMessage(
               message: 'Unable to sign up',
               subtitle: _pageError,
               variant: ErrorMessageVariant.banner,
@@ -203,7 +203,7 @@ class _RegisterPageState extends State<RegisterPage> {
             style: AppTextStyles.label(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
-          OdTextField(
+          AppTextField(
             controller: _nameController,
             placeholder: 'Your username',
             leadingIcon: Icons.person_outline_rounded,
@@ -221,7 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
             style: AppTextStyles.label(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
-          OdTextField(
+          AppTextField(
             controller: _emailController,
             placeholder: 'name@email.com',
             keyboardType: TextInputType.emailAddress,
@@ -240,7 +240,7 @@ class _RegisterPageState extends State<RegisterPage> {
             style: AppTextStyles.label(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
-          OdTextField(
+          AppTextField(
             controller: _passwordController,
             placeholder: 'Minimum 8 characters',
             obscureText: true,
@@ -259,7 +259,7 @@ class _RegisterPageState extends State<RegisterPage> {
             style: AppTextStyles.label(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
-          OdTextField(
+          AppTextField(
             controller: _confirmPasswordController,
             placeholder: 'Re-enter your password',
             obscureText: true,
@@ -273,7 +273,7 @@ class _RegisterPageState extends State<RegisterPage> {
             },
           ),
           const SizedBox(height: 22),
-          OdButton(
+          AppButton(
             label: 'Create account',
             onPressed: _isSubmitting ? null : _submit,
             isLoading: _isSubmitting,

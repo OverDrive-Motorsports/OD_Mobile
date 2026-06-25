@@ -10,6 +10,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../widgets/base/app_button.dart';
 
 class LiveRacePage extends StatelessWidget {
 	const LiveRacePage({super.key});
@@ -20,8 +21,8 @@ class LiveRacePage extends StatelessWidget {
 		backgroundColor: AppColors.background,
 		appBar: AppBar(
 			backgroundColor: AppColors.surface,
-			leading: IconButton(
-			icon: const Icon(Icons.arrow_back_rounded),
+			leading: AppButton(
+			icon: Icons.arrow_back_rounded,
 			onPressed: () => Navigator.of(context).pop(),
 			),
 			title: Text(

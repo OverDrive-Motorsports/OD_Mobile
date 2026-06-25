@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class DrsErsWidget extends StatefulWidget {
-  const DrsErsWidget({this.initialDriverId = 'NOR', super.key});
+class DrsErs extends StatefulWidget {
+  const DrsErs({this.initialDriverId = 'NOR', super.key});
 
   final String initialDriverId;
 
   @override
-  State<DrsErsWidget> createState() => _DrsErsWidgetState();
+  State<DrsErs> createState() => _DrsErsState();
 }
 
-class _DrsErsWidgetState extends State<DrsErsWidget> {
+class _DrsErsState extends State<DrsErs> {
   late String _driverId;
 
   @override

@@ -10,7 +10,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../glass_pill.dart';
 
 /// A championship tile with a circular icon and text labels.
 class ChampionshipIcon extends StatelessWidget {
@@ -47,11 +46,12 @@ class ChampionshipIcon extends StatelessWidget {
             child: Stack(
               children: [
                 Positioned.fill(
-                  child: GlassPill(
-                    padding: EdgeInsets.zero,
-                    backgroundColor: AppColors.inputSurface,
-                    borderColor: AppColors.white.withValues(alpha: 0.06),
-                    borderRadius: BorderRadius.circular(999),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: AppColors.inputSurface,
+                      borderRadius: BorderRadius.circular(999),
+                      border: Border.all(color: AppColors.border),
+                    ),
                     child: const SizedBox.expand(),
                   ),
                 ),

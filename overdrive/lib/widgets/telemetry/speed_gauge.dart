@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'telemetry_widget_style.dart';
 
-class SpeedGaugeWidget extends StatefulWidget {
-  const SpeedGaugeWidget({super.key});
+class SpeedGauge extends StatefulWidget {
+  const SpeedGauge({super.key});
 
   @override
-  State<SpeedGaugeWidget> createState() => _SpeedGaugeWidgetState();
+  State<SpeedGauge> createState() => _SpeedGaugeState();
 }
 
-class _SpeedGaugeWidgetState extends State<SpeedGaugeWidget> {
+class _SpeedGaugeState extends State<SpeedGauge> {
   final math.Random _random = math.Random();
   Timer? _timer;
   int _speed = 186;

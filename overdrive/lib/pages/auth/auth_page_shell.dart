@@ -10,7 +10,6 @@
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
-import '../../widgets/glass_pill.dart';
 
 /// Shared page frame for login and registration screens.
 class AuthPageShell extends StatelessWidget {
@@ -63,10 +62,15 @@ class AuthPageShell extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         if (eyebrow != null) ...[
-                          GlassPill(
+                          Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 14,
                               vertical: 8,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceElevated,
+                              borderRadius: BorderRadius.circular(22),
+                              border: Border.all(color: AppColors.border),
                             ),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,

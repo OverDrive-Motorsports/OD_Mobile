@@ -22,7 +22,7 @@ import '../pages/tv/live_race_page.dart';
 import '../pages/tv/tv_page.dart';
 import '../services/auth_service.dart';
 import '../services/championship/championship_mock_data.dart';
-import '../widgets/navigation_shell.dart';
+import '../widgets/navigation/navigation_shell.dart';
 
 // ---------------------------------------------------------------------------
 // Route paths

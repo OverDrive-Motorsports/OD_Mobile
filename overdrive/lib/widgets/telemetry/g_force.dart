@@ -9,16 +9,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class GForceWidget extends StatefulWidget {
-  const GForceWidget({this.initialDriverId = 'VER', super.key});
+class GForce extends StatefulWidget {
+  const GForce({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<GForceWidget> createState() => _GForceWidgetState();
+  State<GForce> createState() => _GForceState();
 }
 
-class _GForceWidgetState extends State<GForceWidget> {
+class _GForceState extends State<GForce> {
   late String _driverId;
   TelemetrySimulator? _simulator;
   final List<Offset> _trail = [];

@@ -8,6 +8,7 @@
 */
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/painting.dart';
 
 @immutable
 class ChampionshipLiveGroup {
@@ -26,6 +27,7 @@ class ChampionshipLiveEntry {
     required this.gap,
     required this.lap,
     this.tyreCompound,
+    this.teamColor,
   });
 
   final int position;
@@ -34,4 +36,5 @@ class ChampionshipLiveEntry {
   final String gap;
   final int lap;
   final String? tyreCompound;
+  final Color? teamColor;
 }

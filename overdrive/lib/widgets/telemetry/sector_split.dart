@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class SectorSplitWidget extends StatefulWidget {
-  const SectorSplitWidget({this.initialDriverId = 'VER', super.key});
+class SectorSplit extends StatefulWidget {
+  const SectorSplit({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<SectorSplitWidget> createState() => _SectorSplitWidgetState();
+  State<SectorSplit> createState() => _SectorSplitState();
 }
 
-class _SectorSplitWidgetState extends State<SectorSplitWidget> {
+class _SectorSplitState extends State<SectorSplit> {
   late String _driverId;
 
   @override

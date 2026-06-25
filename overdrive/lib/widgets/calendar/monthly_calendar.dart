@@ -7,10 +7,50 @@
 ##
 */
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import 'event_calendar.dart';
+
+// ---------------------------------------------------------------------------
+// Glass themes
+// ---------------------------------------------------------------------------
+
+const _kBorderColor = Color(0x26FFFFFF);
+
+final _kContainerTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.14,
+  blurSigma: 24.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.08,
+  vibrancyIntensity: 0.04,
+  edgeLightColor: _kBorderColor,
+  edgeShadowColor: _kBorderColor,
+);
+
+final _kNavBtnTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.10,
+  blurSigma: 20.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.06,
+  edgeLightColor: _kBorderColor,
+  edgeShadowColor: _kBorderColor,
+);
+
+final _kNavBtnDisabledTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.04,
+  blurSigma: 14.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.02,
+  edgeLightColor: const Color(0x10FFFFFF),
+  edgeShadowColor: const Color(0x10FFFFFF),
+);
+
+// ---------------------------------------------------------------------------
+// MonthlyCalendar
+// ---------------------------------------------------------------------------
 
 /// A reusable monthly calendar widget for date selection.
 class MonthlyCalendar extends StatefulWidget {
@@ -45,7 +85,6 @@ class MonthlyCalendar extends StatefulWidget {
   State<MonthlyCalendar> createState() => _MonthlyCalendarState();
 }
 
-/// The state that manages visible month, paging and date bounds.
 class _MonthlyCalendarState extends State<MonthlyCalendar> {
   late final PageController _pageController;
   late DateTime _firstMonth;
@@ -53,12 +92,15 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
   late DateTime _visibleMonth;
   late DateTime _today;
 
+  // Tracks swipe direction for the animated month label (+1 = forward, -1 = back).
+  int _navDirection = 1;
+
   @override
   void initState() {
     super.initState();
     _configureBounds();
     _visibleMonth = _clampMonth(
-      _monthOnly(widget.initialMonth ?? widget.selectedDate ?? _today),
+      _monthOnly(widget.initialMonth ?? _today),
     );
     _pageController = PageController(initialPage: _pageForMonth(_visibleMonth));
   }
@@ -109,49 +151,54 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
     final canGoNext = _pageForMonth(_visibleMonth) < _pageCount - 1;
     final normalizedEvents = _normalizeEvents(widget.eventsByDate);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
+    return CupertinoTheme(
+      data: const CupertinoThemeData(brightness: Brightness.dark),
+      child: CupertinoLiquidGlass(
+        theme: _kContainerTheme,
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _CalendarHeader(
-              title: _buildMonthLabel(_visibleMonth),
-              canGoPrevious: canGoPrevious,
-              canGoNext: canGoNext,
-              onPrevious: canGoPrevious ? _goToPreviousMonth : null,
-              onNext: canGoNext ? _goToNextMonth : null,
-            ),
-            const SizedBox(height: 16),
-            _WeekdayRow(labels: widget.weekdayLabels),
-            const SizedBox(height: 12),
-            if (widget.isLoading)
-              const _CalendarLoadingGrid()
-            else
-              AspectRatio(
-                aspectRatio: 7 / 6.4,
-                child: PageView.builder(
-                  controller: _pageController,
-                  scrollDirection: Axis.vertical,
-                  itemCount: _pageCount,
-                  onPageChanged: _handlePageChanged,
-                  itemBuilder: (BuildContext context, int index) {
-                    return _MonthGrid(
-                      month: _monthAt(index),
-                      today: _today,
-                      selectedDate: widget.selectedDate,
-                      eventsByDate: normalizedEvents,
-                      onDateTap: _handleDateTap,
-                    );
-                  },
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _CalendarHeader(
+                  monthLabel: _buildMonthLabel(_visibleMonth),
+                  visibleMonth: _visibleMonth,
+                  navDirection: _navDirection,
+                  canGoPrevious: canGoPrevious,
+                  canGoNext: canGoNext,
+                  onPrevious: canGoPrevious ? _goToPreviousMonth : null,
+                  onNext: canGoNext ? _goToNextMonth : null,
                 ),
-              ),
-          ],
+                const SizedBox(height: 16),
+                _WeekdayRow(labels: widget.weekdayLabels),
+                const SizedBox(height: 12),
+                if (widget.isLoading)
+                  const _CalendarLoadingGrid()
+                else
+                  AspectRatio(
+                    aspectRatio: 7 / 6.0,
+                    child: PageView.builder(
+                      controller: _pageController,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _pageCount,
+                      onPageChanged: _handlePageChanged,
+                      itemBuilder: (BuildContext context, int index) {
+                        return _MonthGrid(
+                          month: _monthAt(index),
+                          today: _today,
+                          selectedDate: widget.selectedDate,
+                          eventsByDate: normalizedEvents,
+                          onDateTap: _handleDateTap,
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -189,14 +236,17 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
       return;
     }
 
-    setState(() => _visibleMonth = month);
+    setState(() {
+      _navDirection = index > _pageForMonth(_visibleMonth) ? 1 : -1;
+      _visibleMonth = month;
+    });
     widget.onMonthChanged?.call(month);
   }
 
   void _goToPreviousMonth() {
     _pageController.animateToPage(
       _pageForMonth(_visibleMonth) - 1,
-      duration: const Duration(milliseconds: 220),
+      duration: const Duration(milliseconds: 280),
       curve: Curves.easeOutCubic,
     );
   }
@@ -204,7 +254,7 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
   void _goToNextMonth() {
     _pageController.animateToPage(
       _pageForMonth(_visibleMonth) + 1,
-      duration: const Duration(milliseconds: 220),
+      duration: const Duration(milliseconds: 280),
       curve: Curves.easeOutCubic,
     );
   }
@@ -229,35 +279,42 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
     }
 
     const monthNames = <String>[
-      'January',
-      'February',
-      'March',
-      'April',
-      'May',
-      'June',
-      'July',
-      'August',
-      'September',
-      'October',
-      'November',
-      'December',
+      'Janvier',
+      'Février',
+      'Mars',
+      'Avril',
+      'Mai',
+      'Juin',
+      'Juillet',
+      'Août',
+      'Septembre',
+      'Octobre',
+      'Novembre',
+      'Décembre',
     ];
 
     return '${monthNames[month.month - 1]} ${month.year}';
   }
 }
 
-/// The header that shows the current month and navigation buttons.
+// ---------------------------------------------------------------------------
+// _CalendarHeader
+// ---------------------------------------------------------------------------
+
 class _CalendarHeader extends StatelessWidget {
   const _CalendarHeader({
-    required this.title,
+    required this.monthLabel,
+    required this.visibleMonth,
+    required this.navDirection,
     required this.canGoPrevious,
     required this.canGoNext,
     required this.onPrevious,
     required this.onNext,
   });
 
-  final String title;
+  final String monthLabel;
+  final DateTime visibleMonth;
+  final int navDirection;
   final bool canGoPrevious;
   final bool canGoNext;
   final VoidCallback? onPrevious;
@@ -268,19 +325,38 @@ class _CalendarHeader extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: Text(
-            title,
-            style: AppTextStyles.bodyBold().copyWith(fontSize: 18),
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 260),
+            transitionBuilder: (child, animation) {
+              final isIncoming = child.key == ValueKey(visibleMonth);
+              final beginOffset = isIncoming
+                  ? Offset(navDirection > 0 ? 0.25 : -0.25, 0)
+                  : Offset(navDirection > 0 ? -0.25 : 0.25, 0);
+              return SlideTransition(
+                position: Tween<Offset>(
+                  begin: beginOffset,
+                  end: Offset.zero,
+                ).animate(
+                  CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
+                ),
+                child: FadeTransition(opacity: animation, child: child),
+              );
+            },
+            child: Text(
+              monthLabel,
+              key: ValueKey(visibleMonth),
+              style: AppTextStyles.bodyBold().copyWith(fontSize: 18),
+            ),
           ),
         ),
-        _HeaderButton(
-          icon: Icons.keyboard_arrow_up_rounded,
+        _NavButton(
+          icon: Icons.chevron_left_rounded,
           onTap: onPrevious,
           enabled: canGoPrevious,
         ),
         const SizedBox(width: 8),
-        _HeaderButton(
-          icon: Icons.keyboard_arrow_down_rounded,
+        _NavButton(
+          icon: Icons.chevron_right_rounded,
           onTap: onNext,
           enabled: canGoNext,
         ),
@@ -289,9 +365,12 @@ class _CalendarHeader extends StatelessWidget {
   }
 }
 
-/// A compact icon button used in the calendar header.
-class _HeaderButton extends StatelessWidget {
-  const _HeaderButton({
+// ---------------------------------------------------------------------------
+// _NavButton
+// ---------------------------------------------------------------------------
+
+class _NavButton extends StatefulWidget {
+  const _NavButton({
     required this.icon,
     required this.onTap,
     required this.enabled,
@@ -302,30 +381,63 @@ class _HeaderButton extends StatelessWidget {
   final bool enabled;
 
   @override
+  State<_NavButton> createState() => _NavButtonState();
+}
+
+class _NavButtonState extends State<_NavButton>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _press;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _press = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 90),
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.88).animate(
+      CurvedAnimation(parent: _press, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _press.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: enabled ? onTap : null,
-        borderRadius: BorderRadius.circular(14),
-        child: Ink(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: enabled
-                ? AppColors.white.withValues(alpha: 0.08)
-                : AppColors.white.withValues(alpha: 0.04),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(
-              color: enabled
-                  ? AppColors.white.withValues(alpha: 0.12)
-                  : AppColors.white.withValues(alpha: 0.06),
+    return GestureDetector(
+      onTapDown: widget.enabled ? (_) => _press.forward() : null,
+      onTapUp: widget.enabled
+          ? (_) {
+              _press.reverse();
+              widget.onTap?.call();
+            }
+          : null,
+      onTapCancel: widget.enabled ? () => _press.reverse() : null,
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (context, child) =>
+            Transform.scale(scale: _scale.value, child: child),
+        child: CupertinoLiquidGlass(
+          theme: widget.enabled ? _kNavBtnTheme : _kNavBtnDisabledTheme,
+          borderRadius: BorderRadius.circular(14),
+          child: SizedBox(
+            width: 36,
+            height: 36,
+            child: Center(
+              child: Icon(
+                widget.icon,
+                size: 22,
+                color: widget.enabled
+                    ? AppColors.textPrimary
+                    : AppColors.textMuted,
+              ),
             ),
-          ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: enabled ? AppColors.textPrimary : AppColors.textMuted,
           ),
         ),
       ),
@@ -333,7 +445,10 @@ class _HeaderButton extends StatelessWidget {
   }
 }
 
-/// A row that displays the weekday labels.
+// ---------------------------------------------------------------------------
+// _WeekdayRow
+// ---------------------------------------------------------------------------
+
 class _WeekdayRow extends StatelessWidget {
   const _WeekdayRow({required this.labels});
 
@@ -355,7 +470,10 @@ class _WeekdayRow extends StatelessWidget {
   }
 }
 
-/// A full month grid with all visible day cells.
+// ---------------------------------------------------------------------------
+// _MonthGrid
+// ---------------------------------------------------------------------------
+
 class _MonthGrid extends StatelessWidget {
   const _MonthGrid({
     required this.month,
@@ -401,8 +519,11 @@ class _MonthGrid extends StatelessWidget {
   }
 }
 
-/// A single day cell shown inside the month grid.
-class _DayCell extends StatelessWidget {
+// ---------------------------------------------------------------------------
+// _DayCell
+// ---------------------------------------------------------------------------
+
+class _DayCell extends StatefulWidget {
   const _DayCell({
     required this.date,
     required this.isCurrentMonth,
@@ -420,31 +541,86 @@ class _DayCell extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final borderColor = isToday
-        ? AppColors.gold
-        : AppColors.white.withValues(alpha: 0.08);
-    final backgroundColor = isSelected
-        ? AppColors.white.withValues(alpha: 0.10)
-        : isCurrentMonth
-        ? AppColors.white.withValues(alpha: 0.04)
-        : AppColors.white.withValues(alpha: 0.02);
-    final textColor = isToday
-        ? AppColors.gold
-        : isCurrentMonth
-        ? AppColors.textPrimary
-        : AppColors.textSecondary;
+  State<_DayCell> createState() => _DayCellState();
+}
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Ink(
+class _DayCellState extends State<_DayCell>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _press;
+  late final Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _press = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 80),
+      reverseDuration: const Duration(milliseconds: 200),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.82).animate(
+      CurvedAnimation(parent: _press, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _press.dispose();
+    super.dispose();
+  }
+
+  Color get _backgroundColor {
+    if (widget.isSelected) {
+      return AppColors.white.withValues(alpha: 0.14);
+    }
+    if (widget.isToday) {
+      return AppColors.gold.withValues(alpha: 0.10);
+    }
+    if (widget.isCurrentMonth) {
+      return AppColors.white.withValues(alpha: 0.04);
+    }
+    return AppColors.white.withValues(alpha: 0.02);
+  }
+
+  Color get _borderColor {
+    if (widget.isSelected) {
+      return AppColors.white.withValues(alpha: 0.40);
+    }
+    if (widget.isToday) {
+      return AppColors.gold.withValues(alpha: 0.80);
+    }
+    return AppColors.white.withValues(alpha: 0.08);
+  }
+
+  Color get _textColor {
+    if (widget.isToday) {
+      return AppColors.gold;
+    }
+    if (widget.isCurrentMonth) {
+      return AppColors.textPrimary;
+    }
+    return AppColors.textSecondary;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _press.forward(),
+      onTapUp: (_) {
+        _press.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _press.reverse(),
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (context, child) =>
+            Transform.scale(scale: _scale.value, child: child),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 180),
+          curve: Curves.easeOut,
           decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: borderColor),
+            color: _backgroundColor,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: _borderColor),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 4),
@@ -453,14 +629,14 @@ class _DayCell extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '${date.day}',
+                  '${widget.date.day}',
                   style: AppTextStyles.bodyBold().copyWith(
                     fontSize: 13,
-                    color: textColor,
+                    color: _textColor,
                   ),
                 ),
                 const SizedBox(height: 3),
-                _MonthlyEventDots(events: events),
+                _MonthlyEventDots(events: widget.events),
               ],
             ),
           ),
@@ -470,7 +646,10 @@ class _DayCell extends StatelessWidget {
   }
 }
 
-/// A small row of dots used to show event markers on a day.
+// ---------------------------------------------------------------------------
+// _MonthlyEventDots
+// ---------------------------------------------------------------------------
+
 class _MonthlyEventDots extends StatelessWidget {
   const _MonthlyEventDots({required this.events});
 
@@ -502,7 +681,10 @@ class _MonthlyEventDots extends StatelessWidget {
   }
 }
 
-/// A placeholder grid shown while the calendar is loading.
+// ---------------------------------------------------------------------------
+// _CalendarLoadingGrid
+// ---------------------------------------------------------------------------
+
 class _CalendarLoadingGrid extends StatelessWidget {
   const _CalendarLoadingGrid();
 
@@ -515,16 +697,16 @@ class _CalendarLoadingGrid extends StatelessWidget {
         padding: EdgeInsets.zero,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 7,
-          childAspectRatio: 0.92,
-          mainAxisSpacing: 6,
-          crossAxisSpacing: 6,
+          childAspectRatio: 1.05,
+          mainAxisSpacing: 5,
+          crossAxisSpacing: 5,
         ),
         itemCount: 42,
         itemBuilder: (BuildContext context, int index) {
           return DecoratedBox(
             decoration: BoxDecoration(
               color: AppColors.white.withValues(alpha: 0.05),
-              borderRadius: BorderRadius.circular(16),
+              borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: AppColors.white.withValues(alpha: 0.08),
               ),
@@ -537,7 +719,10 @@ class _CalendarLoadingGrid extends StatelessWidget {
   }
 }
 
-/// Normalizes event map keys to date-only values for reliable lookup.
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
 Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
   Map<DateTime, List<CalendarEventMarker>> input,
 ) {
@@ -553,7 +738,6 @@ Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
   return normalized;
 }
 
-/// Builds the 42 visible day cells for a month grid.
 List<DateTime> _buildMonthDays(DateTime month) {
   final firstDay = DateTime(month.year, month.month);
   final leadingDays = firstDay.weekday - DateTime.monday;
@@ -565,31 +749,27 @@ List<DateTime> _buildMonthDays(DateTime month) {
   );
 }
 
-/// Returns the number of calendar months between two month-only dates.
 int _monthsBetween(DateTime start, DateTime end) =>
     (end.year - start.year) * 12 + end.month - start.month;
 
-/// Returns the first day of the month for the provided date.
 DateTime _monthOnly(DateTime? date) {
   final safeDate = date ?? DateTime.now();
   return DateTime(safeDate.year, safeDate.month);
 }
 
-/// Normalizes a date to midnight using Flutter's date-only helper.
 DateTime _dateOnly(DateTime date) => DateUtils.dateOnly(date);
 
-/// Compares two dates while ignoring their time components.
 bool _isSameDate(DateTime left, DateTime right) =>
     left.year == right.year &&
     left.month == right.month &&
     left.day == right.day;
 
 const List<String> _defaultWeekdayLabels = <String>[
-  'MON',
-  'TUE',
-  'WED',
-  'THU',
-  'FRI',
-  'SAT',
-  'SUN',
+  'LUN',
+  'MAR',
+  'MER',
+  'JEU',
+  'VEN',
+  'SAM',
+  'DIM',
 ];

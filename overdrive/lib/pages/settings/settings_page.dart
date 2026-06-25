@@ -9,10 +9,10 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../widgets/base/od_button.dart';
-import '../../widgets/base/od_modal.dart';
-import '../../widgets/base/od_switch.dart';
-import '../../widgets/base/od_toast.dart';
+import '../../widgets/base/app_button.dart';
+import '../../widgets/base/app_modal.dart';
+import '../../widgets/base/app_switch.dart';
+import '../../widgets/base/app_toast.dart';
 
 const SettingsModalContent _storageInfoModalContent = SettingsModalContent(
   title: 'Stockage des reglages',
@@ -180,7 +180,7 @@ class _SettingsBodyState extends State<SettingsBody> {
 
   void _saveSettings() {
     FocusScope.of(context).unfocus();
-    OdToast.show(
+    AppToast.show(
       context,
       message: 'Reglages enregistres localement.',
       type: ToastType.success,
@@ -195,7 +195,7 @@ class _SettingsBodyState extends State<SettingsBody> {
     });
 
     FocusScope.of(context).unfocus();
-    OdToast.show(
+    AppToast.show(
       context,
       message: 'Les preferences par defaut ont ete restaurees.',
       type: ToastType.info,
@@ -203,7 +203,7 @@ class _SettingsBodyState extends State<SettingsBody> {
   }
 
   void _openStorageInfo() {
-    OdModal.show<void>(
+    AppModal.show<void>(
       context,
       title: _storageInfoModalContent.title,
       child: Column(
@@ -216,7 +216,7 @@ class _SettingsBodyState extends State<SettingsBody> {
             style: AppTextStyles.caption(),
           ),
           const SizedBox(height: 20),
-          OdButton(
+          AppButton(
             label: _storageInfoModalContent.dismissLabel,
             fullWidth: true,
             onPressed: () => Navigator.of(context).maybePop(),
@@ -264,9 +264,9 @@ class _SettingsBodyState extends State<SettingsBody> {
   List<Widget> _buildActionSectionChildren() {
     return <Widget>[
       for (var index = 0; index < _settingsActions.length; index++) ...[
-        OdButton(
+        AppButton(
           label: _settingsActions[index].label,
-          leadingIcon: _settingsActions[index].icon,
+          icon: _settingsActions[index].icon,
           fullWidth: true,
           onPressed: () => _handleAction(_settingsActions[index].type),
         ),
@@ -411,7 +411,7 @@ class _SwitchTile extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 16),
-            OdSwitch(value: value, onChanged: onChanged),
+            AppSwitch(value: value, onChanged: onChanged),
           ],
         ),
       ],

@@ -12,14 +12,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overdrive/core/theme/app_theme.dart';
-import 'package:overdrive/services/championship/championship_circuit.dart';
 import 'package:overdrive/services/championship/championship_enums.dart';
 import 'package:overdrive/services/championship/championship_live_entry.dart';
 import 'package:overdrive/services/championship/championship_session.dart';
 import 'package:overdrive/widgets/championships/championship_icon.dart';
-import 'package:overdrive/widgets/championships/championship_replay_btn.dart';
+import 'package:overdrive/widgets/base/app_button.dart';
 import 'package:overdrive/widgets/championships/championship_schedule.dart';
-import 'package:overdrive/widgets/championships/championship_standings_widget.dart';
+import 'package:overdrive/widgets/championships/championship_standings.dart';
 import 'package:overdrive/widgets/championships/championship_top3.dart';
 
 import '../helpers/test_app.dart';
@@ -112,14 +111,14 @@ void main() {
     });
   });
 
-  group('ChampionshipStandingsWidget', () {
+  group('ChampionshipStandings', () {
     testWidgets('switches between multiple standings sections', (
       WidgetTester tester,
     ) async {
       await pumpTestApp(
         tester,
         const Scaffold(
-          body: ChampionshipStandingsWidget(
+          body: ChampionshipStandings(
             title: 'Standings',
             sections: <ChampionshipStandingsSection>[
               ChampionshipStandingsSection(
@@ -158,7 +157,7 @@ void main() {
   });
 
   group('Championship CTA widgets', () {
-    testWidgets('ChampionshipReplayBtn delegates taps to the caller', (
+    testWidgets('Replay AppButton triggers onPressed', (
       WidgetTester tester,
     ) async {
       var tapped = false;
@@ -166,18 +165,19 @@ void main() {
       await pumpTestApp(
         tester,
         Scaffold(
-          body: ChampionshipReplayBtn(
-            replays: const ChampionshipReplays(label: 'Monaco 2026'),
-            onTap: () => tapped = true,
+          body: AppButton(
+            label: 'Monaco 2026',
+            icon: Icons.play_arrow_rounded,
+            fullWidth: true,
+            onPressed: () => tapped = true,
           ),
         ),
       );
 
-      await tester.tap(find.text('Bibliotheque de replays'));
+      await tester.tap(find.text('Monaco 2026'));
       await tester.pump();
 
       expect(tapped, isTrue);
-      expect(find.text('Monaco 2026'), findsOneWidget);
     });
 
     testWidgets(

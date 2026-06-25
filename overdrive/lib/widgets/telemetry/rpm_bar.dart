@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'telemetry_widget_style.dart';
 
-class RpmBarWidget extends StatefulWidget {
-  const RpmBarWidget({super.key});
+class RpmBar extends StatefulWidget {
+  const RpmBar({super.key});
 
   @override
-  State<RpmBarWidget> createState() => _RpmBarWidgetState();
+  State<RpmBar> createState() => _RpmBarState();
 }
 
-class _RpmBarWidgetState extends State<RpmBarWidget> {
+class _RpmBarState extends State<RpmBar> {
   final math.Random _random = math.Random();
   Timer? _timer;
   int _rpm = 9400;

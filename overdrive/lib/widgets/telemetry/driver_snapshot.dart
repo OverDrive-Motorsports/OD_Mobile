@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class DriverSnapshotWidget extends StatefulWidget {
-  const DriverSnapshotWidget({this.initialDriverId = 'VER', super.key});
+class DriverSnapshot extends StatefulWidget {
+  const DriverSnapshot({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<DriverSnapshotWidget> createState() => _DriverSnapshotWidgetState();
+  State<DriverSnapshot> createState() => _DriverSnapshotState();
 }
 
-class _DriverSnapshotWidgetState extends State<DriverSnapshotWidget> {
+class _DriverSnapshotState extends State<DriverSnapshot> {
   late String _driverId;
 
   @override

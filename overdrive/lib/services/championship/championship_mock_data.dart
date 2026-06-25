@@ -47,6 +47,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: 'Leader',
           lap: 42,
           tyreCompound: 'M',
+          teamColor: Color(0xFF3671C6),
         ),
         ChampionshipLiveEntry(
           position: 2,
@@ -55,6 +56,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+3.4s',
           lap: 42,
           tyreCompound: 'M',
+          teamColor: Color(0xFF00D2BE),
         ),
         ChampionshipLiveEntry(
           position: 3,
@@ -63,6 +65,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+8.1s',
           lap: 42,
           tyreCompound: 'S',
+          teamColor: Color(0xFFE8002D),
         ),
         ChampionshipLiveEntry(
           position: 4,
@@ -71,6 +74,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+12.7s',
           lap: 42,
           tyreCompound: 'S',
+          teamColor: Color(0xFFFF8000),
         ),
         ChampionshipLiveEntry(
           position: 5,
@@ -79,6 +83,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+18.3s',
           lap: 41,
           tyreCompound: 'M',
+          teamColor: Color(0xFFE8002D),
         ),
         ChampionshipLiveEntry(
           position: 6,
@@ -87,6 +92,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+24.1s',
           lap: 41,
           tyreCompound: 'H',
+          teamColor: Color(0xFF358C75),
         ),
         ChampionshipLiveEntry(
           position: 7,
@@ -95,6 +101,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+31.6s',
           lap: 41,
           tyreCompound: 'H',
+          teamColor: Color(0xFFFF8000),
         ),
         ChampionshipLiveEntry(
           position: 8,
@@ -103,6 +110,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+38.2s',
           lap: 41,
           tyreCompound: 'M',
+          teamColor: Color(0xFF00D2BE),
         ),
         ChampionshipLiveEntry(
           position: 9,
@@ -111,6 +119,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+45.0s',
           lap: 40,
           tyreCompound: 'H',
+          teamColor: Color(0xFF3671C6),
         ),
         ChampionshipLiveEntry(
           position: 10,
@@ -119,6 +128,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+52.3s',
           lap: 40,
           tyreCompound: 'M',
+          teamColor: Color(0xFF2293D1),
         ),
         ChampionshipLiveEntry(
           position: 11,
@@ -127,6 +137,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+58.7s',
           lap: 40,
           tyreCompound: 'H',
+          teamColor: Color(0xFF2293D1),
         ),
         ChampionshipLiveEntry(
           position: 12,
@@ -135,6 +146,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 39,
           tyreCompound: 'H',
+          teamColor: Color(0xFF358C75),
         ),
         ChampionshipLiveEntry(
           position: 13,
@@ -143,6 +155,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 39,
           tyreCompound: 'M',
+          teamColor: Color(0xFF6692FF),
         ),
         ChampionshipLiveEntry(
           position: 14,
@@ -151,6 +164,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 39,
           tyreCompound: 'H',
+          teamColor: Color(0xFFB6BABD),
         ),
         ChampionshipLiveEntry(
           position: 15,
@@ -159,6 +173,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 38,
           tyreCompound: 'H',
+          teamColor: Color(0xFF52E252),
         ),
         ChampionshipLiveEntry(
           position: 16,
@@ -167,6 +182,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 38,
           tyreCompound: 'H',
+          teamColor: Color(0xFF52E252),
         ),
         ChampionshipLiveEntry(
           position: 17,
@@ -175,6 +191,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 38,
           tyreCompound: 'M',
+          teamColor: Color(0xFF37BEDD),
         ),
         ChampionshipLiveEntry(
           position: 18,
@@ -183,6 +200,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+1 t',
           lap: 38,
           tyreCompound: 'M',
+          teamColor: Color(0xFF37BEDD),
         ),
         ChampionshipLiveEntry(
           position: 19,
@@ -191,6 +209,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+2 t',
           lap: 37,
           tyreCompound: 'H',
+          teamColor: Color(0xFFB6BABD),
         ),
         ChampionshipLiveEntry(
           position: 20,
@@ -199,6 +218,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
           gap: '+2 t',
           lap: 37,
           tyreCompound: 'H',
+          teamColor: Color(0xFF6692FF),
         ),
       ],
     ),

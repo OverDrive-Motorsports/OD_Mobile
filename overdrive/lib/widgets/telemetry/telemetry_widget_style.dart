@@ -4,7 +4,7 @@ import '../../core/theme/app_theme.dart';
 
 // Shared card decoration for all telemetry widgets.
 // Pass accentColor to override the default gold border/glow with a state-driven color
-// (e.g., EngineWidget uses red/gold/green to reflect the current engine mode).
+// (e.g., EngineTemps uses red/gold/green to reflect the current engine mode).
 BoxDecoration telemetryDecoration({Color? accentColor}) {
   final color = accentColor ?? AppColors.gold;
 

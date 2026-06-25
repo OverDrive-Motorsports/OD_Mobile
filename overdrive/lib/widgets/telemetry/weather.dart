@@ -7,8 +7,8 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class WeatherWidget extends StatelessWidget {
-  const WeatherWidget({super.key});
+class Weather extends StatelessWidget {
+  const Weather({super.key});
 
   @override
   Widget build(BuildContext context) {

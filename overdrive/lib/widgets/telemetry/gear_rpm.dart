@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class FuelWidget extends StatefulWidget {
-  const FuelWidget({this.initialDriverId = 'VER', super.key});
+class GearRpm extends StatefulWidget {
+  const GearRpm({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<FuelWidget> createState() => _FuelWidgetState();
+  State<GearRpm> createState() => _GearRpmState();
 }
 
-class _FuelWidgetState extends State<FuelWidget> {
+class _GearRpmState extends State<GearRpm> {
   late String _driverId;
 
   @override
@@ -25,27 +25,24 @@ class _FuelWidgetState extends State<FuelWidget> {
     _driverId = widget.initialDriverId;
   }
 
-  Color _fuelColor(double fraction) {
-    if (fraction < 0.2) return AppColors.red;
-    if (fraction < 0.4) return const Color(0xFFFF8C00);
+  Color _rpmColor(double fraction) {
+    if (fraction >= 0.85) return AppColors.red;
+    if (fraction >= 0.65) return AppColors.gold;
     return AppColors.green;
   }
 
   @override
   Widget build(BuildContext context) {
     final data = context.watch<TelemetrySimulator>().getSnapshot(_driverId);
-    final fuelFraction = (data.fuelLoad / 110).clamp(0.0, 1.0);
-    final fuelColor = _fuelColor(fuelFraction);
-    final lapsLeft = data.fuelPerLap > 0
-        ? (data.fuelLoad / data.fuelPerLap).floor()
-        : 0;
+    final rpmFraction = (data.rpm / 15000).clamp(0.0, 1.0);
+    final rpmColor = _rpmColor(rpmFraction);
 
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
         showTelemetryWidgetMenu(
           context,
-          widgetLabel: 'Fuel Load',
+          widgetLabel: 'Gear & RPM',
           currentDriverId: _driverId,
           onDriverSelected: (id) => setState(() => _driverId = id),
           onReset: actions?.onReset,
@@ -53,12 +50,15 @@ class _FuelWidgetState extends State<FuelWidget> {
         );
       },
       child: Container(
-        decoration: telemetryDecoration(accentColor: fuelColor),
+        decoration: telemetryDecoration(
+          accentColor: rpmFraction >= 0.85 ? AppColors.red : null,
+        ),
         padding: const EdgeInsets.all(14),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final w = constraints.maxWidth;
             final scale = (w / 160).clamp(0.6, 1.6);
+            final gearSize = 68.0 * scale;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +66,7 @@ class _FuelWidgetState extends State<FuelWidget> {
                 Row(
                   children: [
                     Text(
-                      'FUEL',
+                      'GEAR',
                       style: AppTextStyles.label(color: AppColors.textMuted)
                           .copyWith(fontSize: 10 * scale),
                     ),
@@ -81,33 +81,13 @@ class _FuelWidgetState extends State<FuelWidget> {
                 Expanded(
                   child: Center(
                     child: TweenAnimationBuilder<double>(
-                      tween: Tween<double>(end: data.fuelLoad),
-                      duration: const Duration(milliseconds: 300),
-                      builder: (context, value, _) => Row(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            value.toStringAsFixed(1),
-                            style: AppTextStyles.display(color: fuelColor)
-                                .copyWith(
-                              fontSize: 36 * scale,
-                              letterSpacing: -1,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: 4 * scale,
-                              left: 3 * scale,
-                            ),
-                            child: Text(
-                              'kg',
-                              style: AppTextStyles.caption(
-                                color: AppColors.textMuted,
-                              ).copyWith(fontSize: 12 * scale),
-                            ),
-                          ),
-                        ],
+                      tween: Tween<double>(end: data.gear.toDouble()),
+                      duration: const Duration(milliseconds: 150),
+                      builder: (context, value, _) => Text(
+                        value.round().toString(),
+                        style: AppTextStyles.display(
+                          color: AppColors.textPrimary,
+                        ).copyWith(fontSize: gearSize, letterSpacing: -2),
                       ),
                     ),
                   ),
@@ -115,26 +95,27 @@ class _FuelWidgetState extends State<FuelWidget> {
                 Row(
                   children: [
                     Text(
-                      '${data.fuelPerLap.toStringAsFixed(2)} kg/lap',
-                      style: AppTextStyles.caption(color: AppColors.textMuted)
+                      'RPM',
+                      style: AppTextStyles.label(color: AppColors.textMuted)
                           .copyWith(fontSize: 10 * scale),
                     ),
                     const Spacer(),
-                    Text(
-                      '~$lapsLeft laps',
-                      style: AppTextStyles.label(color: fuelColor)
+                    AnimatedDefaultTextStyle(
+                      duration: const Duration(milliseconds: 200),
+                      style: AppTextStyles.label(color: rpmColor)
                           .copyWith(fontSize: 10 * scale),
+                      child: Text('${data.rpm}'),
                     ),
                   ],
                 ),
-                const SizedBox(height: 6),
+                const SizedBox(height: 4),
                 TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: fuelFraction),
-                  duration: const Duration(milliseconds: 400),
+                  tween: Tween<double>(end: rpmFraction),
+                  duration: const Duration(milliseconds: 200),
                   builder: (context, fraction, _) => ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: SizedBox(
-                      height: 5,
+                      height: 8,
                       child: Stack(
                         children: [
                           Container(color: AppColors.surface),
@@ -142,8 +123,8 @@ class _FuelWidgetState extends State<FuelWidget> {
                             widthFactor: fraction,
                             alignment: Alignment.centerLeft,
                             child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              color: fuelColor,
+                              duration: const Duration(milliseconds: 200),
+                              color: rpmColor,
                             ),
                           ),
                         ],

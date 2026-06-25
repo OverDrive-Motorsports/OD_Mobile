@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class SpeedometerWidget extends StatefulWidget {
-  const SpeedometerWidget({this.initialDriverId = 'VER', super.key});
+class Speedometer extends StatefulWidget {
+  const Speedometer({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<SpeedometerWidget> createState() => _SpeedometerWidgetState();
+  State<Speedometer> createState() => _SpeedometerState();
 }
 
-class _SpeedometerWidgetState extends State<SpeedometerWidget> {
+class _SpeedometerState extends State<Speedometer> {
   late String _driverId;
 
   @override

@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class PitStrategyWidget extends StatefulWidget {
-  const PitStrategyWidget({this.initialDriverId = 'LEC', super.key});
+class PitStrategy extends StatefulWidget {
+  const PitStrategy({this.initialDriverId = 'LEC', super.key});
 
   final String initialDriverId;
 
   @override
-  State<PitStrategyWidget> createState() => _PitStrategyWidgetState();
+  State<PitStrategy> createState() => _PitStrategyState();
 }
 
-class _PitStrategyWidgetState extends State<PitStrategyWidget> {
+class _PitStrategyState extends State<PitStrategy> {
   late String _driverId;
 
   @override

@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class ThrottleBrakeWidget extends StatefulWidget {
-  const ThrottleBrakeWidget({this.initialDriverId = 'LEC', super.key});
+class ThrottleBrake extends StatefulWidget {
+  const ThrottleBrake({this.initialDriverId = 'LEC', super.key});
 
   final String initialDriverId;
 
   @override
-  State<ThrottleBrakeWidget> createState() => _ThrottleBrakeWidgetState();
+  State<ThrottleBrake> createState() => _ThrottleBrakeState();
 }
 
-class _ThrottleBrakeWidgetState extends State<ThrottleBrakeWidget> {
+class _ThrottleBrakeState extends State<ThrottleBrake> {
   late String _driverId;
 
   @override

@@ -1,3 +1,5 @@
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -5,10 +7,29 @@ import '../../core/theme/app_theme.dart';
 import 'telemetry_item_actions.dart';
 import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
-import 'telemetry_widget_style.dart';
 
-class StandingsWidget extends StatelessWidget {
-  const StandingsWidget({super.key});
+// ---------------------------------------------------------------------------
+// Glass theme for the outer telemetry card
+// ---------------------------------------------------------------------------
+
+const _kBorderColor = Color(0x26FFFFFF);
+
+final _kStandingsTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.10,
+  blurSigma: 24.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.08,
+  vibrancyIntensity: 0.04,
+  edgeLightColor: _kBorderColor,
+  edgeShadowColor: _kBorderColor,
+);
+
+// ---------------------------------------------------------------------------
+// RaceStandings widget
+// ---------------------------------------------------------------------------
+
+class RaceStandings extends StatelessWidget {
+  const RaceStandings({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -24,44 +45,54 @@ class StandingsWidget extends StatelessWidget {
           onRemove: actions?.onRemove,
         );
       },
-      child: Container(
-        decoration: telemetryDecoration(),
-        padding: const EdgeInsets.all(14),
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final scale = (w / 320).clamp(0.55, 1.5);
+      child: CupertinoTheme(
+        data: const CupertinoThemeData(brightness: Brightness.dark),
+        child: CupertinoLiquidGlass(
+          theme: _kStandingsTheme,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final w = constraints.maxWidth;
+                final scale = (w / 320).clamp(0.55, 1.5);
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'STANDINGS',
-                  style: AppTextStyles.label(color: AppColors.textMuted)
-                      .copyWith(fontSize: 10 * scale),
-                ),
-                const SizedBox(height: 6),
-                Expanded(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      for (final driver in TelemetryMockData.drivers)
-                        _StandingRow(
-                          driver: driver,
-                          snapshot: sim.getSnapshot(driver['id'] as String),
-                          scale: scale,
-                        ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'STANDINGS',
+                      style: AppTextStyles.label(color: AppColors.textMuted)
+                          .copyWith(fontSize: 10 * scale),
+                    ),
+                    const SizedBox(height: 6),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          for (final driver in TelemetryMockData.drivers)
+                            _StandingRow(
+                              driver: driver,
+                              snapshot: sim.getSnapshot(driver['id'] as String),
+                              scale: scale,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
         ),
       ),
     );
   }
 }
+
+// ---------------------------------------------------------------------------
+// _StandingRow
+// ---------------------------------------------------------------------------
 
 class _StandingRow extends StatelessWidget {
   const _StandingRow({

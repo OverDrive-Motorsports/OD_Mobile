@@ -3,16 +3,17 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../base/app_button.dart';
 import 'telemetry_widget_style.dart';
 
-class LapTimerWidget extends StatefulWidget {
-  const LapTimerWidget({super.key});
+class LapTimer extends StatefulWidget {
+  const LapTimer({super.key});
 
   @override
-  State<LapTimerWidget> createState() => _LapTimerWidgetState();
+  State<LapTimer> createState() => _LapTimerState();
 }
 
-class _LapTimerWidgetState extends State<LapTimerWidget> {
+class _LapTimerState extends State<LapTimer> {
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
   Duration _elapsed = Duration.zero;
@@ -109,25 +110,16 @@ class _LapTimerWidgetState extends State<LapTimerWidget> {
           Row(
             children: [
               Expanded(
-                child: ElevatedButton(
+                child: AppButton(
+                  label: _stopwatch.isRunning ? 'PAUSE' : 'PLAY',
                   onPressed: _toggleRunning,
-                  child: Text(
-                    _stopwatch.isRunning ? 'PAUSE' : 'PLAY',
-                    style: AppTextStyles.label(color: AppColors.black),
-                  ),
+                  fullWidth: true,
                 ),
               ),
               const SizedBox(width: 8),
-              OutlinedButton(
+              AppButton(
+                label: 'TOUR',
                 onPressed: _recordLap,
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.textPrimary,
-                  side: const BorderSide(color: AppColors.border),
-                ),
-                child: Text(
-                  'TOUR',
-                  style: AppTextStyles.label(color: AppColors.textPrimary),
-                ),
               ),
             ],
           ),

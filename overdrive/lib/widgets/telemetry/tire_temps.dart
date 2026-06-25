@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class TireTempWidget extends StatefulWidget {
-  const TireTempWidget({this.initialDriverId = 'VER', super.key});
+class TireTemps extends StatefulWidget {
+  const TireTemps({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<TireTempWidget> createState() => _TireTempWidgetState();
+  State<TireTemps> createState() => _TireTempsState();
 }
 
-class _TireTempWidgetState extends State<TireTempWidget> {
+class _TireTempsState extends State<TireTemps> {
   late String _driverId;
 
   @override

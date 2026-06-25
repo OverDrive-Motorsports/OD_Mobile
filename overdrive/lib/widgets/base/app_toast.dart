@@ -3,22 +3,40 @@
 ## OverDrive 2026
 ## All Technical rights reserved
 ##
-## od_toast.dart - Shared singleton toast overlay for temporary feedback.
+## app_toast.dart - Shared singleton toast overlay for temporary feedback.
 ##
 */
 
 import 'dart:async';
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+
+// ---------------------------------------------------------------------------
+// Glass theme
+// ---------------------------------------------------------------------------
+
+const _kToastBorderColor = Color(0x22FFFFFF);
+
+final _kToastTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.28,
+  blurSigma: 32.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.10,
+  vibrancyIntensity: 0.06,
+  edgeLightColor: _kToastBorderColor,
+  edgeShadowColor: _kToastBorderColor,
+);
 
 /// Semantic toast styles mapped to shared app colors and icons.
 enum ToastType { error, success, info }
 
 /// A helper used to show a single shared toast at a time.
-class OdToast {
-  const OdToast._();
+class AppToast {
+  const AppToast._();
 
   static OverlayEntry? _activeEntry;
   static VoidCallback? _removeActiveEntry;
@@ -49,7 +67,7 @@ class OdToast {
     }
 
     entry = OverlayEntry(
-      builder: (_) => _OdToastEntry(
+      builder: (_) => _AppToastEntry(
         message: message,
         type: type,
         duration: duration,
@@ -64,8 +82,8 @@ class OdToast {
 }
 
 /// A temporary toast overlay entry with its own animation lifecycle.
-class _OdToastEntry extends StatefulWidget {
-  const _OdToastEntry({
+class _AppToastEntry extends StatefulWidget {
+  const _AppToastEntry({
     required this.message,
     required this.type,
     required this.duration,
@@ -78,11 +96,10 @@ class _OdToastEntry extends StatefulWidget {
   final VoidCallback onDismissed;
 
   @override
-  State<_OdToastEntry> createState() => _OdToastEntryState();
+  State<_AppToastEntry> createState() => _AppToastEntryState();
 }
 
-/// The state that runs the toast animations and auto-dismiss timer.
-class _OdToastEntryState extends State<_OdToastEntry>
+class _AppToastEntryState extends State<_AppToastEntry>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _fadeAnimation;
@@ -103,9 +120,11 @@ class _OdToastEntryState extends State<_OdToastEntry>
       curve: Curves.easeOutCubic,
     );
     _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.28),
+      begin: const Offset(0, -0.28),
       end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
+    ).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+    );
 
     _controller.forward();
     _dismissTimer = Timer(widget.duration, _dismiss);
@@ -131,12 +150,12 @@ class _OdToastEntryState extends State<_OdToastEntry>
   @override
   Widget build(BuildContext context) {
     final style = _ToastStyle.resolve(widget.type);
-    final bottomOffset = MediaQuery.paddingOf(context).bottom + 24;
+    final topOffset = MediaQuery.paddingOf(context).top + 14;
 
     return Positioned(
-      left: 24,
-      right: 24,
-      bottom: bottomOffset,
+      left: 20,
+      right: 20,
+      top: topOffset,
       child: IgnorePointer(
         child: FadeTransition(
           opacity: _fadeAnimation,
@@ -145,31 +164,34 @@ class _OdToastEntryState extends State<_OdToastEntry>
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 520),
-                child: DecoratedBox(
-                  decoration: BoxDecoration(
-                    color: AppColors.toastSurface,
+                child: CupertinoTheme(
+                  data: const CupertinoThemeData(brightness: Brightness.dark),
+                  child: CupertinoLiquidGlass(
+                    theme: _kToastTheme,
                     borderRadius: BorderRadius.circular(999),
-                    border: Border.all(
-                      color: AppColors.white.withValues(alpha: 0.08),
-                    ),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 12,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(style.icon, size: 18, color: style.color),
-                        const SizedBox(width: 10),
-                        Flexible(
-                          child: Text(
-                            widget.message,
-                            style: AppTextStyles.body().copyWith(fontSize: 14),
-                          ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(999),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 14,
                         ),
-                      ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(style.icon, size: 20, color: style.color),
+                            const SizedBox(width: 12),
+                            Flexible(
+                              child: Text(
+                                widget.message,
+                                style: AppTextStyles.body().copyWith(
+                                  fontSize: 15,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -182,7 +204,6 @@ class _OdToastEntryState extends State<_OdToastEntry>
   }
 }
 
-/// A small style object used internally by the toast widget.
 class _ToastStyle {
   const _ToastStyle({required this.icon, required this.color});
 

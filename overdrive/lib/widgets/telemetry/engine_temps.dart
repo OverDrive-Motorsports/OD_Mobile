@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class EngineWidget extends StatefulWidget {
-  const EngineWidget({this.initialDriverId = 'NOR', super.key});
+class EngineTemps extends StatefulWidget {
+  const EngineTemps({this.initialDriverId = 'NOR', super.key});
 
   final String initialDriverId;
 
   @override
-  State<EngineWidget> createState() => _EngineWidgetState();
+  State<EngineTemps> createState() => _EngineTempsState();
 }
 
-class _EngineWidgetState extends State<EngineWidget> {
+class _EngineTempsState extends State<EngineTemps> {
   late String _driverId;
 
   @override

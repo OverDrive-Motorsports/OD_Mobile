@@ -13,8 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overdrive/services/tv/tv_mock_data.dart';
 import 'package:overdrive/services/tv/tv_stream.dart';
-import 'package:overdrive/widgets/base/od_modal.dart';
-import 'package:overdrive/widgets/search_bar.dart' as od;
+import 'package:overdrive/widgets/base/app_modal.dart';
+import 'package:overdrive/widgets/base/search_bar.dart';
 import 'package:overdrive/widgets/tv/tv_stream_selector_sheet.dart';
 
 import '../helpers/test_app.dart';
@@ -33,8 +33,8 @@ void main() {
         Scaffold(
           body: Padding(
             padding: const EdgeInsets.all(24),
-            child: od.SearchBar(
-              props: od.SearchBarProps(
+            child: AppSearchBar(
+              props: AppSearchBarProps(
                 controller: controller,
                 placeholder: 'Search drivers',
                 onSearch: searches.add,
@@ -70,8 +70,8 @@ void main() {
       await pumpTestApp(
         tester,
         Scaffold(
-          body: od.SearchBar(
-            props: od.SearchBarProps(
+          body: AppSearchBar(
+            props: AppSearchBarProps(
               controller: TextEditingController(text: 'query'),
               enabled: false,
               onSearch: (_) {},
@@ -99,7 +99,7 @@ void main() {
               return Center(
                 child: ElevatedButton(
                   onPressed: () {
-                    OdModal.show<void>(
+                    AppModal.show<void>(
                       context,
                       child: TvStreamSelectorSheet(
                         options: tvStreamsMonacoMock,

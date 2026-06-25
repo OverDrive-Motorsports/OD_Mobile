@@ -36,8 +36,8 @@ const double _kBtnChevronSize = 15.0;
 const _kBorderColor = Color(0x1AFFFFFF);
 
 final _kDarkPanelTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.30,
-  blurSigma: 35.0,
+  tintOpacity: 0.14,
+  blurSigma: 48.0,
   noiseOpacity: 0.0,
   specularOpacity: 0.08,
   vibrancyIntensity: 0.06,
@@ -46,8 +46,8 @@ final _kDarkPanelTheme = LiquidGlassThemeData.dark().copyWith(
 );
 
 final _kDarkBtnTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.28,
-  blurSigma: 20.0,
+  tintOpacity: 0.12,
+  blurSigma: 32.0,
   noiseOpacity: 0.0,
   specularOpacity: 0.08,
   edgeLightColor: _kBorderColor,

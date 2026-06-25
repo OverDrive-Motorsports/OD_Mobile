@@ -9,7 +9,7 @@
 
 import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
-import '../../widgets/search_bar.dart' as od;
+import '../../widgets/base/search_bar.dart';
 
 const SearchPageContent _searchPageContent = SearchPageContent(
   title: 'Search',
@@ -67,8 +67,8 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                 ),
-                od.SearchBar(
-                  props: od.SearchBarProps(
+                AppSearchBar(
+                  props: AppSearchBarProps(
                     controller: _searchController,
                     placeholder: _searchPageContent.placeholder,
                     onSearch: (_) {},

@@ -12,9 +12,9 @@ import '../../core/theme/app_theme.dart';
 import '../../pages/settings/settings_page.dart';
 import '../../pages/subscription/subscription_page.dart';
 import '../../widgets/base/menu_overlay.dart';
-import '../../widgets/base/od_button.dart';
-import '../../widgets/base/od_modal.dart';
-import '../../widgets/base/od_toast.dart';
+import '../../widgets/base/app_button.dart';
+import '../../widgets/base/app_modal.dart';
+import '../../widgets/base/app_toast.dart';
 
 /// Fallback data rendered when no live [ProfilePageData] is injected.
 const ProfilePageData profilePagePreviewData = ProfilePageData(
@@ -207,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showModal(BuildContext context, ProfileModalContent content) {
-    OdModal.show<void>(
+    AppModal.show<void>(
       context,
       title: content.title,
       child: Column(
@@ -217,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 8),
           Text(content.supportingText, style: AppTextStyles.caption()),
           const SizedBox(height: 20),
-          OdButton(
+          AppButton(
             label: content.dismissLabel,
             fullWidth: true,
             onPressed: () => Navigator.of(context).maybePop(),
@@ -234,10 +234,10 @@ class _ProfilePageState extends State<ProfilePage> {
         _showModal(context, _content.editProfileModal);
         return;
       case ProfileActionType.shareProfile:
-        OdToast.show(context, message: _content.shareProfileToastMessage);
+        AppToast.show(context, message: _content.shareProfileToastMessage);
         return;
       case ProfileActionType.signOut:
-        OdToast.show(
+        AppToast.show(
           context,
           message: _content.signOutToastMessage,
           type: ToastType.info,
@@ -452,9 +452,9 @@ class _ProfileActionButton extends StatelessWidget {
       return _DangerActionButton(action: action, onPressed: onPressed);
     }
 
-    return OdButton(
+    return AppButton(
       label: action.label,
-      leadingIcon: action.icon,
+      icon: action.icon,
       fullWidth: true,
       onPressed: onPressed,
     );

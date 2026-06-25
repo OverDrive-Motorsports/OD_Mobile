@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class GearRpmWidget extends StatefulWidget {
-  const GearRpmWidget({this.initialDriverId = 'VER', super.key});
+class LapDelta extends StatefulWidget {
+  const LapDelta({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<GearRpmWidget> createState() => _GearRpmWidgetState();
+  State<LapDelta> createState() => _LapDeltaState();
 }
 
-class _GearRpmWidgetState extends State<GearRpmWidget> {
+class _LapDeltaState extends State<LapDelta> {
   late String _driverId;
 
   @override
@@ -25,24 +25,31 @@ class _GearRpmWidgetState extends State<GearRpmWidget> {
     _driverId = widget.initialDriverId;
   }
 
-  Color _rpmColor(double fraction) {
-    if (fraction >= 0.85) return AppColors.red;
-    if (fraction >= 0.65) return AppColors.gold;
-    return AppColors.green;
+  String _formatTime(double seconds) {
+    final m = seconds ~/ 60;
+    final s = (seconds % 60).floor();
+    final ms = ((seconds % 1) * 1000).toInt();
+    return '$m:${s.toString().padLeft(2, '0')}.${ms.toString().padLeft(3, '0')}';
+  }
+
+  String _formatDelta(double delta) {
+    final sign = delta < 0 ? '-' : '+';
+    return '$sign${delta.abs().toStringAsFixed(3)}s';
   }
 
   @override
   Widget build(BuildContext context) {
     final data = context.watch<TelemetrySimulator>().getSnapshot(_driverId);
-    final rpmFraction = (data.rpm / 15000).clamp(0.0, 1.0);
-    final rpmColor = _rpmColor(rpmFraction);
+    final delta = data.currentLapTime - data.bestLapTime;
+    final deltaColor = delta < 0 ? AppColors.green : AppColors.red;
+    final lapProgress = (data.currentLapTime / data.bestLapTime).clamp(0.0, 1.0);
 
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
         showTelemetryWidgetMenu(
           context,
-          widgetLabel: 'Gear & RPM',
+          widgetLabel: 'Lap Delta',
           currentDriverId: _driverId,
           onDriverSelected: (id) => setState(() => _driverId = id),
           onReset: actions?.onReset,
@@ -50,15 +57,12 @@ class _GearRpmWidgetState extends State<GearRpmWidget> {
         );
       },
       child: Container(
-        decoration: telemetryDecoration(
-          accentColor: rpmFraction >= 0.85 ? AppColors.red : null,
-        ),
+        decoration: telemetryDecoration(accentColor: deltaColor),
         padding: const EdgeInsets.all(14),
         child: LayoutBuilder(
           builder: (context, constraints) {
             final w = constraints.maxWidth;
             final scale = (w / 160).clamp(0.6, 1.6);
-            final gearSize = 68.0 * scale;
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,7 +70,7 @@ class _GearRpmWidgetState extends State<GearRpmWidget> {
                 Row(
                   children: [
                     Text(
-                      'GEAR',
+                      'LAP',
                       style: AppTextStyles.label(color: AppColors.textMuted)
                           .copyWith(fontSize: 10 * scale),
                     ),
@@ -78,44 +82,45 @@ class _GearRpmWidgetState extends State<GearRpmWidget> {
                     ),
                   ],
                 ),
-                Expanded(
-                  child: Center(
-                    child: TweenAnimationBuilder<double>(
-                      tween: Tween<double>(end: data.gear.toDouble()),
-                      duration: const Duration(milliseconds: 150),
-                      builder: (context, value, _) => Text(
-                        value.round().toString(),
-                        style: AppTextStyles.display(
-                          color: AppColors.textPrimary,
-                        ).copyWith(fontSize: gearSize, letterSpacing: -2),
-                      ),
-                    ),
+                const Spacer(),
+                TweenAnimationBuilder<double>(
+                  tween: Tween<double>(end: data.currentLapTime),
+                  duration: const Duration(milliseconds: 200),
+                  builder: (context, t, _) => Text(
+                    _formatTime(t),
+                    style: AppTextStyles.display(color: AppColors.textPrimary)
+                        .copyWith(fontSize: 20 * scale, letterSpacing: -0.5),
                   ),
                 ),
+                const SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
-                      'RPM',
-                      style: AppTextStyles.label(color: AppColors.textMuted)
-                          .copyWith(fontSize: 10 * scale),
+                      _formatTime(data.bestLapTime),
+                      style: AppTextStyles.caption(color: AppColors.textMuted)
+                          .copyWith(fontSize: 11 * scale),
                     ),
                     const Spacer(),
-                    AnimatedDefaultTextStyle(
-                      duration: const Duration(milliseconds: 200),
-                      style: AppTextStyles.label(color: rpmColor)
-                          .copyWith(fontSize: 10 * scale),
-                      child: Text('${data.rpm}'),
+                    TweenAnimationBuilder<double>(
+                      tween: Tween<double>(end: delta),
+                      duration: const Duration(milliseconds: 250),
+                      builder: (context, d, _) => AnimatedDefaultTextStyle(
+                        duration: const Duration(milliseconds: 200),
+                        style: AppTextStyles.bodyBold(color: deltaColor)
+                            .copyWith(fontSize: 13 * scale),
+                        child: Text(_formatDelta(d)),
+                      ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 4),
+                const Spacer(),
                 TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: rpmFraction),
-                  duration: const Duration(milliseconds: 200),
+                  tween: Tween<double>(end: lapProgress),
+                  duration: const Duration(milliseconds: 220),
                   builder: (context, fraction, _) => ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: SizedBox(
-                      height: 8,
+                      height: 5,
                       child: Stack(
                         children: [
                           Container(color: AppColors.surface),
@@ -124,7 +129,7 @@ class _GearRpmWidgetState extends State<GearRpmWidget> {
                             alignment: Alignment.centerLeft,
                             child: AnimatedContainer(
                               duration: const Duration(milliseconds: 200),
-                              color: rpmColor,
+                              color: deltaColor,
                             ),
                           ),
                         ],

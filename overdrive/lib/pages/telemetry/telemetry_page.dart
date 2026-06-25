@@ -6,21 +6,22 @@ import 'package:provider/provider.dart';
 
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
-import '../../widgets/telemetry/drs_ers_widget.dart';
-import '../../widgets/telemetry/driver_snapshot_widget.dart';
-import '../../widgets/telemetry/engine_widget.dart';
-import '../../widgets/telemetry/fuel_widget.dart';
-import '../../widgets/telemetry/g_force_widget.dart';
-import '../../widgets/telemetry/gear_rpm_widget.dart';
-import '../../widgets/telemetry/lap_delta_widget.dart';
-import '../../widgets/telemetry/pit_strategy_widget.dart';
-import '../../widgets/telemetry/sector_split_widget.dart';
-import '../../widgets/telemetry/speedometer_widget.dart';
-import '../../widgets/telemetry/standings_widget.dart';
+import '../../widgets/base/app_button.dart';
+import '../../widgets/telemetry/drs_ers.dart';
+import '../../widgets/telemetry/driver_snapshot.dart';
+import '../../widgets/telemetry/engine_temps.dart';
+import '../../widgets/telemetry/fuel_gauge.dart';
+import '../../widgets/telemetry/g_force.dart';
+import '../../widgets/telemetry/gear_rpm.dart';
+import '../../widgets/telemetry/lap_delta.dart';
+import '../../widgets/telemetry/pit_strategy.dart';
+import '../../widgets/telemetry/sector_split.dart';
+import '../../widgets/telemetry/speedometer.dart';
+import '../../widgets/telemetry/race_standings.dart';
 import '../../widgets/telemetry/telemetry_mock_data.dart';
-import '../../widgets/telemetry/throttle_brake_widget.dart';
-import '../../widgets/telemetry/tire_temp_widget.dart';
-import '../../widgets/telemetry/weather_widget.dart';
+import '../../widgets/telemetry/throttle_brake.dart';
+import '../../widgets/telemetry/tire_temps.dart';
+import '../../widgets/telemetry/weather.dart';
 import 'grid/grid_board.dart';
 import 'grid/grid_item.dart';
 
@@ -48,20 +49,20 @@ enum _WidgetType {
 }
 
 Widget _buildWidget(_WidgetType type) => switch (type) {
-      _WidgetType.speedometer => const SpeedometerWidget(),
-      _WidgetType.gearRpm => const GearRpmWidget(),
-      _WidgetType.throttleBrake => const ThrottleBrakeWidget(),
-      _WidgetType.lapDelta => const LapDeltaWidget(),
-      _WidgetType.drsErs => const DrsErsWidget(),
-      _WidgetType.gForce => const GForceWidget(),
-      _WidgetType.sectorSplit => const SectorSplitWidget(),
-      _WidgetType.driverSnapshot => const DriverSnapshotWidget(),
-      _WidgetType.tireTemp => const TireTempWidget(),
-      _WidgetType.fuel => const FuelWidget(),
-      _WidgetType.weather => const WeatherWidget(),
-      _WidgetType.pitStrategy => const PitStrategyWidget(),
-      _WidgetType.engine => const EngineWidget(),
-      _WidgetType.standings => const StandingsWidget(),
+      _WidgetType.speedometer => const Speedometer(),
+      _WidgetType.gearRpm => const GearRpm(),
+      _WidgetType.throttleBrake => const ThrottleBrake(),
+      _WidgetType.lapDelta => const LapDelta(),
+      _WidgetType.drsErs => const DrsErs(),
+      _WidgetType.gForce => const GForce(),
+      _WidgetType.sectorSplit => const SectorSplit(),
+      _WidgetType.driverSnapshot => const DriverSnapshot(),
+      _WidgetType.tireTemp => const TireTemps(),
+      _WidgetType.fuel => const FuelGauge(),
+      _WidgetType.weather => const Weather(),
+      _WidgetType.pitStrategy => const PitStrategy(),
+      _WidgetType.engine => const EngineTemps(),
+      _WidgetType.standings => const RaceStandings(),
     };
 
 // ─── Page root — owns the simulator ──────────────────────────────────────────
@@ -103,7 +104,7 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
       row: 0,
       colSpan: _defaultColSpan,
       rowSpan: _defaultRowSpan,
-      child: const SpeedometerWidget(),
+      child: const Speedometer(),
     ),
   ];
 
@@ -286,10 +287,9 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         automaticallyImplyLeading: false,
-        leading: IconButton(
-          tooltip: 'Back',
+        leading: AppButton(
+          icon: Icons.arrow_back_rounded,
           onPressed: _goBack,
-          icon: const Icon(Icons.arrow_back_rounded, color: AppColors.white),
         ),
         title: Text('Telemetry', style: AppTextStyles.bodyBold()),
         actions: [
@@ -306,10 +306,9 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
               const SizedBox(width: 6),
               Text('LIVE', style: AppTextStyles.label(color: AppColors.green)),
               const SizedBox(width: 12),
-              IconButton(
-                tooltip: 'Add widget',
+              AppButton(
+                icon: Icons.add_rounded,
                 onPressed: _showAddSheet,
-                icon: const Icon(Icons.add_rounded, color: AppColors.white),
               ),
             ],
           ),

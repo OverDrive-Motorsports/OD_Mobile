@@ -13,8 +13,7 @@ import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/tv/tv_mock_data.dart';
 import '../../services/tv/tv_stream.dart';
-import '../../widgets/base/od_modal.dart';
-import '../../widgets/glass_pill.dart';
+import '../../widgets/base/app_modal.dart';
 import '../../widgets/tv/tv_live_player.dart';
 import '../../widgets/tv/tv_stream_selector_sheet.dart';
 
@@ -37,7 +36,7 @@ class _TvPageState extends State<TvPage> {
 
   /// Opens the stream picker and updates the selected stream on selection.
   Future<void> _openStreamSelector() {
-    return OdModal.show<void>(
+    return AppModal.show<void>(
       context,
       child: TvStreamSelectorSheet(
         options: _streams,
@@ -96,14 +95,16 @@ class _TvPageState extends State<TvPage> {
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: _openStreamSelector,
-                      child: GlassPill(
+                      child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 18,
                           vertical: 12,
                         ),
-                        backgroundColor: AppColors.gold.withValues(alpha: 0.12),
-                        borderColor: AppColors.gold.withValues(alpha: 0.24),
-                        borderRadius: BorderRadius.circular(22),
+                        decoration: BoxDecoration(
+                          color: AppColors.surfaceElevated,
+                          borderRadius: BorderRadius.circular(22),
+                          border: Border.all(color: AppColors.border),
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
@@ -156,11 +157,13 @@ class _LiveBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassPill(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      backgroundColor: AppColors.gold.withValues(alpha: 0.12),
-      borderColor: AppColors.gold.withValues(alpha: isActive ? 0.28 : 0.12),
-      borderRadius: BorderRadius.circular(99),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -189,11 +192,13 @@ class _TopControlButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: GlassPill(
+      child: Container(
         padding: const EdgeInsets.all(10),
-        backgroundColor: AppColors.black.withValues(alpha: 0.24),
-        borderColor: AppColors.gold.withValues(alpha: 0.20),
-        borderRadius: BorderRadius.circular(18),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.border),
+        ),
         child: Icon(
           icon,
           color: AppColors.white.withValues(alpha: 0.88),

@@ -7,16 +7,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
-class LapDeltaWidget extends StatefulWidget {
-  const LapDeltaWidget({this.initialDriverId = 'VER', super.key});
+class FuelGauge extends StatefulWidget {
+  const FuelGauge({this.initialDriverId = 'VER', super.key});
 
   final String initialDriverId;
 
   @override
-  State<LapDeltaWidget> createState() => _LapDeltaWidgetState();
+  State<FuelGauge> createState() => _FuelGaugeState();
 }
 
-class _LapDeltaWidgetState extends State<LapDeltaWidget> {
+class _FuelGaugeState extends State<FuelGauge> {
   late String _driverId;
 
   @override
@@ -25,31 +25,27 @@ class _LapDeltaWidgetState extends State<LapDeltaWidget> {
     _driverId = widget.initialDriverId;
   }
 
-  String _formatTime(double seconds) {
-    final m = seconds ~/ 60;
-    final s = (seconds % 60).floor();
-    final ms = ((seconds % 1) * 1000).toInt();
-    return '$m:${s.toString().padLeft(2, '0')}.${ms.toString().padLeft(3, '0')}';
-  }
-
-  String _formatDelta(double delta) {
-    final sign = delta < 0 ? '-' : '+';
-    return '$sign${delta.abs().toStringAsFixed(3)}s';
+  Color _fuelColor(double fraction) {
+    if (fraction < 0.2) return AppColors.red;
+    if (fraction < 0.4) return const Color(0xFFFF8C00);
+    return AppColors.green;
   }
 
   @override
   Widget build(BuildContext context) {
     final data = context.watch<TelemetrySimulator>().getSnapshot(_driverId);
-    final delta = data.currentLapTime - data.bestLapTime;
-    final deltaColor = delta < 0 ? AppColors.green : AppColors.red;
-    final lapProgress = (data.currentLapTime / data.bestLapTime).clamp(0.0, 1.0);
+    final fuelFraction = (data.fuelLoad / 110).clamp(0.0, 1.0);
+    final fuelColor = _fuelColor(fuelFraction);
+    final lapsLeft = data.fuelPerLap > 0
+        ? (data.fuelLoad / data.fuelPerLap).floor()
+        : 0;
 
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
         showTelemetryWidgetMenu(
           context,
-          widgetLabel: 'Lap Delta',
+          widgetLabel: 'Fuel Load',
           currentDriverId: _driverId,
           onDriverSelected: (id) => setState(() => _driverId = id),
           onReset: actions?.onReset,
@@ -57,7 +53,7 @@ class _LapDeltaWidgetState extends State<LapDeltaWidget> {
         );
       },
       child: Container(
-        decoration: telemetryDecoration(accentColor: deltaColor),
+        decoration: telemetryDecoration(accentColor: fuelColor),
         padding: const EdgeInsets.all(14),
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -70,7 +66,7 @@ class _LapDeltaWidgetState extends State<LapDeltaWidget> {
                 Row(
                   children: [
                     Text(
-                      'LAP',
+                      'FUEL',
                       style: AppTextStyles.label(color: AppColors.textMuted)
                           .copyWith(fontSize: 10 * scale),
                     ),
@@ -82,41 +78,59 @@ class _LapDeltaWidgetState extends State<LapDeltaWidget> {
                     ),
                   ],
                 ),
-                const Spacer(),
-                TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: data.currentLapTime),
-                  duration: const Duration(milliseconds: 200),
-                  builder: (context, t, _) => Text(
-                    _formatTime(t),
-                    style: AppTextStyles.display(color: AppColors.textPrimary)
-                        .copyWith(fontSize: 20 * scale, letterSpacing: -0.5),
+                Expanded(
+                  child: Center(
+                    child: TweenAnimationBuilder<double>(
+                      tween: Tween<double>(end: data.fuelLoad),
+                      duration: const Duration(milliseconds: 300),
+                      builder: (context, value, _) => Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            value.toStringAsFixed(1),
+                            style: AppTextStyles.display(color: fuelColor)
+                                .copyWith(
+                              fontSize: 36 * scale,
+                              letterSpacing: -1,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                              bottom: 4 * scale,
+                              left: 3 * scale,
+                            ),
+                            child: Text(
+                              'kg',
+                              style: AppTextStyles.caption(
+                                color: AppColors.textMuted,
+                              ).copyWith(fontSize: 12 * scale),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                const SizedBox(height: 4),
                 Row(
                   children: [
                     Text(
-                      _formatTime(data.bestLapTime),
+                      '${data.fuelPerLap.toStringAsFixed(2)} kg/lap',
                       style: AppTextStyles.caption(color: AppColors.textMuted)
-                          .copyWith(fontSize: 11 * scale),
+                          .copyWith(fontSize: 10 * scale),
                     ),
                     const Spacer(),
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(end: delta),
-                      duration: const Duration(milliseconds: 250),
-                      builder: (context, d, _) => AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-                        style: AppTextStyles.bodyBold(color: deltaColor)
-                            .copyWith(fontSize: 13 * scale),
-                        child: Text(_formatDelta(d)),
-                      ),
+                    Text(
+                      '~$lapsLeft laps',
+                      style: AppTextStyles.label(color: fuelColor)
+                          .copyWith(fontSize: 10 * scale),
                     ),
                   ],
                 ),
-                const Spacer(),
+                const SizedBox(height: 6),
                 TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: lapProgress),
-                  duration: const Duration(milliseconds: 220),
+                  tween: Tween<double>(end: fuelFraction),
+                  duration: const Duration(milliseconds: 400),
                   builder: (context, fraction, _) => ClipRRect(
                     borderRadius: BorderRadius.circular(4),
                     child: SizedBox(
@@ -128,8 +142,8 @@ class _LapDeltaWidgetState extends State<LapDeltaWidget> {
                             widthFactor: fraction,
                             alignment: Alignment.centerLeft,
                             child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              color: deltaColor,
+                              duration: const Duration(milliseconds: 300),
+                              color: fuelColor,
                             ),
                           ),
                         ],
