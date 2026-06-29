@@ -9,6 +9,8 @@
 
 import 'dart:ui';
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
@@ -128,6 +130,23 @@ class _TelemetryMenuRoute extends PopupRoute<void> {
   }
 }
 
+// ── Glass preset ────────────────────────────────────────────────────────────
+
+const _kMenuRadius = BorderRadius.all(Radius.circular(18));
+const _kMenuGlass = LiquidGlassThemeData(
+  tintColor: Color(0xFF888888),
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.08,
+  vibrancyIntensity: 0.04,
+  edgeLightColor: Color(0x28888888),
+  edgeShadowColor: Color(0x28888888),
+  borderRadius: _kMenuRadius,
+  innerShadowBlurRadius: 0.0,
+);
+const _kMenuFill = Color(0x12888888);
+
 // ── UI components ───────────────────────────────────────────────────────
 
 // Elevated card containing the driver picker (optional) and action rows;
@@ -155,87 +174,84 @@ class _MenuCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 320),
-        child: Container(
-          decoration: BoxDecoration(
-            color: AppColors.surfaceElevated,
-            borderRadius: BorderRadius.circular(18),
-            border: Border.all(
-              color: AppColors.white.withValues(alpha: 0.08),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.55),
-                blurRadius: 48,
-                spreadRadius: 4,
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(18, 16, 14, 14),
-                child: Row(
+        child: CupertinoTheme(
+          data: const CupertinoThemeData(brightness: Brightness.dark),
+          child: CupertinoLiquidGlass(
+            theme: _kMenuGlass,
+            borderRadius: _kMenuRadius,
+            child: ClipRRect(
+              borderRadius: _kMenuRadius,
+              child: ColoredBox(
+                color: _kMenuFill,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Text(widgetLabel, style: AppTextStyles.bodyBold()),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () => Navigator.of(context).maybePop(),
-                      child: const Icon(
-                        Icons.close_rounded,
-                        size: 18,
-                        color: AppColors.textMuted,
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(18, 16, 14, 14),
+                      child: Row(
+                        children: [
+                          Text(widgetLabel, style: AppTextStyles.bodyBold()),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () => Navigator.of(context).maybePop(),
+                            child: const Icon(
+                              Icons.close_rounded,
+                              size: 18,
+                              color: AppColors.textMuted,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    if (hasDrivers) ...[
+                      const Divider(height: 1, color: AppColors.divider),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(18, 10, 18, 4),
+                        child: Text(
+                          'DRIVER',
+                          style: AppTextStyles.label(color: AppColors.textMuted),
+                        ),
+                      ),
+                      for (final driver in TelemetryMockData.drivers)
+                        _DriverRow(
+                          driver: driver,
+                          isSelected: driver['id'] == currentDriverId,
+                          onTap: () {
+                            onDriverSelected!(driver['id'] as String);
+                            Navigator.of(context).maybePop();
+                          },
+                        ),
+                      const SizedBox(height: 6),
+                    ],
+                    const Divider(height: 1, color: AppColors.divider),
+                    if (onReset != null)
+                      _ActionRow(
+                        icon: Icons.restart_alt_rounded,
+                        label: 'Reset size',
+                        color: AppColors.textSecondary,
+                        onTap: () {
+                          Navigator.of(context).maybePop();
+                          onReset!();
+                        },
+                      ),
+                    if (onRemove != null) ...[
+                      const Divider(height: 1, color: AppColors.divider),
+                      _ActionRow(
+                        icon: Icons.delete_outline_rounded,
+                        label: 'Remove widget',
+                        color: AppColors.red,
+                        onTap: () {
+                          Navigator.of(context).maybePop();
+                          onRemove!();
+                        },
+                      ),
+                    ],
+                    const SizedBox(height: 4),
                   ],
                 ),
               ),
-              if (hasDrivers) ...[
-                const Divider(height: 1, color: AppColors.divider),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(18, 10, 18, 4),
-                  child: Text(
-                    'DRIVER',
-                    style: AppTextStyles.label(color: AppColors.textMuted),
-                  ),
-                ),
-                for (final driver in TelemetryMockData.drivers)
-                  _DriverRow(
-                    driver: driver,
-                    isSelected: driver['id'] == currentDriverId,
-                    onTap: () {
-                      onDriverSelected!(driver['id'] as String);
-                      Navigator.of(context).maybePop();
-                    },
-                  ),
-                const SizedBox(height: 6),
-              ],
-              const Divider(height: 1, color: AppColors.divider),
-              if (onReset != null)
-                _ActionRow(
-                  icon: Icons.restart_alt_rounded,
-                  label: 'Reset size',
-                  color: AppColors.textSecondary,
-                  onTap: () {
-                    Navigator.of(context).maybePop();
-                    onReset!();
-                  },
-                ),
-              if (onRemove != null) ...[
-                const Divider(height: 1, color: AppColors.divider),
-                _ActionRow(
-                  icon: Icons.delete_outline_rounded,
-                  label: 'Remove widget',
-                  color: AppColors.red,
-                  onTap: () {
-                    Navigator.of(context).maybePop();
-                    onRemove!();
-                  },
-                ),
-              ],
-              const SizedBox(height: 4),
-            ],
+            ),
           ),
         ),
       ),
