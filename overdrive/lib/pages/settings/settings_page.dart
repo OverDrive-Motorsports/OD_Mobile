@@ -1,9 +1,9 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## SettingsPage - Settings screen composed with shared OverDrive widgets.
+ ## settings_page.dart - Settings screen with grouped toggle rows and action buttons backed by immutable definitions.
  ##
  */
 
@@ -145,11 +145,8 @@ class SettingsModalContent {
   final String dismissLabel;
 }
 
-/// Scrollable settings content.
-///
-/// Designed to be embeddable: used both by [SettingsPage] (standalone route)
-/// and by [ProfilePage] (tab inside the profile IndexedStack). Has no Scaffold
-/// so it avoids nested navigation scaffolds.
+/// Scrollable settings content embeddable in both [SettingsPage] (standalone route)
+/// and [ProfilePage] (tab in IndexedStack) — has no Scaffold to avoid nesting.
 class SettingsBody extends StatefulWidget {
   const SettingsBody({super.key});
 
@@ -307,9 +304,7 @@ class _SettingsBodyState extends State<SettingsBody> {
 }
 
 /// Standalone settings page — thin Scaffold wrapper around [SettingsBody].
-///
-/// Used when navigating directly to [RoutePaths.settings]; the profile page
-/// embeds [SettingsBody] directly to avoid a nested Scaffold.
+/// Used for direct navigation to [RoutePaths.settings]; [ProfilePage] embeds [SettingsBody] directly.
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 

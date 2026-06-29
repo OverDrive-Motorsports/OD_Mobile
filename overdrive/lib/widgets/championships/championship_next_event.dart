@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## championship_next_event.dart - Next event countdown card for championship pages.
+ ## championship_next_event.dart - Off-season card showing the countdown and details for the next championship event.
  ##
  */
 
@@ -13,9 +13,7 @@ import 'package:flutter/cupertino.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/championship/championship_circuit.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 
@@ -29,9 +27,7 @@ final _kCardTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// ChampionshipNextEventCard
-// ---------------------------------------------------------------------------
+// ── ChampionshipNextEventCard ─────────────────────────────────────────────
 
 /// Off-season card showing the next known event name, location, and countdown.
 class ChampionshipNextEventCard extends StatelessWidget {
@@ -103,10 +99,9 @@ class ChampionshipNextEventCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────
 
+// Single countdown unit displaying a numeric value and its label (days/hours/min).
 class _CountdownCell extends StatelessWidget {
   const _CountdownCell({required this.value, required this.label});
 
@@ -131,6 +126,7 @@ class _CountdownCell extends StatelessWidget {
   }
 }
 
+// Faint interpunct used as a visual separator between countdown cells.
 class _CountdownDot extends StatelessWidget {
   const _CountdownDot();
 
@@ -148,6 +144,7 @@ class _CountdownDot extends StatelessWidget {
   }
 }
 
+// Decomposed countdown (days, hours, minutes) derived from a Duration to the event start.
 class _EventCountdown {
   const _EventCountdown({
     required this.days,

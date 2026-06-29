@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## error_message.dart - Shared inline and banner error presentation widgets.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## error_message.dart - Inline error message widget used below form fields and action results.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,9 +13,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kBannerEdgeColor = Color(0x80FF3030);
 
@@ -29,9 +27,7 @@ final _kBannerTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kBannerEdgeColor,
 );
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+// ── Public API ────────────────────────────────────────────────────────────
 
 /// Visual variants supported by the shared error message widget.
 enum ErrorMessageVariant { inline, banner }
@@ -61,9 +57,7 @@ class ErrorMessage extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Inline
-// ---------------------------------------------------------------------------
+// ── Inline ────────────────────────────────────────────────────────────────
 
 class _InlineErrorMessage extends StatelessWidget {
   const _InlineErrorMessage({required this.message});
@@ -97,9 +91,7 @@ class _InlineErrorMessage extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Banner
-// ---------------------------------------------------------------------------
+// ── Banner ────────────────────────────────────────────────────────────────
 
 class _BannerErrorMessage extends StatelessWidget {
   const _BannerErrorMessage({required this.message, this.subtitle});

@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## replay_page.dart - Temporary replay library screen.
+ ## replay_page.dart - Replay route shell passing a championship-provided title to the shared placeholder page.
  ##
  */
 

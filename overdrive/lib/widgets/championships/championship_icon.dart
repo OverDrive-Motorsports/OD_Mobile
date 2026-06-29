@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## championship_icon.dart - Reusable championship icon tile.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## championship_icon.dart - Championship series icon resolved by series ID, used in cards and headers.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 

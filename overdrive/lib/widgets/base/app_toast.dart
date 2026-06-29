@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## app_toast.dart - Shared singleton toast overlay for temporary feedback.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## app_toast.dart - Ephemeral toast notification with auto-dismiss and slide-up animation.
+ ##
+ */
 
 import 'dart:async';
 
@@ -15,9 +15,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kToastBorderColor = Color(0x22FFFFFF);
 
@@ -137,6 +135,7 @@ class _AppToastEntryState extends State<_AppToastEntry>
     super.dispose();
   }
 
+  // Runs the reverse animation then notifies the overlay controller to remove this entry.
   Future<void> _dismiss() async {
     if (_isDismissing || !mounted) {
       return;
@@ -204,6 +203,7 @@ class _AppToastEntryState extends State<_AppToastEntry>
   }
 }
 
+// Maps a ToastType to the appropriate icon and accent colour for the toast pill.
 class _ToastStyle {
   const _ToastStyle({required this.icon, required this.color});
 

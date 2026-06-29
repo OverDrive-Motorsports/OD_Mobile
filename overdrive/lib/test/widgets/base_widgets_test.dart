@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## base_widgets_test.dart - Widget tests for shared base UI primitives.
+ ## base_widgets_test.dart - Widget tests for shared base components: AppButton, AppTextField, AppModal, AppToast.
  ##
  */
 

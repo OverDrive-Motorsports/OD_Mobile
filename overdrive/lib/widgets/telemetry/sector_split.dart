@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [sector_split.dart] - Telemetry widget displaying per-sector lap times with colour-coded delta vs. best.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,9 +16,30 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+// Formats a sector time in seconds to "S.mmm" notation; returns "—" when null.
+String _fmtSector(double? t) {
+  if (t == null) return '—';
+  final s = t.floor();
+  final ms = ((t % 1) * 1000).toInt();
+  return '$s.${ms.toString().padLeft(3, '0')}';
+}
+
+// Maps a sector time to a status colour: gold = personal best, green = near-best, red = slow.
+Color _sectorColor(double? time, double best) {
+  if (time == null) return AppColors.textMuted;
+  final d = time - best;
+  if (d < -0.01) return AppColors.gold;
+  if (d < 0.08) return AppColors.green;
+  return AppColors.red;
+}
+
+// ── Public widget ──────────────────────────────────────────────────────────
+
+// Root stateful widget; holds the selected driver and delegates layout to small/large sub-widgets.
 class SectorSplit extends StatefulWidget {
   const SectorSplit({this.initialDriverId = 'VER', super.key});
-
   final String initialDriverId;
 
   @override
@@ -25,18 +55,16 @@ class _SectorSplitState extends State<SectorSplit> {
     _driverId = widget.initialDriverId;
   }
 
-  String _fmt(double? t) {
-    if (t == null) return '—';
-    final s = t.floor();
-    final ms = ((t % 1) * 1000).toInt();
-    return '$s.${ms.toString().padLeft(3, '0')}';
-  }
-
-  String _fmtDelta(double? actual, double best) {
-    if (actual == null) return '';
-    final delta = actual - best;
-    final sign = delta < 0 ? '' : '+';
-    return '$sign${delta.toStringAsFixed(3)}';
+  void _showMenu(BuildContext context) {
+    final actions = TelemetryItemActions.maybeOf(context);
+    showTelemetryWidgetMenu(
+      context,
+      widgetLabel: 'Sector Split',
+      currentDriverId: _driverId,
+      onDriverSelected: (id) => setState(() => _driverId = id),
+      onReset: actions?.onReset,
+      onRemove: actions?.onRemove,
+    );
   }
 
   @override
@@ -44,67 +72,16 @@ class _SectorSplitState extends State<SectorSplit> {
     final data = context.watch<TelemetrySimulator>().getSnapshot(_driverId);
 
     return GestureDetector(
-      onTap: () {
-        final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(
-          context,
-          widgetLabel: 'Sector Split',
-          currentDriverId: _driverId,
-          onDriverSelected: (id) => setState(() => _driverId = id),
-          onReset: actions?.onReset,
-          onRemove: actions?.onRemove,
-        );
-      },
-      child: Container(
-        decoration: telemetryDecoration(),
-        padding: const EdgeInsets.all(14),
+      onTap: () => _showMenu(context),
+      child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final scale = (w / 160).clamp(0.6, 1.6);
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'SECTORS',
-                      style: AppTextStyles.label(color: AppColors.textMuted)
-                          .copyWith(fontSize: 10 * scale),
-                    ),
-                    const Spacer(),
-                    Text(
-                      _driverId,
-                      style: AppTextStyles.label(color: AppColors.gold)
-                          .copyWith(fontSize: 10 * scale),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      for (var i = 0; i < 3; i++) ...[
-                        Expanded(
-                          child: _SectorBox(
-                            label: 'S${i + 1}',
-                            time: data.sectorTimes[i],
-                            best: data.bestSectorTimes[i],
-                            delta: _fmtDelta(
-                              data.sectorTimes[i],
-                              data.bestSectorTimes[i],
-                            ),
-                            formatted: _fmt(data.sectorTimes[i]),
-                            scale: scale,
-                          ),
-                        ),
-                        if (i < 2) SizedBox(width: 6 * scale),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
+            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallSectors(data: data, driverId: _driverId)
+                  : _LargeSectors(data: data, driverId: _driverId),
             );
           },
         ),
@@ -113,89 +90,151 @@ class _SectorSplitState extends State<SectorSplit> {
   }
 }
 
-class _SectorBox extends StatelessWidget {
-  const _SectorBox({
-    required this.label,
-    required this.time,
-    required this.best,
-    required this.delta,
-    required this.formatted,
-    required this.scale,
-  });
+// ── Small ─────────────────────────────────────────────────────────────────────
 
-  final String label;
-  final double? time;
-  final double best;
-  final String delta;
-  final String formatted;
-  final double scale;
-
-  Color get _bgColor {
-    if (time == null) return AppColors.surface;
-    final d = time! - best;
-    if (d < -0.01) return AppColors.gold.withValues(alpha: 0.2);
-    if (d < 0.05) return AppColors.green.withValues(alpha: 0.15);
-    return AppColors.red.withValues(alpha: 0.15);
-  }
-
-  Color get _borderColor {
-    if (time == null) return AppColors.border;
-    final d = time! - best;
-    if (d < -0.01) return AppColors.gold.withValues(alpha: 0.7);
-    if (d < 0.05) return AppColors.green.withValues(alpha: 0.6);
-    return AppColors.red.withValues(alpha: 0.6);
-  }
-
-  Color get _textColor {
-    if (time == null) return AppColors.textMuted;
-    final d = time! - best;
-    if (d < -0.01) return AppColors.gold;
-    if (d < 0.05) return AppColors.green;
-    return AppColors.red;
-  }
+class _SmallSectors extends StatelessWidget {
+  const _SmallSectors({required this.data, required this.driverId});
+  final TelemetrySnapshot data;
+  final String driverId;
 
   @override
   Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'SECTORS', driverId: driverId),
+        Expanded(
+          child: Row(
+            children: [
+              for (var i = 0; i < 3; i++) ...[
+                Expanded(
+                  child: _SectorCard(
+                    label: 'S${i + 1}',
+                    time: data.sectorTimes[i],
+                    best: data.bestSectorTimes[i],
+                    large: false,
+                  ),
+                ),
+                if (i < 2) const SizedBox(width: 6),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Large ─────────────────────────────────────────────────────────────────────
+
+class _LargeSectors extends StatelessWidget {
+  const _LargeSectors({required this.data, required this.driverId});
+  final TelemetrySnapshot data;
+  final String driverId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'SECTORS', driverId: driverId),
+        Expanded(
+          child: Row(
+            children: [
+              for (var i = 0; i < 3; i++) ...[
+                Expanded(
+                  child: _SectorCard(
+                    label: 'S${i + 1}',
+                    time: data.sectorTimes[i],
+                    best: data.bestSectorTimes[i],
+                    large: true,
+                  ),
+                ),
+                if (i < 2) const SizedBox(width: 6),
+              ],
+            ],
+          ),
+        ),
+        // Best times row
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Text('BEST', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+            const Spacer(),
+            for (var i = 0; i < 3; i++) ...[
+              SizedBox(
+                width: 46,
+                child: Text(
+                  _fmtSector(data.bestSectorTimes[i]),
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+                ),
+              ),
+              if (i < 2) const SizedBox(width: 6),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// ── Sector card ───────────────────────────────────────────────────────────────
+
+class _SectorCard extends StatelessWidget {
+  const _SectorCard({required this.label, required this.time, required this.best, required this.large});
+  final String label;
+  final double? time;
+  final double best;
+  final bool large;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _sectorColor(time, best);
+    final formatted = _fmtSector(time);
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
-      padding: EdgeInsets.symmetric(
-        horizontal: 6 * scale,
-        vertical: 10 * scale,
-      ),
       decoration: BoxDecoration(
-        color: _bgColor,
+        color: time != null ? color.withValues(alpha: 0.10) : AppColors.surface.withValues(alpha: 0.50),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: _borderColor),
+        border: Border.all(
+          color: time != null ? color.withValues(alpha: 0.45) : AppColors.border.withValues(alpha: 0.30),
+        ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             label,
-            style: AppTextStyles.label(color: AppColors.textMuted)
-                .copyWith(fontSize: 9 * scale),
+            style: AppTextStyles.label(color: AppColors.textMuted).copyWith(fontSize: 9, letterSpacing: 0.4),
           ),
-          SizedBox(height: 4 * scale),
+          SizedBox(height: large ? 6 : 4),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               formatted,
-              style: AppTextStyles.bodyBold(color: _textColor)
-                  .copyWith(fontSize: 12 * scale),
-              textAlign: TextAlign.center,
+              style: AppTextStyles.bodyBold(color: time != null ? color : AppColors.textMuted)
+                  .copyWith(fontSize: large ? 13 : 11),
             ),
           ),
-          if (delta.isNotEmpty) ...[
-            SizedBox(height: 2 * scale),
+          // Delta vs best — only show when completed and large mode
+          if (large && time != null) ...[
+            const SizedBox(height: 2),
             Text(
-              delta,
-              style: AppTextStyles.label(color: _textColor)
-                  .copyWith(fontSize: 9 * scale),
-              textAlign: TextAlign.center,
+              _delta(time!, best),
+              style: AppTextStyles.caption(color: color.withValues(alpha: 0.80)).copyWith(fontSize: 9),
             ),
           ],
         ],
       ),
     );
+  }
+
+  String _delta(double time, double best) {
+    final d = time - best;
+    if (d < -0.01) return 'BEST';
+    final sign = d >= 0 ? '+' : '';
+    return '$sign${d.toStringAsFixed(3)}';
   }
 }

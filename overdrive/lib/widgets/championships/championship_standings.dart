@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## championship_standings.dart - Reusable championship standings card.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## championship_standings.dart - Standings table widget rendering driver or team points entries.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,9 +15,7 @@ import 'package:flutter/physics.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass themes
-// ---------------------------------------------------------------------------
+// ── Glass themes ──────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 
@@ -40,9 +38,7 @@ final _kSwitchTrackTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// Data models
-// ---------------------------------------------------------------------------
+// ── Data models ───────────────────────────────────────────────────────────
 
 /// A single row item used in a standings section.
 @immutable
@@ -90,9 +86,7 @@ class ChampionshipStandingsSection {
   final List<ChampionshipStandingEntry> entries;
 }
 
-// ---------------------------------------------------------------------------
-// ChampionshipStandings
-// ---------------------------------------------------------------------------
+// ── ChampionshipStandings ─────────────────────────────────────────────────
 
 /// A standings card that can switch between multiple sections.
 class ChampionshipStandings extends StatefulWidget {
@@ -183,10 +177,9 @@ class _ChampionshipStandingsState extends State<ChampionshipStandings> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _StandingsSwitch — spring-physics liquid pill selector
-// ---------------------------------------------------------------------------
+// ── _StandingsSwitch — spring-physics liquid pill selector ────────────────
 
+// Spring-physics pill selector that switches between standings sections (e.g. Drivers / Teams).
 class _StandingsSwitch extends StatefulWidget {
   const _StandingsSwitch({
     required this.sections,
@@ -299,10 +292,9 @@ class _StandingsSwitchState extends State<_StandingsSwitch>
   }
 }
 
-// ---------------------------------------------------------------------------
-// _SwitchLabel — label that fades white as its tab becomes active
-// ---------------------------------------------------------------------------
+// ── _SwitchLabel — label that fades white as its tab becomes active ────────
 
+// Section tab label that interpolates from secondary to white as its tab becomes active.
 class _SwitchLabel extends StatelessWidget {
   const _SwitchLabel({
     required this.index,
@@ -333,10 +325,9 @@ class _SwitchLabel extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _SwitchPillPainter — velocity-stretched pill (same logic as navbar)
-// ---------------------------------------------------------------------------
+// ── _SwitchPillPainter — velocity-stretched pill (same logic as navbar) ───
 
+// Velocity-stretched pill painter — same elastic logic as the navbar _SelectorPainter.
 class _SwitchPillPainter extends CustomPainter {
   _SwitchPillPainter({
     required this.position,
@@ -396,10 +387,9 @@ class _SwitchPillPainter extends CustomPainter {
   bool shouldRepaint(_SwitchPillPainter old) => tabCount != old.tabCount;
 }
 
-// ---------------------------------------------------------------------------
-// _StandingsHeader
-// ---------------------------------------------------------------------------
+// ── _StandingsHeader ──────────────────────────────────────────────────────
 
+// Column-label row (position, name, optional middle, points) aligned with the entry rows below.
 class _StandingsHeader extends StatelessWidget {
   const _StandingsHeader({required this.section});
 
@@ -444,10 +434,9 @@ class _StandingsHeader extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _StandingsList
-// ---------------------------------------------------------------------------
+// ── _StandingsList ────────────────────────────────────────────────────────
 
+// Vertical list of _StandingRow widgets for the active section, keyed for AnimatedSwitcher.
 class _StandingsList extends StatelessWidget {
   const _StandingsList({required this.section, super.key});
 
@@ -471,10 +460,9 @@ class _StandingsList extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _StandingRow
-// ---------------------------------------------------------------------------
+// ── _StandingRow ──────────────────────────────────────────────────────────
 
+// Single standings row: position number, avatar, name/subtitle, optional middle value, and points.
 class _StandingRow extends StatelessWidget {
   const _StandingRow({
     required this.entry,
@@ -548,10 +536,9 @@ class _StandingRow extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _EntryAvatar
-// ---------------------------------------------------------------------------
+// ── _EntryAvatar ──────────────────────────────────────────────────────────
 
+// Circular avatar that shows a network image when available, falling back to two-letter initials.
 class _EntryAvatar extends StatelessWidget {
   const _EntryAvatar({required this.entry});
 

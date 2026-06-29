@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## app_button.dart - Liquid-glass pill button with iOS 26 press animation.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## app_button.dart - Reusable button component in primary, secondary, and danger variants.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,41 +13,35 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme — explicit dark so CupertinoTheme context is irrelevant.
-// Tuned for a small pill surface: lighter blur, same uniform border as navbar.
-// ---------------------------------------------------------------------------
+// ── Glass theme — "Moyen — gris" ─────────────────────────────────────────
 
-const _kBorderColor = Color(0x26FFFFFF); // ~15% white
-const _kBorderColorPressed = Color(0x40FFFFFF); // brighter on press
+const _kBorderColor = Color(0x28888888);
+const _kBorderColorPressed = Color(0x40888888);
+const _kFillColor = Color(0x12888888);
 
 final _kButtonTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.10,
-  blurSigma: 28.0,
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
   noiseOpacity: 0.0,
-  specularOpacity: 0.10,
+  specularOpacity: 0.08,
   vibrancyIntensity: 0.04,
   edgeLightColor: _kBorderColor,
   edgeShadowColor: _kBorderColor,
 );
 
 final _kButtonThemePressed = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.18,
-  blurSigma: 28.0,
+  tintOpacity: 0.20,
+  blurSigma: 22.0,
   noiseOpacity: 0.0,
-  specularOpacity: 0.14,
-  vibrancyIntensity: 0.08,
+  specularOpacity: 0.12,
+  vibrancyIntensity: 0.06,
   edgeLightColor: _kBorderColorPressed,
   edgeShadowColor: _kBorderColorPressed,
 );
 
-// ---------------------------------------------------------------------------
-// AppButton
-// ---------------------------------------------------------------------------
+// ── AppButton ─────────────────────────────────────────────────────────────
 
-/// Shared liquid-glass button for labeled actions and icon-only actions.
-///
-/// Pass only [icon] (no [label]) for a compact icon-only variant.
+/// Shared liquid-glass button for labeled or icon-only actions (pass [icon] without [label] for the compact variant).
 class AppButton extends StatefulWidget {
   const AppButton({
     this.label,
@@ -143,21 +137,27 @@ class _AppButtonState extends State<AppButton>
                   key: ValueKey(_ctrl.value > 0.5),
                   theme: _ctrl.value > 0.5 ? _kButtonThemePressed : _kButtonTheme,
                   borderRadius: BorderRadius.circular(999),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      minHeight: 44,
-                      minWidth: _isIconOnly ? 44 : 0,
-                    ),
-                    child: Padding(
-                      padding: _isIconOnly
-                          ? const EdgeInsets.all(10)
-                          : const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 12,
-                            ),
-                      child: _isIconOnly
-                          ? _buildIconContent()
-                          : _buildLabelContent(),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(999),
+                    child: ColoredBox(
+                      color: _kFillColor,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: 44,
+                          minWidth: _isIconOnly ? 44 : 0,
+                        ),
+                        child: Padding(
+                          padding: _isIconOnly
+                              ? const EdgeInsets.all(10)
+                              : const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                  vertical: 12,
+                                ),
+                          child: _isIconOnly
+                              ? _buildIconContent()
+                              : _buildLabelContent(),
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -204,9 +204,7 @@ class _AppButtonState extends State<AppButton>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────
 
 /// Returns a 5×4 color matrix that shifts brightness by [delta] (−1…+1).
 List<double> _brightnessMatrix(double delta) {

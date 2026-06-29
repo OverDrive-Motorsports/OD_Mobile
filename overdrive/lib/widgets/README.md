@@ -8,406 +8,127 @@ Pages should compose these widgets instead of rebuilding the same UI patterns.
 - Keep widgets reusable and explicitly typed.
 - Keep business logic outside UI primitives whenever possible.
 - Prefer small, composable files over page-specific one-off rendering.
-- Reuse shared visual primitives such as `GlassPill` or the base widget library before adding new styles.
 - Use `AppColors` and `AppTextStyles` from `app_theme.dart` for shared color and typography choices.
-## Base Widgets
+- All glass surfaces use `cupertino_liquid_glass` with the dark theme preset.
 
-### `base/od_button.dart`
+---
 
-Reusable pill button for standard actions across the app.
+## Directory Structure
 
-Main API:
-- `OdButton`
+```
+widgets/
+├── base/               Shared design-system primitives (buttons, modals, inputs, toasts, nav overlay)
+├── calendar/           Monthly calendar grid and event list
+├── championships/      Championship cards: circuit, weather, schedule, standings, top 3
+├── navigation/         Bottom navigation shell (GoRouter integration)
+├── telemetry/          22 live telemetry data cards + 4 support files for the freeform grid
+└── tv/                 Live race video player and stream selector sheet
+```
 
-Props:
-- `label`: button text.
-- `onPressed`: tap callback. Passing `null` disables the button.
-- `leadingIcon`: optional icon displayed before the label.
-- `isLoading`: replaces the icon with a spinner and disables taps.
-- `fullWidth`: stretches the button to the available width.
+---
 
-Behavior:
-- Uses a 44px minimum touch target.
-- Applies a subtle press animation for active taps.
-- Keeps one consistent dark outlined visual style for the whole app.
+## `base/`
 
-### `base/od_text_field.dart`
+Design-system primitives shared across every page.
 
-Reusable rounded text field inspired by Cupertino input styling.
+| File | Widget | Purpose |
+|------|--------|---------|
+| `app_button.dart` | `AppButton` | Primary, secondary, and danger button variants with press animation |
+| `app_modal.dart` | `AppModal` / `showAppModal` | Bottom-sheet modal with blurred backdrop, title, body, and action buttons |
+| `app_switch.dart` | `AppSwitch` | Liquid-glass toggle switch with spring physics; optionally paired with a label |
+| `app_text_field.dart` | `AppTextField` | Themed text input with label, hint, and inline validation error display |
+| `app_toast.dart` | `AppToast` / `showAppToast` | Auto-dismiss slide-up toast notification; only one visible at a time |
+| `demo_liquid.dart` | `DemoLiquid` | Design-review showcase of all `cupertino_liquid_glass` theme presets |
+| `error_message.dart` | `ErrorMessage` | Inline error text used below form fields and action results |
+| `menu_overlay.dart` | `MenuOverlay` | App-wide bottom navigation overlay providing page shortcuts |
+| `search_bar.dart` | `AppSearchBar` | Focus-aware search input with a clear button; presentational only |
 
-Main API:
-- `OdTextField`
+---
 
-Props:
-- `placeholder`: placeholder text.
-- `controller`: optional external controller. The widget creates one internally when omitted.
-- `obscureText`: hides the text for passwords or secrets.
-- `keyboardType`: configures the keyboard type.
-- `errorMessage`: optional inline error message displayed under the field.
-- `leadingIcon`: optional icon inside the field.
-- `onClear`: optional callback enabling the clear action when text is not empty.
-- `onChanged`: input callback.
+## `calendar/`
 
-Behavior:
-- Uses a dark rounded container and white input text.
-- Uses the app accent color for the cursor.
-- Highlights the field in red when `errorMessage` is present.
+| File | Widget | Purpose |
+|------|--------|---------|
+| `event_calendar.dart` | `EventCalendar` | Vertically scrolling race event cards with past/ongoing/upcoming styling |
+| `monthly_calendar.dart` | `MonthlyCalendar` | Scrollable month grid with event marker dots and day selection |
 
-### `base/od_error_message.dart`
+`event_calendar.dart` also exports `CalendarEventMarker`, `CalendarScheduleEvent`, and
+`CalendarScheduleStatus` — the calendar domain models consumed by `CalendarPage`.
 
-Reusable error presentation widget with two visual variants.
+---
 
-Main API:
-- `OdErrorMessage`
-- `ErrorMessageVariant`
+## `championships/`
 
-Props:
-- `message`: required main message.
-- `subtitle`: optional secondary text for the banner variant.
-- `variant`: either `inline` or `banner`.
+| File | Widget | Purpose |
+|------|--------|---------|
+| `championship_circuit_weather.dart` | `ChampionshipCircuitWeatherCard` | Circuit metadata + current weather conditions |
+| `championship_icon.dart` | `ChampionshipIcon` | Series icon resolved by championship ID |
+| `championship_next_event.dart` | `ChampionshipNextEventCard` | Countdown card for the next off-season event |
+| `championship_schedule.dart` | `ChampionshipScheduleCard` | Weekend session list with completion status |
+| `championship_standings.dart` | `ChampionshipStandingsWidget` | Driver/team standings table with animated tab switcher |
+| `championship_top3.dart` | `ChampionshipTop3Card` | Live timing podium card showing top-3 drivers with gap, tyre, and team color |
 
-Behavior:
-- `inline` is intended for field-level validation.
-- `banner` is intended for section or page-level feedback.
+See [`championships/README.md`](championships/README.md) for detailed API documentation.
 
-### `base/od_toast.dart`
+---
 
-Singleton toast overlay for temporary feedback messages.
+## `navigation/`
 
-Main API:
-- `OdToast.show`
-- `ToastType`
+| File | Widget | Purpose |
+|------|--------|---------|
+| `navigation_shell.dart` | `NavigationShell` | Bottom nav bar wrapping GoRouter's `StatefulShellRoute.indexedStack` for five main branches |
 
-Arguments:
-- `context`
-- `message`
-- `type`
-- `duration`
+---
 
-Behavior:
-- Only one toast can be visible at a time.
-- Showing a new toast removes the currently displayed one first.
-- Appears with slide-up and fade animations.
+## `telemetry/`
 
-### `base/od_modal.dart`
+22 live telemetry data cards plus 4 support files for the freeform drag-and-resize grid.
 
-Reusable bottom sheet helper with a blurred backdrop and rounded top corners.
-
-Main API:
-- `OdModal.show`
-
-Arguments:
-- `context`
-- `title`
-- `child`
-- `showHandle`
-- `isDismissible`
-
-Behavior:
-- Uses a custom popup route.
-- Keeps the sheet slightly below the screen edge for a native floating-sheet feel.
-- Supports tap-outside dismissal and drag-down dismissal when enabled.
-
-### `base/od_switch.dart`
-
-Reusable Cupertino switch row.
-
-Main API:
-- `OdSwitch`
-
-Props:
-- `value`
-- `onChanged`
-- `label`
-
-Behavior:
-- Keeps native Cupertino switch dimensions.
-- Uses the OverDrive red accent for the active track.
-- When `label` is present, the widget renders a 44px high row.
-
-## Shared Primitives
-
-### `glass_pill.dart`
-
-Reusable translucent pill surface used by compact controls.
-
-Main API:
-- `GlassPill`
-
-Props:
-- `child`
-- `highlighted`
-- `disabled`
-- `padding`
-- `backgroundColor`
-- `borderColor`
-- `borderRadius`
-
-Typical usage:
-- menu trigger
-- search surface
-- future compact floating controls
-
-### `search_bar.dart`
-
-Presentational search bar with externalized state and callbacks.
-
-Main API:
-- `SearchBar`
-- `SearchBarProps`
-
-`SearchBarProps` fields:
-- `controller`
-- `onSearch`
-- `onClear`
-- `placeholder`
-- `enabled`
-- `autofocus`
-- `focusNode`
-- `textInputAction`
-
-Behavior:
-- Displays a clear action when the field is focused or non-empty.
-- Does not perform searches by itself.
-- Does not own search business logic.
-
-### `menu_overlay.dart`
-
-Floating top-level menu overlay used above pages.
-
-Main API:
-- `MenuOverlay`
-
-Related widgets in the same file:
-- `MenuButton`
-- `MenuPanel`
-- `MenuAction`
-- `MenuEntry`
-
-Behavior:
-- Displays the `OD` brand mark and the menu trigger.
-- Opens a floating panel with a `Home` navigation action and backend health action.
-- Uses `HealthService` for the health check action.
-
-## Calendar Widgets
-
-### `calendar/monthly_calendar.dart`
-
-Reusable monthly calendar view decoupled from page logic.
-
-Main API:
-- `MonthlyCalendar`
-
-Props:
-- `selectedDate`
-- `initialMonth`
-- `eventsByDate`
-- `onDateSelected`
-- `onMonthChanged`
-- `isLoading`
-- `firstAvailableMonth`
-- `lastAvailableMonth`
-- `today`
-- `weekdayLabels`
-- `monthLabelBuilder`
-
-Behavior:
-- Uses a vertical `PageView` to navigate months.
-- Supports external selection control.
-- Remains presentational and demo-data free.
-
-### `calendar/event_calendar.dart`
-
-Reusable list of schedule cards and related calendar models.
-
-Main API:
-- `EventCalendar`
-- `CalendarEventMarker`
-- `CalendarScheduleEvent`
-- `CalendarScheduleStatus`
-
-Props on `EventCalendar`:
-- `events`
-- `today`
-- `selectedDate`
-- `onEventTap`
-- `emptyTitle`
-- `emptySubtitle`
-
-Behavior:
-- Distinguishes past, ongoing and upcoming events.
-- Supports empty-state rendering.
-- Stays presentation-focused so it can be reused on multiple pages.
-
-## Championship Widgets
-
-### `championships/championship_icon.dart`
-
-Reusable championship tile with centered logo content.
-
-Main API:
-- `ChampionshipIcon`
-
-Props:
-- `name`
-- `logoAsset`
-- `subtitle`
-- `isFavorite`
-- `onTap`
-
-Behavior:
-- Supports both asset logos and emoji fallback content.
-- Reuses `GlassPill` for the circular icon surface.
-
-### `championships/championship_top3.dart`
-
-Compact live podium card used by championship live pages.
-
-Main API:
-- `ChampionshipTop3`
-
-Props:
-- `entries`
-- `accentColor`
-- `label`
-
-Behavior:
-- Displays the first 3 live entries in a compact 3-column layout.
-- Supports optional per-category labels for multi-class live timing.
-- Gives the leader a stronger visual emphasis than P2 and P3.
-
-### `championships/championship_schedule.dart`
-
-Reusable weekend program card.
-
-Main API:
-- `ChampionshipSchedule`
-
-Props:
-- `sessions`
-- `now`
-- `title`
-
-Behavior:
-- Automatically identifies the next upcoming session.
-- Displays session badges for completed, next, live, and upcoming states.
-- Opens the shared `OdModal` with the session name when a row is tapped.
-
-### `championships/championship_standings_widget.dart`
-
-Reusable standings card with optional section switching.
-
-Main API:
-- `ChampionshipStandingsWidget`
-- `ChampionshipStandingsSection`
-- `ChampionshipStandingEntry`
-
-Props on `ChampionshipStandingsWidget`:
-- `title`
-- `sections`
-- `initialSectionIndex`
-
-Props on `ChampionshipStandingsSection`:
-- `label`
-- `entries`
-- `leadingColumnLabel`
-- `middleColumnLabel`
-- `trailingColumnLabel`
-
-Props on `ChampionshipStandingEntry`:
-- `position`
-- `title`
-- `trailingValue`
-- `subtitle`
-- `middleValue`
-- `imageUrl`
-- `avatarLabel`
-- `avatarColor`
-
-Behavior:
-- Switches cleanly between multiple standings sections.
-- Supports text avatars or remote images.
-- Keeps all standings rendering presentational.
-
-### `championships/championship_replay_btn.dart`
-
-Reusable replay call-to-action card.
-
-Main API:
-- `ChampionshipReplayBtn`
-
-Props:
-- `replays`
-- `onTap`
-
-Behavior:
-- Renders a compact replay library entry card.
-- Keeps navigation handling outside the widget.
-
-## TV Widgets
-
-### `tv/tv_live_player.dart`
-
-Embedded live player used by the TV page.
-
-Main API:
-- `TvLivePlayer`
-
-Props:
-- `stream`
-
-Behavior:
-- Builds and loads a YouTube embed in a `WebView`.
-- Shows a loading overlay while the player is preparing.
-- Falls back to a themed unavailable state when no valid video URL exists.
-
-### `tv/tv_stream_selector_sheet.dart`
-
-Bottom-sheet stream picker used by the TV page.
-
-Main API:
-- `TvStreamSelectorSheet`
-
-Props:
-- `options`
-- `selectedId`
-- `onSelected`
-
-Behavior:
-- Renders selectable stream cards in a compact grid.
-- Delegates the selected stream back to the page through `onSelected`.
-
-## Telemetry Widgets
-
-Live data cards for the customizable telemetry grid. Each widget reads from
-`TelemetrySimulator` via Provider and renders inside a `GridItemWidget`.
-
-Full widget catalogue and shared utilities are documented in
+Full widget catalogue, data model reference, and conventions are in
 [`telemetry/README.md`](telemetry/README.md).
 
 Quick reference:
 
-| Widget | Driver-aware | Data shown |
-|--------|-------------|------------|
-| `SpeedometerWidget` | yes | Speed arc |
-| `GearRpmWidget` | yes | Gear + RPM bar |
-| `ThrottleBrakeWidget` | yes | Throttle / brake bars |
-| `LapDeltaWidget` | yes | Lap time + sector splits |
-| `DrsErsWidget` | yes | DRS state + ERS charge |
-| `GForceWidget` | yes | Lateral + longitudinal G |
-| `SectorSplitWidget` | yes | S1 / S2 / S3 vs personal best |
-| `DriverSnapshotWidget` | yes | Driver card (gap, trend) |
-| `TireTempWidget` | yes | Per-corner tyre temps |
-| `FuelWidget` | yes | Fuel load + laps remaining |
-| `PitStrategyWidget` | yes | Compound, tyre age, pit window |
-| `EngineWidget` | yes | Engine mode + water/oil temp |
-| `WeatherWidget` | no | Track conditions (shared) |
-| `StandingsWidget` | no | All-driver P1/P2/P3 comparison |
+| Widget | Driver-aware | Key data shown |
+|--------|-------------|----------------|
+| `Speedometer` | yes | Speed arc (km/h) |
+| `GearRpm` | yes | Gear number + RPM bar |
+| `ThrottleBrake` | yes | Throttle / brake bars |
+| `LapDelta` | yes | Lap time + delta |
+| `DrsErs` | yes | DRS state + ERS charge |
+| `GForce` | yes | Lateral + longitudinal G scatter |
+| `SectorSplit` | yes | S1 / S2 / S3 vs personal best |
+| `DriverSnapshot` | yes | Driver card (gap, trend, speed) |
+| `TireTemps` | yes | Per-corner tyre temp heat map |
+| `FuelGauge` | yes | Fuel load + laps remaining |
+| `PitStrategy` | yes | Compound, tyre age, pit window |
+| `EngineTemps` | yes | Engine mode + water/oil temp |
+| `LapHistory` | yes | Per-lap time bar chart |
+| `LapPosition` | yes | Position-history line chart |
+| `LapTimer` | yes | Live current-lap counter |
+| `PedalTrace` | yes | Rolling throttle/brake waveform |
+| `Damage` | yes | Per-corner body damage bars |
+| `Penalty` | yes | Time penalty + warning dots |
+| `Weather` | no | Track conditions (shared) |
+| `RaceStandings` | no | All-driver P1/P2/P3 comparison |
+| `WeatherForecast` | no | Hourly forecast strip |
+| `WeatherRadar` | no | Stylized radar sweep |
+
+---
+
+## `tv/`
+
+| File | Widget | Purpose |
+|------|--------|---------|
+| `tv_live_player.dart` | `TvLivePlayer` | Full-screen WebView video player for a `TvStream`; falls back to an unavailable state when no URL is set |
+| `tv_stream_selector_sheet.dart` | `TvStreamSelectorSheet` | Bottom sheet listing all available streams for selection |
+
+---
 
 ## Maintenance Checklist
 
 Before adding or editing a widget here, verify:
-- Can this UI be reused elsewhere?
+- Can this UI be reused elsewhere, or does it belong in the page file?
 - Are state ownership and callbacks clearly typed?
-- Can optional behavior be explained with a short inline comment?
-- Should the visual treatment be extracted into a smaller shared primitive?
+- Does the visual treatment use `AppColors`/`AppTextStyles` rather than hardcoded values?
+- Should the glass surface use `TelemetryCard` (telemetry) or a direct `CupertinoLiquidGlass` (everything else)?

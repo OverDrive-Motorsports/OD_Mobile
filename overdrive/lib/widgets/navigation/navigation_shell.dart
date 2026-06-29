@@ -1,9 +1,9 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## NavigationShell - Liquid glass floating bottom navigation shell.
+ ## navigation_shell.dart - Bottom navigation shell wrapping GoRouter's StatefulShellRoute with five main branches.
  ##
  */
 
@@ -16,19 +16,11 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Layout constants
-// ---------------------------------------------------------------------------
+// ── Layout constants ──────────────────────────────────────────────────────
 
 const double _kBarHeight = 52.0;
 
-// ---------------------------------------------------------------------------
-// Glass theme
-//
-// edgeLightColor == edgeShadowColor collapses the directional border gradient
-// into a uniform stroke — no "lit on one side" artefact.
-// noiseOpacity: 0 removes grain that makes the surface look dirty.
-// ---------------------------------------------------------------------------
+// ── Glass theme — edgeLightColor == edgeShadowColor → uniform stroke; noiseOpacity: 0 removes grain ──
 
 const _kNavBorderColor = Color(0x1AFFFFFF);
 
@@ -42,15 +34,10 @@ final _kNavBarTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kNavBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// NavigationShell
-// ---------------------------------------------------------------------------
+// ── NavigationShell ───────────────────────────────────────────────────────
 
 /// Root scaffold that hosts the [StatefulNavigationShell] produced by GoRouter.
-///
-/// Renders a floating liquid-glass bottom bar. The bar shrinks (scale 0.88)
-/// while the user scrolls down and snaps back on scroll-up or scroll-end,
-/// keeping the content area uncluttered during reading.
+/// Renders a floating liquid-glass bottom bar that shrinks (scale 0.88) on scroll-down and snaps back on scroll-up/end.
 class NavigationShell extends StatefulWidget {
   const NavigationShell({required this.navigationShell, super.key});
 
@@ -86,9 +73,7 @@ class _NavigationShellState extends State<NavigationShell> {
 
   @override
   Widget build(BuildContext context) {
-    // No extra bottom gap — pill sits right at the system inset boundary.
-    // extendBody: true makes the page content fill behind the bar so there
-    // is no black strip below the pill.
+    // No extra bottom gap — pill sits at the system inset boundary; extendBody: true fills content behind the bar (no black strip).
     final bottomInset = MediaQuery.viewPaddingOf(context).bottom;
 
     return CupertinoTheme(
@@ -122,9 +107,7 @@ class _NavigationShellState extends State<NavigationShell> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _GlassBar
-// ---------------------------------------------------------------------------
+// ── _GlassBar ─────────────────────────────────────────────────────────────
 
 const _tabs = <(IconData, IconData)>[
   (CupertinoIcons.house, CupertinoIcons.house_fill),
@@ -135,10 +118,7 @@ const _tabs = <(IconData, IconData)>[
 ];
 
 /// Inner bar rendered inside the floating glass surface.
-///
-/// Manages spring-physics tab switching and horizontal swipe gestures.
-/// The selected-tab indicator (selector pill) is painted by [_SelectorPainter]
-/// and animated with a [SpringSimulation] driven by an unbounded controller.
+/// Manages spring-physics tab switching and horizontal swipe gestures; the selector pill is painted by [_SelectorPainter] via a [SpringSimulation].
 class _GlassBar extends StatefulWidget {
   const _GlassBar({required this.currentIndex, required this.onTap});
 
@@ -282,9 +262,7 @@ class _GlassBarState extends State<_GlassBar>
   }
 }
 
-// ---------------------------------------------------------------------------
-// _AnimatedTabIcon
-// ---------------------------------------------------------------------------
+// ── _AnimatedTabIcon ──────────────────────────────────────────────────────
 
 class _AnimatedTabIcon extends StatelessWidget {
   const _AnimatedTabIcon({required this.index, required this.position});
@@ -315,15 +293,10 @@ class _AnimatedTabIcon extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _SelectorPainter
-// ---------------------------------------------------------------------------
+// ── _SelectorPainter ──────────────────────────────────────────────────────
 
 /// Paints the velocity-stretched pill that tracks the selected tab.
-///
-/// Pill width stretches proportionally to swipe velocity (max ~1.36×),
-/// matching the elastic "liquid" feel of iOS 26 tab bars.
-/// Corner radius matches the outer glass bar (28 pt) for visual consistency.
+/// Width stretches proportionally to swipe velocity (max ~1.36×); corner radius (28 pt) matches the outer glass bar.
 class _SelectorPainter extends CustomPainter {
   _SelectorPainter({
     required this.position,

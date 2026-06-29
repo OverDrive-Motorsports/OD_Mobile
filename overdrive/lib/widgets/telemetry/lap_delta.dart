@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [lap_delta.dart] - Telemetry widget displaying current lap time, best lap, and delta against the driver's personal best.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,9 +16,16 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
+// Formats a raw seconds value into M:SS.mmm — used for both current and best lap displays.
+String _fmtTime(double seconds) {
+  final m = seconds ~/ 60;
+  final s = (seconds % 60).floor();
+  final ms = ((seconds % 1) * 1000).toInt();
+  return '$m:${s.toString().padLeft(2, '0')}.${ms.toString().padLeft(3, '0')}';
+}
+
 class LapDelta extends StatefulWidget {
   const LapDelta({this.initialDriverId = 'VER', super.key});
-
   final String initialDriverId;
 
   @override
@@ -25,16 +41,16 @@ class _LapDeltaState extends State<LapDelta> {
     _driverId = widget.initialDriverId;
   }
 
-  String _formatTime(double seconds) {
-    final m = seconds ~/ 60;
-    final s = (seconds % 60).floor();
-    final ms = ((seconds % 1) * 1000).toInt();
-    return '$m:${s.toString().padLeft(2, '0')}.${ms.toString().padLeft(3, '0')}';
-  }
-
-  String _formatDelta(double delta) {
-    final sign = delta < 0 ? '-' : '+';
-    return '$sign${delta.abs().toStringAsFixed(3)}s';
+  void _showMenu(BuildContext context) {
+    final actions = TelemetryItemActions.maybeOf(context);
+    showTelemetryWidgetMenu(
+      context,
+      widgetLabel: 'Lap Delta',
+      currentDriverId: _driverId,
+      onDriverSelected: (id) => setState(() => _driverId = id),
+      onReset: actions?.onReset,
+      onRemove: actions?.onRemove,
+    );
   }
 
   @override
@@ -45,103 +61,156 @@ class _LapDeltaState extends State<LapDelta> {
     final lapProgress = (data.currentLapTime / data.bestLapTime).clamp(0.0, 1.0);
 
     return GestureDetector(
-      onTap: () {
-        final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(
-          context,
-          widgetLabel: 'Lap Delta',
-          currentDriverId: _driverId,
-          onDriverSelected: (id) => setState(() => _driverId = id),
-          onReset: actions?.onReset,
-          onRemove: actions?.onRemove,
-        );
-      },
-      child: Container(
-        decoration: telemetryDecoration(accentColor: deltaColor),
-        padding: const EdgeInsets.all(14),
+      onTap: () => _showMenu(context),
+      child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final scale = (w / 160).clamp(0.6, 1.6);
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'LAP',
-                      style: AppTextStyles.label(color: AppColors.textMuted)
-                          .copyWith(fontSize: 10 * scale),
-                    ),
-                    const Spacer(),
-                    Text(
-                      _driverId,
-                      style: AppTextStyles.label(color: AppColors.gold)
-                          .copyWith(fontSize: 10 * scale),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: data.currentLapTime),
-                  duration: const Duration(milliseconds: 200),
-                  builder: (context, t, _) => Text(
-                    _formatTime(t),
-                    style: AppTextStyles.display(color: AppColors.textPrimary)
-                        .copyWith(fontSize: 20 * scale, letterSpacing: -0.5),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      _formatTime(data.bestLapTime),
-                      style: AppTextStyles.caption(color: AppColors.textMuted)
-                          .copyWith(fontSize: 11 * scale),
-                    ),
-                    const Spacer(),
-                    TweenAnimationBuilder<double>(
-                      tween: Tween<double>(end: delta),
-                      duration: const Duration(milliseconds: 250),
-                      builder: (context, d, _) => AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-                        style: AppTextStyles.bodyBold(color: deltaColor)
-                            .copyWith(fontSize: 13 * scale),
-                        child: Text(_formatDelta(d)),
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-                TweenAnimationBuilder<double>(
-                  tween: Tween<double>(end: lapProgress),
-                  duration: const Duration(milliseconds: 220),
-                  builder: (context, fraction, _) => ClipRRect(
-                    borderRadius: BorderRadius.circular(4),
-                    child: SizedBox(
-                      height: 5,
-                      child: Stack(
-                        children: [
-                          Container(color: AppColors.surface),
-                          FractionallySizedBox(
-                            widthFactor: fraction,
-                            alignment: Alignment.centerLeft,
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              color: deltaColor,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallLap(data: data, driverId: _driverId, delta: delta, deltaColor: deltaColor, lapProgress: lapProgress)
+                  : _LargeLap(data: data, driverId: _driverId, delta: delta, deltaColor: deltaColor, lapProgress: lapProgress),
             );
           },
         ),
       ),
+    );
+  }
+}
+
+// ── Small ─────────────────────────────────────────────────────────────────────
+
+class _SmallLap extends StatelessWidget {
+  const _SmallLap({required this.data, required this.driverId, required this.delta, required this.deltaColor, required this.lapProgress});
+  final TelemetrySnapshot data;
+  final String driverId;
+  final double delta;
+  final Color deltaColor;
+  final double lapProgress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'LAP', driverId: driverId),
+        Expanded(
+          child: Center(
+            child: TweenAnimationBuilder<double>(
+              tween: Tween<double>(end: data.currentLapTime),
+              duration: const Duration(milliseconds: 200),
+              builder: (_, t, _) => Text(
+                _fmtTime(t),
+                style: AppTextStyles.display(color: AppColors.textPrimary)
+                    .copyWith(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+              ),
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            Text(
+              _fmtTime(data.bestLapTime),
+              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+            ),
+            const Spacer(),
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(end: delta),
+              duration: const Duration(milliseconds: 250),
+              builder: (_, d, _) {
+                final s = d >= 0 ? '+' : '';
+                return Text(
+                  '$s${d.toStringAsFixed(3)}s',
+                  style: AppTextStyles.caption(color: deltaColor).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+                );
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        TelemetryBar(fraction: lapProgress, color: deltaColor),
+      ],
+    );
+  }
+}
+
+// ── Large ─────────────────────────────────────────────────────────────────────
+
+class _LargeLap extends StatelessWidget {
+  const _LargeLap({required this.data, required this.driverId, required this.delta, required this.deltaColor, required this.lapProgress});
+  final TelemetrySnapshot data;
+  final String driverId;
+  final double delta;
+  final Color deltaColor;
+  final double lapProgress;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'LAP', driverId: driverId),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Current lap time — large
+              TweenAnimationBuilder<double>(
+                tween: Tween<double>(end: data.currentLapTime),
+                duration: const Duration(milliseconds: 200),
+                builder: (_, t, _) => Text(
+                  _fmtTime(t),
+                  style: AppTextStyles.display(color: AppColors.textPrimary)
+                      .copyWith(fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: -1),
+                ),
+              ),
+              const SizedBox(height: 10),
+              // Best + delta row
+              Row(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('BEST', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                      Text(
+                        _fmtTime(data.bestLapTime),
+                        style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('DELTA', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                      TweenAnimationBuilder<double>(
+                        tween: Tween<double>(end: delta),
+                        duration: const Duration(milliseconds: 250),
+                        builder: (_, d, _) {
+                          final s = d >= 0 ? '+' : '';
+                          return Text(
+                            '$s${d.toStringAsFixed(3)}s',
+                            style: AppTextStyles.caption(color: deltaColor).copyWith(fontSize: 11, fontWeight: FontWeight.w700),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    'L${data.lapNumber}/${TelemetrySnapshot.totalLaps}',
+                    style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        // Lap progress bar
+        TelemetryBar(fraction: lapProgress, color: deltaColor),
+      ],
     );
   }
 }

@@ -7,10 +7,37 @@
  ##
  */
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../services/tv/tv_stream.dart';
+
+// ── Glass themes — stream selector cards ─────────────────────────────────
+
+const _kCardEdge = Color(0x1AFFFFFF);
+const _kCardEdgeSelected = Color(0x38FFFFFF);
+
+final _kCardTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.06,
+  blurSigma: 14.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.05,
+  vibrancyIntensity: 0.02,
+  edgeLightColor: _kCardEdge,
+  edgeShadowColor: _kCardEdge,
+);
+
+final _kCardSelectedTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.10,
+  vibrancyIntensity: 0.04,
+  edgeLightColor: _kCardEdgeSelected,
+  edgeShadowColor: _kCardEdgeSelected,
+);
 
 /// Bottom-sheet content used to choose the active TV stream.
 class TvStreamSelectorSheet extends StatelessWidget {
@@ -91,92 +118,82 @@ class _TvStreamCard extends StatelessWidget {
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 160),
         opacity: isSelected ? 1 : 0.54,
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          curve: Curves.easeOut,
-          decoration: BoxDecoration(
+        child: CupertinoTheme(
+          data: const CupertinoThemeData(brightness: Brightness.dark),
+          child: CupertinoLiquidGlass(
+            theme: isSelected ? _kCardSelectedTheme : _kCardTheme,
             borderRadius: BorderRadius.circular(18),
-            color: AppColors.white.withValues(alpha: isSelected ? 0.05 : 0.03),
-            border: Border.all(
-              color: isSelected
-                  ? AppColors.white.withValues(alpha: 0.22)
-                  : AppColors.white.withValues(alpha: 0.04),
-            ),
-          ),
-          child: Column(
-            children: <Widget>[
-              Expanded(
-                child: Stack(
-                  children: <Widget>[
-                    Positioned.fill(
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(18),
-                          ),
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: <Color>[
-                              AppColors.white.withValues(
-                                alpha: isSelected ? 0.025 : 0.018,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned.fill(
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topCenter,
+                                end: Alignment.bottomCenter,
+                                colors: <Color>[
+                                  AppColors.white.withValues(
+                                    alpha: isSelected ? 0.025 : 0.018,
+                                  ),
+                                  Colors.transparent,
+                                ],
                               ),
-                              Colors.transparent,
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    if (option.isPrimary)
-                      Positioned(
-                        top: 10,
-                        right: 10,
-                        child: Container(
-                          width: 9,
-                          height: 9,
-                          decoration: const BoxDecoration(
-                            color: AppColors.red,
-                            shape: BoxShape.circle,
+                        if (option.isPrimary)
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: Container(
+                              width: 9,
+                              height: 9,
+                              decoration: const BoxDecoration(
+                                color: AppColors.red,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                        Center(
+                          child: Icon(
+                            option.icon,
+                            color: foregroundColor,
+                            size: 22,
                           ),
                         ),
-                      ),
-                    Center(
-                      child: Icon(
-                        option.icon,
-                        color: foregroundColor,
-                        size: 22,
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-                decoration: BoxDecoration(
-                  color: AppColors.black.withValues(alpha: 0.16),
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(18),
                   ),
-                ),
-                child: Row(
-                  children: <Widget>[
-                    Icon(option.icon, color: foregroundColor, size: 18),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        option.label,
-                        style: AppTextStyles.body(
-                          color: foregroundColor,
-                        ).copyWith(fontSize: 13),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  ColoredBox(
+                    color: AppColors.black.withValues(alpha: 0.22),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
+                      child: Row(
+                        children: <Widget>[
+                          Icon(option.icon, color: foregroundColor, size: 18),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              option.label,
+                              style: AppTextStyles.body(
+                                color: foregroundColor,
+                              ).copyWith(fontSize: 13),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

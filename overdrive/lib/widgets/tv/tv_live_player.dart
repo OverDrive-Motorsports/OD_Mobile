@@ -7,11 +7,27 @@
  ##
  */
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../services/tv/tv_stream.dart';
+
+// ── Glass theme — unavailable player card ─────────────────────────────────
+
+const _kUnavailableEdge = Color(0x28FFFFFF);
+
+final _kUnavailableTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.10,
+  vibrancyIntensity: 0.04,
+  edgeLightColor: _kUnavailableEdge,
+  edgeShadowColor: _kUnavailableEdge,
+);
 
 /// Embedded live video player used by the TV page.
 class TvLivePlayer extends StatefulWidget {
@@ -138,33 +154,49 @@ class _UnavailablePlayerState extends StatelessWidget {
       ),
       child: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                Icons.live_tv_outlined,
-                color: AppColors.gold.withValues(alpha: 0.72),
-                size: 34,
-              ),
-              const SizedBox(height: 14),
-              Text(
-                'Flux video indisponible',
-                style: AppTextStyles.bodyBold().copyWith(
-                  fontSize: 18,
-                  color: AppColors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 40),
+          child: CupertinoTheme(
+            data: const CupertinoThemeData(brightness: Brightness.dark),
+            child: CupertinoLiquidGlass(
+              theme: _kUnavailableTheme,
+              borderRadius: BorderRadius.circular(24),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 28,
+                    vertical: 32,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Icon(
+                        Icons.live_tv_outlined,
+                        color: AppColors.gold.withValues(alpha: 0.72),
+                        size: 34,
+                      ),
+                      const SizedBox(height: 14),
+                      Text(
+                        'Flux video indisponible',
+                        style: AppTextStyles.bodyBold().copyWith(
+                          fontSize: 18,
+                          color: AppColors.white,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Ce canal n a pas encore de source live active.',
+                        style: AppTextStyles.body(
+                          color: AppColors.gold.withValues(alpha: 0.78),
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 6),
-              Text(
-                'Ce canal n a pas encore de source live active.',
-                style: AppTextStyles.body(
-                  color: AppColors.gold.withValues(alpha: 0.78),
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
+            ),
           ),
         ),
       ),

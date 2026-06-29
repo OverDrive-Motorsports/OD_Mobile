@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## search_page.dart - Search screen scaffold with bottom search bar.
+ ## search_page.dart - Search screen with a local text controller and shared search bar widget.
  ##
  */
 

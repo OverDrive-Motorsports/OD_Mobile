@@ -1,8 +1,15 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [telemetry_item_actions.dart] - InheritedWidget that propagates remove/reset callbacks down the telemetry widget tree.
+ ##
+ */
+
 import 'package:flutter/widgets.dart';
 
-// InheritedWidget injected by GridItemWidget around every telemetry child.
-// Avoids threading onRemove/onReset through every widget's constructor —
-// widgets call TelemetryItemActions.maybeOf(context) in their onTap handler.
+// InheritedWidget injected by GridItemWidget around every telemetry child; avoids threading onRemove/onReset through constructors — widgets call TelemetryItemActions.maybeOf(context) in their onTap handler.
 class TelemetryItemActions extends InheritedWidget {
   const TelemetryItemActions({
     super.key,

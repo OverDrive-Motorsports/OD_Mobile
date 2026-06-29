@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## championship_top3.dart - Live delta-bar card for the top 3 of a race session.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## championship_top3.dart - Live timing podium card showing top-3 drivers with gap, tyre compound, and team colour.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,9 +13,7 @@ import 'package:flutter/cupertino.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/championship/championship_live_entry.dart';
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
+// ── Constants ─────────────────────────────────────────────────────────────
 
 // Gap reference: bar is 0 % at +10 s and 100 % at 0 s (leader).
 const double _kMaxGapSeconds = 10.0;
@@ -32,13 +30,9 @@ final _kCardTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// ChampionshipTop3
-// ---------------------------------------------------------------------------
+// ── ChampionshipTop3 ──────────────────────────────────────────────────────
 
-/// Live timing card — three rows, each with a gradient delta bar whose width
-/// maps the gap to leader linearly (0 s = 100 %, 10 s = 0 %).
-/// Bar colour comes from [ChampionshipLiveEntry.teamColor] when available.
+/// Live timing card — three rows with gradient delta bars mapping gap to leader linearly (0 s = 100%, 10 s = 0%); bar colour from [ChampionshipLiveEntry.teamColor].
 class ChampionshipTop3 extends StatelessWidget {
   const ChampionshipTop3({
     super.key,
@@ -115,10 +109,9 @@ class ChampionshipTop3 extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _DeltaRow
-// ---------------------------------------------------------------------------
+// ── _DeltaRow ─────────────────────────────────────────────────────────────
 
+// One podium row with a gradient bar whose width maps the driver's gap to the leader.
 class _DeltaRow extends StatelessWidget {
   const _DeltaRow({
     required this.entry,

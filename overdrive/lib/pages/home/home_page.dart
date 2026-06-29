@@ -1,17 +1,18 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## home_page.dart - Home screen — liquid glass demo surface gallery.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## home_page.dart - Home screen shell providing the root scaffold and entry point for the bottom navigation.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../widgets/base/demo_liquid.dart';
 
+// Root scaffold for the home screen; currently hosts the liquid glass calibration gallery.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -181,10 +182,9 @@ class HomePage extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Row wrapper with label
-// ---------------------------------------------------------------------------
+// ── Row wrapper with label ────────────────────────────────────────────────
 
+// Labeled wrapper that pairs a preset name with its DemoLiquid surface.
 class _DemoRow extends StatelessWidget {
   const _DemoRow({required this.label, required this.child});
 
@@ -211,10 +211,9 @@ class _DemoRow extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Background
-// ---------------------------------------------------------------------------
+// ── Background ────────────────────────────────────────────────────────────
 
+// Multi-layer gradient and radial white-blob backdrop rendered behind the gallery content.
 class _HomeBackdrop extends StatelessWidget {
   const _HomeBackdrop();
 

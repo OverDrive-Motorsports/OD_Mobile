@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## register_page.dart - Local sign-up flow used until backend account creation is connected.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## register_page.dart - Registration screen with full-name, email, and password form and local validation.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 

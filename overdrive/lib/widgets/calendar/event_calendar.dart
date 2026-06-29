@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## event_calendar.dart - Event list widget styled for past, ongoing, and upcoming races.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## event_calendar.dart - Event list widget styled for past, ongoing, and upcoming races.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,9 +13,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass themes
-// ---------------------------------------------------------------------------
+// ── Glass themes ──────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 const _kOngoingEdgeColor = Color(0x70E80000);
@@ -50,9 +48,7 @@ final _kOngoingTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kOngoingEdgeColor,
 );
 
-// ---------------------------------------------------------------------------
-// Public data models
-// ---------------------------------------------------------------------------
+// ── Public data models ────────────────────────────────────────────────────
 
 /// A small marker used by the monthly calendar to show event dots.
 class CalendarEventMarker {
@@ -112,9 +108,7 @@ class CalendarScheduleEvent {
   }
 }
 
-// ---------------------------------------------------------------------------
-// EventCalendar
-// ---------------------------------------------------------------------------
+// ── EventCalendar ─────────────────────────────────────────────────────────
 
 /// A list of event cards used by the calendar screens.
 class EventCalendar extends StatelessWidget {
@@ -177,10 +171,9 @@ class EventCalendar extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _EventCalendarCard
-// ---------------------------------------------------------------------------
+// ── _EventCalendarCard ────────────────────────────────────────────────────
 
+// Renders one event as a liquid-glass card styled for its status (past/ongoing/upcoming).
 class _EventCalendarCard extends StatelessWidget {
   const _EventCalendarCard({
     required this.event,
@@ -351,10 +344,9 @@ class _EventCalendarCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────
 
+// Icon + label row used in event cards for location and other metadata fields.
 class _MetaItem extends StatelessWidget {
   const _MetaItem({
     required this.icon,
@@ -384,6 +376,7 @@ class _MetaItem extends StatelessWidget {
   }
 }
 
+// Rounded pill badge showing the localised status label on each event card.
 class _StatusPill extends StatelessWidget {
   const _StatusPill({
     required this.label,
@@ -416,6 +409,7 @@ class _StatusPill extends StatelessWidget {
   }
 }
 
+// Shown when the filtered event list is empty; displays a centred icon, title, and subtitle.
 class _EventCalendarEmptyState extends StatelessWidget {
   const _EventCalendarEmptyState({
     required this.title,
@@ -465,10 +459,9 @@ class _EventCalendarEmptyState extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _EventCardStyle — content colors only (no background)
-// ---------------------------------------------------------------------------
+// ── _EventCardStyle — content colors only (no background) ─────────────────
 
+// Resolves all content colours for an event card based on its status and selection state.
 class _EventCardStyle {
   const _EventCardStyle({
     required this.titleColor,
@@ -523,10 +516,9 @@ class _EventCardStyle {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Formatting helpers
-// ---------------------------------------------------------------------------
+// ── Formatting helpers ────────────────────────────────────────────────────
 
+// Returns a compact date-range string, collapsing same-month ranges to "D1 - D2 Month".
 String _formatDateRange(DateTime startDate, DateTime endDate) {
   final start = DateUtils.dateOnly(startDate);
   final end = DateUtils.dateOnly(endDate);
@@ -565,6 +557,7 @@ String _monthLabel(int month) {
   return monthLabels[month - 1];
 }
 
+// Maps a CalendarScheduleStatus to its localised display label.
 String _statusLabel(CalendarScheduleStatus status) {
   switch (status) {
     case CalendarScheduleStatus.past:

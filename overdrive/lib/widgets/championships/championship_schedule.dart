@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## championship_schedule.dart - Adaptive weekend schedule list.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## championship_schedule.dart - Weekend schedule list showing session names, times, and completion status.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,9 +16,7 @@ import '../../services/championship/championship_enums.dart';
 import '../../services/championship/championship_session.dart';
 import '../base/app_modal.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 

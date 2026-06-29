@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## login_page.dart - Demo login screen used as the temporary app landing page.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## login_page.dart - Login screen with email/password form, validation, and navigation to register.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 

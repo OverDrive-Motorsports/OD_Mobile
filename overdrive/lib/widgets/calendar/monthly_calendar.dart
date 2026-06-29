@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## monthly_calendar.dart - Minimal reusable monthly calendar widget.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## monthly_calendar.dart - Scrollable monthly calendar grid with event marker dots and day selection.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,9 +14,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'event_calendar.dart';
 
-// ---------------------------------------------------------------------------
-// Glass themes
-// ---------------------------------------------------------------------------
+// ── Glass themes ──────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 
@@ -48,9 +46,7 @@ final _kNavBtnDisabledTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: const Color(0x10FFFFFF),
 );
 
-// ---------------------------------------------------------------------------
-// MonthlyCalendar
-// ---------------------------------------------------------------------------
+// ── MonthlyCalendar ───────────────────────────────────────────────────────
 
 /// A reusable monthly calendar widget for date selection.
 class MonthlyCalendar extends StatefulWidget {
@@ -297,10 +293,9 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _CalendarHeader
-// ---------------------------------------------------------------------------
+// ── _CalendarHeader ───────────────────────────────────────────────────────
 
+// Month label with animated slide-in/out transitions and prev/next navigation buttons.
 class _CalendarHeader extends StatelessWidget {
   const _CalendarHeader({
     required this.monthLabel,
@@ -365,10 +360,9 @@ class _CalendarHeader extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _NavButton
-// ---------------------------------------------------------------------------
+// ── _NavButton ────────────────────────────────────────────────────────────
 
+// Liquid-glass icon button for previous/next month navigation with press-scale feedback.
 class _NavButton extends StatefulWidget {
   const _NavButton({
     required this.icon,
@@ -445,10 +439,9 @@ class _NavButtonState extends State<_NavButton>
   }
 }
 
-// ---------------------------------------------------------------------------
-// _WeekdayRow
-// ---------------------------------------------------------------------------
+// ── _WeekdayRow ───────────────────────────────────────────────────────────
 
+// Fixed row of seven weekday abbreviation labels aligned with the day columns below.
 class _WeekdayRow extends StatelessWidget {
   const _WeekdayRow({required this.labels});
 
@@ -470,10 +463,9 @@ class _WeekdayRow extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _MonthGrid
-// ---------------------------------------------------------------------------
+// ── _MonthGrid ────────────────────────────────────────────────────────────
 
+// 7-column grid of day cells for a single month, padded to a full 6-week view.
 class _MonthGrid extends StatelessWidget {
   const _MonthGrid({
     required this.month,
@@ -519,10 +511,9 @@ class _MonthGrid extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _DayCell
-// ---------------------------------------------------------------------------
+// ── _DayCell ──────────────────────────────────────────────────────────────
 
+// Individual tappable day cell with today/selected/out-of-month state styling and event dots.
 class _DayCell extends StatefulWidget {
   const _DayCell({
     required this.date,
@@ -646,10 +637,9 @@ class _DayCellState extends State<_DayCell>
   }
 }
 
-// ---------------------------------------------------------------------------
-// _MonthlyEventDots
-// ---------------------------------------------------------------------------
+// ── _MonthlyEventDots ─────────────────────────────────────────────────────
 
+// Up to three coloured dots indicating events on a calendar day cell.
 class _MonthlyEventDots extends StatelessWidget {
   const _MonthlyEventDots({required this.events});
 
@@ -681,10 +671,9 @@ class _MonthlyEventDots extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _CalendarLoadingGrid
-// ---------------------------------------------------------------------------
+// ── _CalendarLoadingGrid ──────────────────────────────────────────────────
 
+// Skeleton grid of 42 placeholder cells shown while event data is loading.
 class _CalendarLoadingGrid extends StatelessWidget {
   const _CalendarLoadingGrid();
 
@@ -719,10 +708,9 @@ class _CalendarLoadingGrid extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────
 
+// Strips time components from event map keys so they align with date-only day cells.
 Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
   Map<DateTime, List<CalendarEventMarker>> input,
 ) {
@@ -738,6 +726,7 @@ Map<DateTime, List<CalendarEventMarker>> _normalizeEvents(
   return normalized;
 }
 
+// Returns 42 dates covering the visible 6-week grid starting from the Monday before the first day.
 List<DateTime> _buildMonthDays(DateTime month) {
   final firstDay = DateTime(month.year, month.month);
   final leadingDays = firstDay.weekday - DateTime.monday;

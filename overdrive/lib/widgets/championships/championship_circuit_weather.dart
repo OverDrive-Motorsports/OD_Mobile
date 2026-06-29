@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## championship_circuit_weather.dart - Circuit stats and weather card for championship pages.
+ ## championship_circuit_weather.dart - Combined card displaying circuit metadata and current weather conditions.
  ##
  */
 
@@ -14,9 +14,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/championship/championship_circuit.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 
@@ -30,9 +28,7 @@ final _kCardTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// ChampionshipCircuitWeatherCard
-// ---------------------------------------------------------------------------
+// ── ChampionshipCircuitWeatherCard ────────────────────────────────────────
 
 /// Event-weekend card showing circuit length, lap count, and weather.
 class ChampionshipCircuitWeatherCard extends StatelessWidget {
@@ -103,10 +99,9 @@ class ChampionshipCircuitWeatherCard extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
+// ── Helpers ───────────────────────────────────────────────────────────────
 
+// Thin vertical separator between metric columns in the circuit/weather card.
 class _MetricDivider extends StatelessWidget {
   const _MetricDivider();
 
@@ -120,6 +115,7 @@ class _MetricDivider extends StatelessWidget {
   }
 }
 
+// Label/value column optionally prefixed with an icon (e.g. weather icon beside rain chance).
 class _MetricColumn extends StatelessWidget {
   const _MetricColumn({required this.label, required this.value, this.icon});
 

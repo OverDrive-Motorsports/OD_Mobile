@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## main_pages_test.dart - Widget tests for routed app pages.
+ ## main_pages_test.dart - Widget tests covering the main navigation pages (Home, Championship, Calendar, Search, Profile).
  ##
  */
 

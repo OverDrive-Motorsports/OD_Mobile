@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## app_modal.dart - Shared liquid-glass bottom sheet with drag dismissal.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## app_modal.dart - Bottom-sheet modal wrapper with title, body, and optional action buttons.
+ ##
+ */
 
 import 'dart:ui';
 
@@ -15,26 +15,23 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kTopRadius = 28.0;
-const _kEdgeColor = Color(0x30FFFFFF);
+const _kEdgeColor = Color(0x60DDDDDD);
+const _kFillColor = Color(0x14DDDDDD);
 
 final _kSheetTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.32,
-  blurSigma: 38.0,
-  noiseOpacity: 0.0,
-  specularOpacity: 0.14,
-  vibrancyIntensity: 0.06,
+  tintOpacity: 0.50,
+  blurSigma: 44.0,
+  noiseOpacity: 0.02,
+  specularOpacity: 0.20,
+  vibrancyIntensity: 0.10,
   edgeLightColor: _kEdgeColor,
   edgeShadowColor: _kEdgeColor,
 );
 
-// ---------------------------------------------------------------------------
-// AppModal
-// ---------------------------------------------------------------------------
+// ── AppModal ──────────────────────────────────────────────────────────────
 
 /// Shows the shared OverDrive liquid-glass bottom sheet.
 class AppModal {
@@ -58,10 +55,9 @@ class AppModal {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Route
-// ---------------------------------------------------------------------------
+// ── Route ─────────────────────────────────────────────────────────────────
 
+// Custom PopupRoute that composes the blurred backdrop and the animated sheet.
 class _AppModalRoute<T> extends PopupRoute<T> {
   _AppModalRoute({
     required this.title,
@@ -152,10 +148,9 @@ class _AppModalRoute<T> extends PopupRoute<T> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Sheet
-// ---------------------------------------------------------------------------
+// ── Sheet ─────────────────────────────────────────────────────────────────
 
+// Liquid-glass bottom sheet with drag-to-dismiss gesture and optional handle/title.
 class _AppModalSheet extends StatefulWidget {
   const _AppModalSheet({
     required this.child,
@@ -176,6 +171,7 @@ class _AppModalSheet extends StatefulWidget {
 class _AppModalSheetState extends State<_AppModalSheet> {
   double _dragOffset = 0;
 
+  // Accumulates the downward drag offset, clamped to 240 logical pixels.
   void _handleDragUpdate(DragUpdateDetails details) {
     if (!widget.isDismissible) return;
     setState(() {
@@ -183,6 +179,7 @@ class _AppModalSheetState extends State<_AppModalSheet> {
     });
   }
 
+  // Dismisses when drag exceeds 110 px or fling velocity exceeds 800 px/s; otherwise snaps back.
   void _handleDragEnd(DragEndDetails details) {
     if (!widget.isDismissible) return;
 
@@ -227,7 +224,9 @@ class _AppModalSheetState extends State<_AppModalSheet> {
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(_kTopRadius),
                     ),
-                    child: Padding(
+                    child: ColoredBox(
+                      color: _kFillColor,
+                      child: Padding(
                       padding: EdgeInsets.fromLTRB(20, 10, 20, 24 + safeBottom),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -276,6 +275,7 @@ class _AppModalSheetState extends State<_AppModalSheet> {
                           ),
                         ],
                       ),
+                    ),
                     ),
                   ),
                 ),

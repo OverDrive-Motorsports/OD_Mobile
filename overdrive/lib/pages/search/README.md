@@ -12,8 +12,8 @@
 
 ## Dependencies
 
-- `MenuOverlay` for top-level navigation.
-- `SearchBar` from `lib/widgets/search_bar.dart`.
+- `AppSearchBar` from `widgets/base/search_bar.dart`.
+- `NavigationShell` provides the bottom navigation frame (injected by GoRouter).
 - Theme tokens from `app_theme.dart`.
 
 ## Extension Notes

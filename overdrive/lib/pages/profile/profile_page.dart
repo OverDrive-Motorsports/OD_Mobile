@@ -1,9 +1,9 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## ProfilePage - Profile screen with tab switcher (Profile / Settings / Subscription).
+ ## profile_page.dart - Profile screen with user identity card, provider list, and quick-action shortcuts.
  ##
  */
 
@@ -173,11 +173,8 @@ class ProfileModalContent {
   final String dismissLabel;
 }
 
-/// Full-screen profile page.
-///
-/// Hosts a three-tab switcher (Profile · Settings · Subscription) driven by
-/// a [MenuOverlayButton] in the header. Tabs are kept alive with [IndexedStack]
-/// so state (e.g. scroll position) is preserved when switching.
+/// Full-screen profile page with a three-tab switcher (Profile · Settings · Subscription)
+/// driven by [MenuOverlayButton]; tabs are kept alive with [IndexedStack].
 class ProfilePage extends StatefulWidget {
   const ProfilePage({this.data, super.key});
 

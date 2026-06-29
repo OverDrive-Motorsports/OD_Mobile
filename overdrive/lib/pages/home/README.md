@@ -2,21 +2,30 @@
 
 ## Purpose
 
-`home_page.dart` provides the current shell for the app entry screen.
-Right now it intentionally stays minimal and only renders the shared menu overlay.
+`home_page.dart` is the root scaffold for the `/` route. It currently serves as the
+entry screen into the app, rendered inside the `NavigationShell` bottom nav tab 0.
+It provides a stable container for future homepage content.
+
+---
 
 ## Responsibilities
 
 - Host the root scaffold for the home route.
-- Keep the page visually consistent with the global theme.
-- Provide a stable place for future homepage content.
+- Maintain visual consistency with the global dark theme.
+- Render placeholder or live homepage content sections as features are added.
+
+---
 
 ## Dependencies
 
-- `AppColors` and `AppTextStyles` from the shared theme.
-- `MenuOverlay` for global navigation.
+- `AppColors` and `AppTextStyles` from `app_theme.dart`.
+- `NavigationShell` provides the bottom navigation frame (injected by GoRouter).
+
+---
 
 ## Extension Notes
 
-- Add homepage sections inside the existing scaffold body.
-- Keep business logic outside the page when possible and pass data in through dedicated models.
+- Add homepage sections (e.g. hero race card, latest news, quick stats) directly inside
+  the scaffold body without moving the page shell.
+- Keep business logic and data fetching outside `HomePage` — pass data through
+  dedicated models or `ChangeNotifier` providers.

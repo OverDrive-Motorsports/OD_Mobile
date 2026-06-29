@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## placeholder_page.dart - Reusable placeholder screen with centered page title.
+ ## placeholder_page.dart - Generic placeholder screen displaying a centered title, used by unfinished routes.
  ##
  */
 

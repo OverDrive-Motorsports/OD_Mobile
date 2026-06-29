@@ -13,9 +13,7 @@ import 'package:flutter/physics.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Layout constants
-// ---------------------------------------------------------------------------
+// ── Layout constants ──────────────────────────────────────────────────────
 
 const double _kTrackW = 52.0;
 const double _kTrackH = 30.0;
@@ -23,9 +21,7 @@ const double _kThumbSize = 22.0;
 const double _kThumbPad = 4.0;
 const double _kThumbTravel = _kTrackW - _kThumbSize - _kThumbPad * 2; // 22 px
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kEdgeColor = Color(0x22FFFFFF);
 
@@ -39,15 +35,11 @@ final _kTrackTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kEdgeColor,
 );
 
-// ---------------------------------------------------------------------------
-// Spring
-// ---------------------------------------------------------------------------
+// ── Spring ────────────────────────────────────────────────────────────────
 
 const _kSpring = SpringDescription(mass: 0.8, stiffness: 280.0, damping: 20.0);
 
-// ---------------------------------------------------------------------------
-// AppSwitch
-// ---------------------------------------------------------------------------
+// ── AppSwitch ─────────────────────────────────────────────────────────────
 
 /// Liquid-glass toggle switch, optionally paired with a label row.
 class AppSwitch extends StatelessWidget {
@@ -90,9 +82,7 @@ class AppSwitch extends StatelessWidget {
   }
 }
 
-// ---------------------------------------------------------------------------
-// _SwitchTrack
-// ---------------------------------------------------------------------------
+// ── _SwitchTrack ──────────────────────────────────────────────────────────
 
 class _SwitchTrack extends StatefulWidget {
   const _SwitchTrack({required this.value, required this.onChanged});
@@ -206,9 +196,7 @@ class _SwitchTrackState extends State<_SwitchTrack>
   }
 }
 
-// ---------------------------------------------------------------------------
-// _ThumbPainter
-// ---------------------------------------------------------------------------
+// ── _ThumbPainter ─────────────────────────────────────────────────────────
 
 class _ThumbPainter extends CustomPainter {
   const _ThumbPainter({

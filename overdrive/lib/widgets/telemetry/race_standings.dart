@@ -1,5 +1,12 @@
-import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
-import 'package:flutter/cupertino.dart';
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [race_standings.dart] - Telemetry widget listing race positions, gaps to leader, and position trends for all drivers.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,27 +14,21 @@ import '../../core/theme/app_theme.dart';
 import 'telemetry_item_actions.dart';
 import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
+import 'telemetry_widget_style.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme for the outer telemetry card
-// ---------------------------------------------------------------------------
+// ── Helpers ─────────────────────────────────────────────────────────────────
 
-const _kBorderColor = Color(0x26FFFFFF);
+// Returns a hardcoded team colour for the three main constructors; all others fall back to gold.
+Color _teamColor(String team) => switch (team) {
+      'Red Bull Racing' => const Color(0xFF3671C6),
+      'Ferrari' => const Color(0xFFE8002D),
+      'McLaren' => const Color(0xFFFF8000),
+      _ => AppColors.gold,
+    };
 
-final _kStandingsTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.10,
-  blurSigma: 24.0,
-  noiseOpacity: 0.0,
-  specularOpacity: 0.08,
-  vibrancyIntensity: 0.04,
-  edgeLightColor: _kBorderColor,
-  edgeShadowColor: _kBorderColor,
-);
+// ── Public widget ──────────────────────────────────────────────────────────
 
-// ---------------------------------------------------------------------------
-// RaceStandings widget
-// ---------------------------------------------------------------------------
-
+// Stateless root widget — standings are global data, so no per-driver selector is required.
 class RaceStandings extends StatelessWidget {
   const RaceStandings({super.key});
 
@@ -45,72 +46,134 @@ class RaceStandings extends StatelessWidget {
           onRemove: actions?.onRemove,
         );
       },
-      child: CupertinoTheme(
-        data: const CupertinoThemeData(brightness: Brightness.dark),
-        child: CupertinoLiquidGlass(
-          theme: _kStandingsTheme,
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                final w = constraints.maxWidth;
-                final scale = (w / 320).clamp(0.55, 1.5);
-
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'STANDINGS',
-                      style: AppTextStyles.label(color: AppColors.textMuted)
-                          .copyWith(fontSize: 10 * scale),
-                    ),
-                    const SizedBox(height: 6),
-                    Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          for (final driver in TelemetryMockData.drivers)
-                            _StandingRow(
-                              driver: driver,
-                              snapshot: sim.getSnapshot(driver['id'] as String),
-                              scale: scale,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
+      child: TelemetryCard(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallStandings(sim: sim)
+                  : _LargeStandings(sim: sim, availableHeight: constraints.maxHeight),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-// ---------------------------------------------------------------------------
-// _StandingRow
-// ---------------------------------------------------------------------------
+// ── Small ─────────────────────────────────────────────────────────────────────
 
-class _StandingRow extends StatelessWidget {
-  const _StandingRow({
-    required this.driver,
-    required this.snapshot,
-    required this.scale,
-  });
+class _SmallStandings extends StatelessWidget {
+  const _SmallStandings({required this.sim});
+  final TelemetrySimulator sim;
 
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'STANDINGS'),
+        const SizedBox(height: 6),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              for (final driver in TelemetryMockData.drivers)
+                _DriverRowCompact(
+                  driver: driver,
+                  snapshot: sim.getSnapshot(driver['id'] as String),
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Large — scales with height ─────────────────────────────────────────────────
+
+// Calculates how many full driver rows (≈ 62 px each) fit in the available height and renders only those.
+class _LargeStandings extends StatelessWidget {
+  const _LargeStandings({required this.sim, required this.availableHeight});
+  final TelemetrySimulator sim;
+  final double availableHeight;
+
+  @override
+  Widget build(BuildContext context) {
+    // How many rows fit? Each full row is ~56px + 6px gap; header ~20px
+    final usable = availableHeight - 32;
+    final rowsVisible = (usable / 62).floor().clamp(1, TelemetryMockData.drivers.length);
+    final drivers = TelemetryMockData.drivers.take(rowsVisible).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'STANDINGS'),
+        const SizedBox(height: 8),
+        Expanded(
+          child: Column(
+            children: [
+              for (var i = 0; i < drivers.length; i++) ...[
+                if (i > 0) const SizedBox(height: 5),
+                Expanded(
+                  child: _DriverRowFull(
+                    driver: drivers[i],
+                    snapshot: sim.getSnapshot(drivers[i]['id'] as String),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Compact row (small mode + large mode base) ────────────────────────────────
+
+class _DriverRowCompact extends StatelessWidget {
+  const _DriverRowCompact({required this.driver, required this.snapshot});
   final Map<String, dynamic> driver;
   final TelemetrySnapshot snapshot;
-  final double scale;
 
-  Color _teamColor(String team) => switch (team) {
-        'Red Bull Racing' => const Color(0xFF3671C6),
-        'Ferrari' => const Color(0xFFE8002D),
-        'McLaren' => const Color(0xFFFF8000),
-        _ => AppColors.gold,
-      };
+  @override
+  Widget build(BuildContext context) {
+    final tc = _teamColor(driver['team'] as String);
+
+    return Row(
+      children: [
+        Container(width: 3, height: 18, decoration: BoxDecoration(color: tc, borderRadius: BorderRadius.circular(2))),
+        const SizedBox(width: 7),
+        Text(
+          'P${driver['position']}',
+          style: AppTextStyles.label(color: tc).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(width: 6),
+        Text(
+          driver['id'] as String,
+          style: AppTextStyles.label(color: AppColors.textPrimary).copyWith(fontSize: 10),
+        ),
+        const Spacer(),
+        Text(
+          snapshot.gapToLeader,
+          style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Full row (large mode) ──────────────────────────────────────────────────────
+
+// Expanded driver row with team-coloured left border, trend arrow, and gap readout.
+class _DriverRowFull extends StatelessWidget {
+  const _DriverRowFull({required this.driver, required this.snapshot});
+  final Map<String, dynamic> driver;
+  final TelemetrySnapshot snapshot;
 
   @override
   Widget build(BuildContext context) {
@@ -122,72 +185,45 @@ class _StandingRow extends StatelessWidget {
     };
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: 10 * scale,
-        vertical: 7 * scale,
-      ),
       decoration: BoxDecoration(
-        color: tc.withValues(alpha: 0.07),
+        color: tc.withValues(alpha: 0.06),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: tc.withValues(alpha: 0.25)),
+        border: Border(left: BorderSide(color: tc, width: 2.5)),
       ),
       child: Row(
         children: [
-          Text(
-            'P${driver['position']}',
-            style: AppTextStyles.bodyBold(color: tc)
-                .copyWith(fontSize: 14 * scale),
-          ),
-          SizedBox(width: 10 * scale),
-          Container(
-            width: 4,
-            height: 28 * scale,
-            decoration: BoxDecoration(
-              color: tc,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          SizedBox(width: 10 * scale),
+          const SizedBox(width: 10),
+          // Position
+          Text('P${driver['position']}', style: AppTextStyles.bodyBold(color: tc).copyWith(fontSize: 15)),
+          const SizedBox(width: 10),
+          // Name + team
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  driver['name'] as String,
-                  style: AppTextStyles.body(color: AppColors.textPrimary)
-                      .copyWith(fontSize: 13 * scale),
-                ),
+                Text(driver['id'] as String, style: AppTextStyles.bodyBold(color: AppColors.textPrimary).copyWith(fontSize: 11)),
                 Text(
                   driver['team'] as String,
-                  style: AppTextStyles.caption(color: AppColors.textMuted)
-                      .copyWith(fontSize: 10 * scale),
+                  style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                snapshot.gapToLeader,
-                style: AppTextStyles.bodyBold(color: AppColors.textPrimary)
-                    .copyWith(fontSize: 12 * scale),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(trendIcon, size: 11 * scale, color: trendColor),
-                  SizedBox(width: 2 * scale),
-                  Text(
-                    '${snapshot.speed.toInt()}',
-                    style: AppTextStyles.label(color: AppColors.textMuted)
-                        .copyWith(fontSize: 9 * scale),
-                  ),
-                ],
-              ),
-            ],
+          // Trend icon
+          Icon(trendIcon, size: 11, color: trendColor),
+          const SizedBox(width: 6),
+          // Gap
+          SizedBox(
+            width: 44,
+            child: Text(
+              snapshot.gapToLeader,
+              textAlign: TextAlign.right,
+              style: AppTextStyles.bodyBold(color: AppColors.textPrimary).copyWith(fontSize: 11),
+            ),
           ),
+          const SizedBox(width: 10),
         ],
       ),
     );

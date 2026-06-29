@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [driver_snapshot.dart] - Telemetry widget showing live driver position, speed, gear, throttle and brake inputs.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -7,9 +16,11 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
+// ── Public widget ──────────────────────────────────────────────────────────
+
+// Root stateful widget; tracks the selected driver and adapts layout to the available tile size.
 class DriverSnapshot extends StatefulWidget {
   const DriverSnapshot({this.initialDriverId = 'VER', super.key});
-
   final String initialDriverId;
 
   @override
@@ -28,8 +39,7 @@ class _DriverSnapshotState extends State<DriverSnapshot> {
   @override
   Widget build(BuildContext context) {
     final data = context.watch<TelemetrySimulator>().getSnapshot(_driverId);
-    final driverMeta = TelemetryMockData.driverById(_driverId);
-    final tc = teamColor(driverMeta['team'] as String);
+    final meta = TelemetryMockData.driverById(_driverId);
 
     return GestureDetector(
       onTap: () {
@@ -43,116 +53,15 @@ class _DriverSnapshotState extends State<DriverSnapshot> {
           onRemove: actions?.onRemove,
         );
       },
-      child: Container(
-        decoration: telemetryDecoration(accentColor: tc),
-        padding: const EdgeInsets.all(14),
+      child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final h = constraints.maxHeight;
-            final scale = (w / 320).clamp(0.55, 1.5);
-
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 52 * scale,
-                  height: 52 * scale,
-                  decoration: BoxDecoration(
-                    color: tc.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(color: tc.withValues(alpha: 0.8), width: 2),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    _driverId,
-                    style: AppTextStyles.display(color: AppColors.white)
-                        .copyWith(fontSize: 13 * scale),
-                  ),
-                ),
-                SizedBox(width: 12 * scale),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'P${driverMeta['position']}',
-                            style: AppTextStyles.display(color: tc)
-                                .copyWith(fontSize: 16 * scale),
-                          ),
-                          SizedBox(width: 8 * scale),
-                          Expanded(
-                            child: Text(
-                              driverMeta['name'] as String,
-                              style: AppTextStyles.bodyBold(
-                                color: AppColors.textPrimary,
-                              ).copyWith(fontSize: 13 * scale),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 6 * scale),
-                      Row(
-                        children: [
-                          _MiniBar(
-                            label: 'THR',
-                            value: data.throttle,
-                            color: AppColors.green,
-                            scale: scale,
-                          ),
-                          SizedBox(width: 8 * scale),
-                          _MiniBar(
-                            label: 'BRK',
-                            value: data.brake,
-                            color: AppColors.red,
-                            scale: scale,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(width: 12 * scale),
-                SizedBox(
-                  height: h,
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        TweenAnimationBuilder<double>(
-                          tween: Tween<double>(end: data.speed),
-                          duration: const Duration(milliseconds: 250),
-                          builder: (context, v, _) => Text(
-                            '${v.toInt()} km/h',
-                            style: AppTextStyles.bodyBold(
-                              color: AppColors.textPrimary,
-                            ).copyWith(fontSize: 14 * scale),
-                          ),
-                        ),
-                        Text(
-                          'G${data.gear}',
-                          style: AppTextStyles.display(color: AppColors.gold)
-                              .copyWith(fontSize: 18 * scale),
-                        ),
-                        SizedBox(height: 2 * scale),
-                        Text(
-                          data.gapToLeader,
-                          style: AppTextStyles.caption(
-                            color: AppColors.textMuted,
-                          ).copyWith(fontSize: 10 * scale),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallDriver(data: data, meta: meta, driverId: _driverId)
+                  : _LargeDriver(data: data, meta: meta, driverId: _driverId),
             );
           },
         ),
@@ -161,48 +70,177 @@ class _DriverSnapshotState extends State<DriverSnapshot> {
   }
 }
 
-class _MiniBar extends StatelessWidget {
-  const _MiniBar({
-    required this.label,
-    required this.value,
-    required this.color,
-    required this.scale,
-  });
+// ── Small ─────────────────────────────────────────────────────────────────────
 
-  final String label;
-  final double value;
-  final Color color;
-  final double scale;
+class _SmallDriver extends StatelessWidget {
+  const _SmallDriver({required this.data, required this.meta, required this.driverId});
+  final TelemetrySnapshot data;
+  final Map<String, dynamic> meta;
+  final String driverId;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: AppTextStyles.label(color: AppColors.textMuted)
-              .copyWith(fontSize: 8 * scale),
+        TelemetryHeader(label: 'DRIVER', driverId: driverId),
+        const Spacer(),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              'P${meta['position']}',
+              style: AppTextStyles.display(color: AppColors.gold).copyWith(fontSize: 28, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                meta['name'] as String,
+                style: AppTextStyles.body(color: AppColors.textPrimary).copyWith(fontSize: 12),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(height: 2),
-        TweenAnimationBuilder<double>(
-          tween: Tween<double>(end: value),
-          duration: const Duration(milliseconds: 220),
-          builder: (context, fraction, _) => ClipRRect(
-            borderRadius: BorderRadius.circular(3),
-            child: SizedBox(
-              width: 46 * scale,
-              height: 5 * scale,
-              child: Stack(
+        const SizedBox(height: 4),
+        Row(
+          children: [
+            Text(data.gapToLeader, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+            const Spacer(),
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(end: data.speed),
+              duration: const Duration(milliseconds: 220),
+              builder: (_, v, _) => Text(
+                '${v.toInt()} km/h',
+                style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 10),
+              ),
+            ),
+            const SizedBox(width: 6),
+            Text('G${data.gear}', style: AppTextStyles.bodyBold(color: AppColors.gold).copyWith(fontSize: 12)),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// ── Large ─────────────────────────────────────────────────────────────────────
+
+class _LargeDriver extends StatelessWidget {
+  const _LargeDriver({required this.data, required this.meta, required this.driverId});
+  final TelemetrySnapshot data;
+  final Map<String, dynamic> meta;
+  final String driverId;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TelemetryHeader(label: 'DRIVER', driverId: driverId),
+        const SizedBox(height: 10),
+        // Driver badge row
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 42,
+              height: 42,
+              decoration: BoxDecoration(
+                color: AppColors.gold.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.gold.withValues(alpha: 0.50)),
+              ),
+              alignment: Alignment.center,
+              child: Text(driverId, style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 12, fontWeight: FontWeight.w700)),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(color: color.withValues(alpha: 0.15)),
-                  FractionallySizedBox(
-                    widthFactor: fraction.clamp(0.0, 1.0),
-                    alignment: Alignment.centerLeft,
-                    child: Container(color: color),
+                  Row(
+                    children: [
+                      Text('P${meta['position']}', style: AppTextStyles.bodyBold(color: AppColors.gold).copyWith(fontSize: 16)),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          meta['name'] as String,
+                          style: AppTextStyles.body(color: AppColors.textPrimary).copyWith(fontSize: 12),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
+                  Text(meta['team'] as String,
+                      style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+                      overflow: TextOverflow.ellipsis),
                 ],
               ),
+            ),
+          ],
+        ),
+        const Spacer(),
+        // Speed + gear
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.baseline,
+          textBaseline: TextBaseline.alphabetic,
+          children: [
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(end: data.speed),
+              duration: const Duration(milliseconds: 220),
+              builder: (_, v, _) => Text(
+                '${v.toInt()}',
+                style: AppTextStyles.display(color: AppColors.textPrimary).copyWith(fontSize: 34, fontWeight: FontWeight.bold),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Text('km/h', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 11)),
+            const Spacer(),
+            Text('G', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 11)),
+            Text('${data.gear}', style: AppTextStyles.bodyBold(color: AppColors.gold).copyWith(fontSize: 18)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        // THR / BRK bars
+        _InputRow(label: 'THR', value: data.throttle, color: AppColors.green),
+        const SizedBox(height: 5),
+        _InputRow(label: 'BRK', value: data.brake, color: AppColors.red),
+        const SizedBox(height: 6),
+        Text(data.gapToLeader, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+      ],
+    );
+  }
+}
+
+// ── Shared ────────────────────────────────────────────────────────────────────
+
+// Renders a labelled progress bar (throttle or brake) with a live percentage readout.
+class _InputRow extends StatelessWidget {
+  const _InputRow({required this.label, required this.value, required this.color});
+  final String label;
+  final double value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox(
+          width: 26,
+          child: Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        ),
+        Expanded(child: TelemetryBar(fraction: value, color: color, trackColor: color.withValues(alpha: 0.10))),
+        const SizedBox(width: 6),
+        SizedBox(
+          width: 30,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: value),
+            duration: const Duration(milliseconds: 220),
+            builder: (_, v, _) => Text(
+              '${(v * 100).toInt()}%',
+              textAlign: TextAlign.right,
+              style: AppTextStyles.caption(color: color).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
             ),
           ),
         ),

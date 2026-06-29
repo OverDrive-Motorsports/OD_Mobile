@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## auth_page_shell.dart - Shared visual shell for the authentication entry screens.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## auth_page_shell.dart - Shared visual frame, footer link, and optional info card for authentication screens.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 

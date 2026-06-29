@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## telemetry_page.dart - Freeform drag-and-resize telemetry dashboard page composing all 22 telemetry widgets.
+ ##
+ */
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -7,13 +16,21 @@ import 'package:provider/provider.dart';
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/base/app_button.dart';
+import '../../widgets/base/app_modal.dart';
+import '../../widgets/telemetry/damage.dart';
 import '../../widgets/telemetry/drs_ers.dart';
+import '../../widgets/telemetry/lap_history.dart';
+import '../../widgets/telemetry/lap_position.dart';
+import '../../widgets/telemetry/pedal_trace.dart';
+import '../../widgets/telemetry/weather_forecast.dart';
+import '../../widgets/telemetry/weather_radar.dart';
 import '../../widgets/telemetry/driver_snapshot.dart';
 import '../../widgets/telemetry/engine_temps.dart';
 import '../../widgets/telemetry/fuel_gauge.dart';
 import '../../widgets/telemetry/g_force.dart';
 import '../../widgets/telemetry/gear_rpm.dart';
 import '../../widgets/telemetry/lap_delta.dart';
+import '../../widgets/telemetry/penalty.dart';
 import '../../widgets/telemetry/pit_strategy.dart';
 import '../../widgets/telemetry/sector_split.dart';
 import '../../widgets/telemetry/speedometer.dart';
@@ -27,6 +44,7 @@ import 'grid/grid_item.dart';
 
 // ─── Widget catalogue ─────────────────────────────────────────────────────────
 
+// Enum listing every addable telemetry widget with its display label and icon.
 enum _WidgetType {
   speedometer('Speedometer', Icons.speed_rounded),
   gearRpm('Gear & RPM', Icons.settings_outlined),
@@ -41,13 +59,21 @@ enum _WidgetType {
   weather('Weather', Icons.wb_sunny_outlined),
   pitStrategy('Pit Strategy', Icons.swap_horiz_rounded),
   engine('Engine', Icons.settings_input_svideo_rounded),
-  standings('Standings', Icons.format_list_numbered_rounded);
+  standings('Standings', Icons.format_list_numbered_rounded),
+  penalty('Penalties', Icons.gavel_rounded),
+  damage('Damage', Icons.car_crash_rounded),
+  lapHistory('Lap History', Icons.show_chart_rounded),
+  lapPosition('Lap Positions', Icons.swap_vert_rounded),
+  pedalTrace('Pedal Trace', Icons.stacked_line_chart_rounded),
+  weatherForecast('Météo Prévisions', Icons.wb_cloudy_rounded),
+  weatherRadar('Radar Météo', Icons.radar_rounded);
 
   const _WidgetType(this.label, this.icon);
   final String label;
   final IconData icon;
 }
 
+// Factory that instantiates the concrete telemetry widget for a given catalogue entry.
 Widget _buildWidget(_WidgetType type) => switch (type) {
       _WidgetType.speedometer => const Speedometer(),
       _WidgetType.gearRpm => const GearRpm(),
@@ -63,10 +89,18 @@ Widget _buildWidget(_WidgetType type) => switch (type) {
       _WidgetType.pitStrategy => const PitStrategy(),
       _WidgetType.engine => const EngineTemps(),
       _WidgetType.standings => const RaceStandings(),
+      _WidgetType.penalty => const Penalty(),
+      _WidgetType.damage => const Damage(),
+      _WidgetType.lapHistory => const LapHistory(),
+      _WidgetType.lapPosition => const LapPosition(),
+      _WidgetType.pedalTrace => const PedalTrace(),
+      _WidgetType.weatherForecast => const WeatherForecast(),
+      _WidgetType.weatherRadar => const WeatherRadar(),
     };
 
 // ─── Page root — owns the simulator ──────────────────────────────────────────
 
+// Provides the TelemetrySimulator to the widget subtree and delegates layout to _TelemetryBoard.
 class TelemetryPage extends StatelessWidget {
   const TelemetryPage({super.key});
 
@@ -91,9 +125,8 @@ class _TelemetryBoard extends StatefulWidget {
 class _TelemetryBoardState extends State<_TelemetryBoard> {
   static const int _minCols = 5;
   static const int _rows = 15;
-  static const double _cellSize = 64;
-  static const double _gap = 5;
-  static const double _boardPadding = 16;
+  static const double _gap = 4;
+  static const double _boardPaddingV = 12;
   static const int _defaultColSpan = 2;
   static const int _defaultRowSpan = 2;
 
@@ -119,10 +152,17 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
 
   // ── Grid helpers ───────────────────────────────────────────────────────────
 
+  // One extra column beyond the natural fit so the grid fills the full width.
   int _responsiveCols() {
     final w = MediaQuery.sizeOf(context).width;
-    final usable = math.max(0.0, w - _boardPadding * 2);
-    return math.max(_minCols, ((usable + _gap) / (_cellSize + _gap)).floor());
+    final base = math.max(_minCols, ((w + _gap) / (64.0 + _gap)).floor());
+    return base + 1;
+  }
+
+  // Cell size computed so cols×(cellSize+gap)−gap == screenWidth exactly.
+  double _cellSizeForCols(int cols) {
+    final w = MediaQuery.sizeOf(context).width;
+    return (w + _gap) / cols - _gap;
   }
 
   bool _overlaps(int col, int row, int cs, int rs) {
@@ -206,73 +246,10 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
   // ── Add-widget bottom sheet ────────────────────────────────────────────────
 
   void _showAddSheet() {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppColors.surfaceElevated,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-              child: Row(
-                children: [
-                  Text('Add widget', style: AppTextStyles.bodyBold()),
-                  const Spacer(),
-                  Text(
-                    '${_WidgetType.values.length} available',
-                    style: AppTextStyles.label(),
-                  ),
-                ],
-              ),
-            ),
-            const Divider(),
-            Flexible(
-              child: ListView(
-                shrinkWrap: true,
-                padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
-                children: [
-                  for (final type in _WidgetType.values)
-                    ListTile(
-                      contentPadding:
-                          const EdgeInsets.symmetric(horizontal: 4),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      leading: Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: AppColors.gold.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(
-                            color: AppColors.gold.withValues(alpha: 0.35),
-                          ),
-                        ),
-                        child:
-                            Icon(type.icon, color: AppColors.gold, size: 18),
-                      ),
-                      title: Text(type.label, style: AppTextStyles.body()),
-                      trailing: const Icon(
-                        Icons.add_circle_outline_rounded,
-                        color: AppColors.gold,
-                        size: 20,
-                      ),
-                      onTap: () {
-                        Navigator.of(ctx).pop();
-                        _addWidget(type);
-                      },
-                    ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
+    AppModal.show<void>(
+      context,
+      title: 'Ajouter un widget',
+      child: _WidgetPickerGrid(onSelected: _addWidget),
     );
   }
 
@@ -281,6 +258,7 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
   @override
   Widget build(BuildContext context) {
     final cols = _responsiveCols();
+    final cellSize = _cellSizeForCols(cols);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -293,50 +271,89 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
         ),
         title: Text('Telemetry', style: AppTextStyles.bodyBold()),
         actions: [
-          Row(
-            children: [
-              Container(
-                width: 7,
-                height: 7,
-                decoration: const BoxDecoration(
-                  color: AppColors.green,
-                  shape: BoxShape.circle,
-                ),
-              ),
-              const SizedBox(width: 6),
-              Text('LIVE', style: AppTextStyles.label(color: AppColors.green)),
-              const SizedBox(width: 12),
-              AppButton(
-                icon: Icons.add_rounded,
-                onPressed: _showAddSheet,
-              ),
-            ],
+          AppButton(
+            icon: Icons.add_rounded,
+            onPressed: _showAddSheet,
           ),
         ],
       ),
       body: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Scrollbar(
-          controller: _verticalScroll,
-          thumbVisibility: true,
-          child: SingleChildScrollView(
-            controller: _verticalScroll,
-            child: Padding(
-              padding: const EdgeInsets.all(_boardPadding),
-              child: GridBoard(
-                cols: cols,
-                rows: _rows,
-                cellSize: _cellSize,
-                gap: _gap,
-                items: List<GridItem>.from(_items),
-                onItemsChanged: _syncBoardItems,
-                onItemRemoved: _removeWidget,
-                onItemReset: _resetWidget,
-              ),
-            ),
+        controller: _verticalScroll,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: _boardPaddingV),
+          child: GridBoard(
+            cols: cols,
+            rows: _rows,
+            cellSize: cellSize,
+            gap: _gap,
+            items: List<GridItem>.from(_items),
+            onItemsChanged: _syncBoardItems,
+            onItemRemoved: _removeWidget,
+            onItemReset: _resetWidget,
           ),
         ),
       ),
+    );
+  }
+}
+
+// ─── Widget picker ─────────────────────────────────────────────────────────────
+
+// 3-column grid shown in the add-widget bottom sheet; tapping a tile inserts it onto the board.
+class _WidgetPickerGrid extends StatelessWidget {
+  const _WidgetPickerGrid({required this.onSelected});
+
+  final ValueChanged<_WidgetType> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: _WidgetType.values.length,
+      itemBuilder: (context, index) {
+        final type = _WidgetType.values[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.of(context).maybePop();
+            onSelected(type);
+          },
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.white.withValues(alpha: 0.05),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: AppColors.white.withValues(alpha: 0.10),
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(type.icon, color: AppColors.gold, size: 22),
+                const SizedBox(height: 8),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 6),
+                  child: Text(
+                    type.label,
+                    style: AppTextStyles.body(
+                      color: AppColors.textPrimary,
+                    ).copyWith(fontSize: 11),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

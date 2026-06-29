@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [g_force.dart] - Telemetry widget rendering a live G-force scatter plot with a fading trail on a circular canvas.
+ ##
+ */
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -9,9 +18,12 @@ import 'telemetry_mock_data.dart';
 import 'telemetry_widget_menu.dart';
 import 'telemetry_widget_style.dart';
 
+// ── GForce widget — maintains an 8-point trail and drives the custom painter ──
+
+// Subscribes directly to TelemetrySimulator via a ChangeNotifier listener instead
+// of context.watch so that driver switches can flush the trail without a rebuild cycle.
 class GForce extends StatefulWidget {
   const GForce({this.initialDriverId = 'VER', super.key});
-
   final String initialDriverId;
 
   @override
@@ -22,6 +34,8 @@ class _GForceState extends State<GForce> {
   late String _driverId;
   TelemetrySimulator? _simulator;
   final List<Offset> _trail = [];
+  double _gLat = 0;
+  double _gLon = 0;
 
   @override
   void initState() {
@@ -44,8 +58,10 @@ class _GForceState extends State<GForce> {
     if (!mounted) return;
     final snap = _simulator!.getSnapshot(_driverId);
     setState(() {
+      _gLat = snap.gLat;
+      _gLon = snap.gLon;
       _trail.add(Offset(snap.gLat, snap.gLon));
-      if (_trail.length > 6) _trail.removeAt(0);
+      if (_trail.length > 8) _trail.removeAt(0);
     });
   }
 
@@ -76,39 +92,28 @@ class _GForceState extends State<GForce> {
           onRemove: actions?.onRemove,
         );
       },
-      child: Container(
-        decoration: telemetryDecoration(accentColor: AppColors.blue),
-        padding: const EdgeInsets.all(14),
+      child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final w = constraints.maxWidth;
-            final scale = (w / 160).clamp(0.6, 1.6);
-
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(
-                      'G-FORCE',
-                      style: AppTextStyles.label(color: AppColors.textMuted)
-                          .copyWith(fontSize: 10 * scale),
+            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TelemetryHeader(label: 'G-FORCE', driverId: _driverId),
+                  Expanded(
+                    child: CustomPaint(
+                      painter: _GForcePainter(trail: List<Offset>.from(_trail)),
+                      child: const SizedBox.expand(),
                     ),
-                    const Spacer(),
-                    Text(
-                      _driverId,
-                      style: AppTextStyles.label(color: AppColors.gold)
-                          .copyWith(fontSize: 10 * scale),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  child: CustomPaint(
-                    painter: _GForcePainter(trail: List<Offset>.from(_trail)),
-                    child: const SizedBox.expand(),
                   ),
-                ),
-              ],
+                  if (mode == TelemetryMode.large) ...[
+                    const SizedBox(height: 6),
+                    _GNumericRow(gLat: _gLat, gLon: _gLon),
+                  ],
+                ],
+              ),
             );
           },
         ),
@@ -117,9 +122,53 @@ class _GForceState extends State<GForce> {
   }
 }
 
+// ── Numeric G readout (large mode only) ───────────────────────────────────────
+
+class _GNumericRow extends StatelessWidget {
+  const _GNumericRow({required this.gLat, required this.gLon});
+  final double gLat;
+  final double gLon;
+
+  @override
+  Widget build(BuildContext context) {
+    final latDir = gLat >= 0 ? '→' : '←';
+    final lonDir = gLon <= 0 ? '▲' : '▼';
+    final latColor = gLat.abs() > 2.5 ? AppColors.red : AppColors.textSecondary;
+    final lonColor = gLon.abs() > 3.0 ? AppColors.red : AppColors.textSecondary;
+
+    return Row(
+      children: [
+        _GValue(label: 'LAT', value: '$latDir ${gLat.abs().toStringAsFixed(1)}G', color: latColor),
+        const Spacer(),
+        _GValue(label: 'LON', value: '$lonDir ${gLon.abs().toStringAsFixed(1)}G', color: lonColor),
+      ],
+    );
+  }
+}
+
+class _GValue extends StatelessWidget {
+  const _GValue({required this.label, required this.value, required this.color});
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        const SizedBox(width: 5),
+        Text(value, style: AppTextStyles.caption(color: color).copyWith(fontSize: 10, fontWeight: FontWeight.w700)),
+      ],
+    );
+  }
+}
+
+// ── Painter ───────────────────────────────────────────────────────────────────
+
 class _GForcePainter extends CustomPainter {
   const _GForcePainter({required this.trail});
-
   final List<Offset> trail;
 
   static const double _maxLat = 4.0;
@@ -128,61 +177,56 @@ class _GForcePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final radius = math.min(size.width, size.height) / 2 - 10;
+    final radius = math.min(size.width, size.height) / 2 - 6;
 
+    // Background disc
     canvas.drawCircle(center, radius, Paint()..color = AppColors.surface);
+
+    // Outer ring
     canvas.drawCircle(
       center,
       radius,
       Paint()
-        ..color = AppColors.border
+        ..color = AppColors.border.withValues(alpha: 0.50)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1,
+        ..strokeWidth = 1.0,
     );
 
-    for (final factor in [0.5, 0.25]) {
+    // Inner reference rings at 25% and 50%
+    for (final f in [0.50, 0.25]) {
       canvas.drawCircle(
         center,
-        radius * factor,
+        radius * f,
         Paint()
-          ..color = AppColors.divider
+          ..color = AppColors.border.withValues(alpha: 0.25)
           ..style = PaintingStyle.stroke
-          ..strokeWidth = 0.8,
+          ..strokeWidth = 0.6,
       );
     }
 
+    // Axis lines
     final axisPaint = Paint()
-      ..color = AppColors.divider
-      ..strokeWidth = 0.8;
-    canvas.drawLine(
-      Offset(center.dx - radius, center.dy),
-      Offset(center.dx + radius, center.dy),
-      axisPaint,
-    );
-    canvas.drawLine(
-      Offset(center.dx, center.dy - radius),
-      Offset(center.dx, center.dy + radius),
-      axisPaint,
-    );
+      ..color = AppColors.border.withValues(alpha: 0.30)
+      ..strokeWidth = 0.6;
+    canvas.drawLine(Offset(center.dx - radius, center.dy), Offset(center.dx + radius, center.dy), axisPaint);
+    canvas.drawLine(Offset(center.dx, center.dy - radius), Offset(center.dx, center.dy + radius), axisPaint);
 
-    void drawLabel(String text, Offset pos) {
-      final span = TextSpan(
-        text: text,
-        style: const TextStyle(
-          color: AppColors.textMuted,
-          fontSize: 9,
-          fontWeight: FontWeight.w600,
+    // Corner labels
+    void label(String text, Offset pos) {
+      final tp = TextPainter(
+        text: TextSpan(
+          text: text,
+          style: const TextStyle(color: AppColors.textMuted, fontSize: 8, fontWeight: FontWeight.w500),
         ),
-      );
-      final tp = TextPainter(text: span, textDirection: TextDirection.ltr)
-        ..layout();
+        textDirection: TextDirection.ltr,
+      )..layout();
       tp.paint(canvas, pos - Offset(tp.width / 2, tp.height / 2));
     }
 
-    drawLabel('Acc.', Offset(center.dx, center.dy - radius - 8));
-    drawLabel('Fr.', Offset(center.dx, center.dy + radius + 8));
-    drawLabel('G', Offset(center.dx - radius - 10, center.dy));
-    drawLabel('D', Offset(center.dx + radius + 10, center.dy));
+    label('ACC', Offset(center.dx, center.dy - radius - 9));
+    label('FR', Offset(center.dx, center.dy + radius + 9));
+    label('G', Offset(center.dx - radius - 9, center.dy));
+    label('D', Offset(center.dx + radius + 9, center.dy));
 
     if (trail.isEmpty) return;
 
@@ -191,24 +235,26 @@ class _GForcePainter extends CustomPainter {
           center.dy - (g.dy / _maxLon) * radius,
         );
 
+    // Trail dots with fade
     for (var i = 0; i < trail.length - 1; i++) {
-      final opacity = (i + 1) / trail.length * 0.55;
+      final opacity = (i + 1) / trail.length * 0.40;
       canvas.drawCircle(
         toScreen(trail[i]),
-        3,
-        Paint()..color = AppColors.blue.withValues(alpha: opacity),
+        2.5,
+        Paint()..color = AppColors.white.withValues(alpha: opacity),
       );
     }
 
+    // Current position dot
     final current = toScreen(trail.last);
-    canvas.drawCircle(current, 5, Paint()..color = AppColors.blue);
+    canvas.drawCircle(current, 5, Paint()..color = AppColors.white.withValues(alpha: 0.90));
     canvas.drawCircle(
       current,
       5,
       Paint()
-        ..color = AppColors.white.withValues(alpha: 0.4)
+        ..color = AppColors.white.withValues(alpha: 0.30)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
+        ..strokeWidth = 2.0,
     );
   }
 

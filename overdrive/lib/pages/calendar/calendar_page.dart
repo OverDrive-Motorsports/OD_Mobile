@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## calendar_page.dart - Calendar screen with championship filters and event cards.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## calendar_page.dart - Calendar screen combining championship filters, monthly calendar, and race event cards.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,9 +16,7 @@ import '../../services/calendar/calendar_service.dart';
 import '../../widgets/calendar/event_calendar.dart';
 import '../../widgets/calendar/monthly_calendar.dart';
 
-// ---------------------------------------------------------------------------
-// Glass themes
-// ---------------------------------------------------------------------------
+// ── Glass themes ──────────────────────────────────────────────────────────
 
 const _kGlassBorderColor = Color(0x26FFFFFF);
 
@@ -583,9 +581,7 @@ class _ArchivesSectionState extends State<_ArchivesSection>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Filter chip row
-// ---------------------------------------------------------------------------
+// ── Filter chip row ───────────────────────────────────────────────────────
 
 /// Horizontally scrollable chip row. Selected chip uses liquid glass;
 /// unselected chips are subtle transparent pills.

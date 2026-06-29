@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## championship_widgets_test.dart - Widget tests for championship UI widgets.
+ ## championship_widgets_test.dart - Widget tests for all championship UI cards and standings widgets.
  ##
  */
 

@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## [telemetry_widget_menu.dart] - Context menu sheet for telemetry widgets, exposing driver selection and widget management actions.
+ ##
+ */
+
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -5,6 +14,9 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'telemetry_mock_data.dart';
 
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+// Maps a team name to its official brand colour; falls back to AppColors.gold for unknown teams.
 Color teamColor(String team) => switch (team) {
       'Red Bull Racing' => const Color(0xFF3671C6),
       'Ferrari' => const Color(0xFFE8002D),
@@ -12,6 +24,10 @@ Color teamColor(String team) => switch (team) {
       _ => AppColors.gold,
     };
 
+// ── Public entry point ──────────────────────────────────────────────────
+
+// Pushes the context menu as a full-screen PopupRoute so back-navigation and
+// barrier dismissal work without interrupting the telemetry data stream.
 Future<void> showTelemetryWidgetMenu(
   BuildContext context, {
   required String widgetLabel,
@@ -31,6 +47,10 @@ Future<void> showTelemetryWidgetMenu(
   );
 }
 
+// ── Route ──────────────────────────────────────────────────────────────────
+
+// Custom PopupRoute that renders a blurred backdrop and a scaled card without
+// relying on the default ModalBarrier, giving independent animation control.
 class _TelemetryMenuRoute extends PopupRoute<void> {
   _TelemetryMenuRoute({
     required this.widgetLabel,
@@ -108,6 +128,10 @@ class _TelemetryMenuRoute extends PopupRoute<void> {
   }
 }
 
+// ── UI components ───────────────────────────────────────────────────────
+
+// Elevated card containing the driver picker (optional) and action rows;
+// driver section is omitted entirely when currentDriverId/onDriverSelected are null.
 class _MenuCard extends StatelessWidget {
   const _MenuCard({
     required this.widgetLabel,

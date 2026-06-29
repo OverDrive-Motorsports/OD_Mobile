@@ -1,3 +1,12 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## grid_item_widget.dart - Interactive wrapper that handles drag and resize gestures for a single grid item.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,50 +14,33 @@ import '../../../core/theme/app_theme.dart';
 import '../../../widgets/telemetry/telemetry_item_actions.dart';
 import 'grid_item.dart';
 
+// Tracks whether the item is idle, being dragged, or being resized.
 enum _InteractionMode { none, drag, resize }
 
-class _CornerAccentPainter extends CustomPainter {
-  const _CornerAccentPainter({required this.color});
-  final Color color;
+// Draws three diagonal dots in the bottom-right corner as a visual resize affordance.
+class _ResizeGripPainter extends CustomPainter {
+  const _ResizeGripPainter();
 
   @override
   void paint(Canvas canvas, Size size) {
-    const radius = 10.0;
-    const legLen = 14.0;
-
     final paint = Paint()
-      ..color = color.withValues(alpha: 0.7)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2.5
-      ..strokeCap = StrokeCap.round;
+      ..color = AppColors.gold.withValues(alpha: 0.40)
+      ..style = PaintingStyle.fill;
 
-    // Top-left corner ⌜
-    final tl = Path()
-      ..moveTo(legLen, 0)
-      ..lineTo(radius, 0)
-      ..arcToPoint(
-        const Offset(0, radius),
-        radius: const Radius.circular(radius),
-      )
-      ..lineTo(0, legLen);
-    canvas.drawPath(tl, paint);
+    const r = 1.4;
+    final w = size.width;
+    final h = size.height;
 
-    // Bottom-right corner ⌟
-    final br = Path()
-      ..moveTo(size.width - legLen, size.height)
-      ..lineTo(size.width - radius, size.height)
-      ..arcToPoint(
-        Offset(size.width, size.height - radius),
-        radius: const Radius.circular(radius),
-      )
-      ..lineTo(size.width, size.height - legLen);
-    canvas.drawPath(br, paint);
+    canvas.drawCircle(Offset(w, h), r, paint);
+    canvas.drawCircle(Offset(w - 4, h - 4), r, paint);
+    canvas.drawCircle(Offset(w - 8, h - 8), r, paint);
   }
 
   @override
-  bool shouldRepaint(_CornerAccentPainter old) => old.color != color;
+  bool shouldRepaint(_ResizeGripPainter old) => false;
 }
 
+// Positioned widget that animates between grid cells and exposes long-press drag and resize handles.
 class GridItemWidget extends StatefulWidget {
   const GridItemWidget({
     super.key,
@@ -87,6 +79,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
   static const double _resizeSnapFactor = 0.5;
 
   _InteractionMode _interactionMode = _InteractionMode.none;
+  bool _isDropping = false;
 
   double _dragDeltaX = 0;
   double _dragDeltaY = 0;
@@ -129,6 +122,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
     widget.onInteractionStart?.call();
     setState(() {
       _interactionMode = _InteractionMode.drag;
+      _isDropping = false;
       _dragDeltaX = 0;
       _dragDeltaY = 0;
       _dragStartCol = widget.item.col;
@@ -180,11 +174,13 @@ class _GridItemWidgetState extends State<GridItemWidget> {
       _resizeDeltaY = offset.dy;
       final stepX = (_resizeDeltaX / (cellStep * _resizeSnapFactor)).round();
       final stepY = (_resizeDeltaY / (cellStep * _resizeSnapFactor)).round();
-      _previewColSpan = (_resizeStartColSpan + stepX)
-          .clamp(1, widget.totalCols - widget.item.col)
+      final newColSpan = _resizeStartColSpan + stepX;
+      final newRowSpan = _resizeStartRowSpan + stepY;
+      _previewColSpan = newColSpan
+          .clamp(widget.item.minColSpan, widget.totalCols - widget.item.col)
           .toInt();
-      _previewRowSpan = (_resizeStartRowSpan + stepY)
-          .clamp(1, widget.totalRows - widget.item.row)
+      _previewRowSpan = newRowSpan
+          .clamp(widget.item.minRowSpan, widget.totalRows - widget.item.row)
           .toInt();
     });
   }
@@ -200,6 +196,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
 
     widget.onInteractionEnd?.call();
     setState(() {
+      _isDropping = mode == _InteractionMode.drag;
       _interactionMode = _InteractionMode.none;
       _dragDeltaX = 0;
       _dragDeltaY = 0;
@@ -253,19 +250,23 @@ class _GridItemWidgetState extends State<GridItemWidget> {
             child: IgnorePointer(
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.gold.withValues(alpha: 0.15),
+                  color: AppColors.gold.withValues(alpha: 0.10),
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: AppColors.gold.withValues(alpha: 0.6),
-                    width: 1.8,
+                    color: AppColors.gold.withValues(alpha: 0.55),
+                    width: 1.5,
                   ),
                 ),
               ),
             ),
           ),
         AnimatedPositioned(
-          duration: const Duration(milliseconds: 70),
-          curve: Curves.easeOut,
+          duration: _isDropping
+              ? const Duration(milliseconds: 280)
+              : _isDragging
+                  ? Duration.zero
+                  : const Duration(milliseconds: 150),
+          curve: _isDropping ? Curves.easeOutBack : Curves.easeOut,
           left: liveLeft,
           top: liveTop,
           width: baseWidth,
@@ -290,13 +291,19 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                       child: widget.item.child,
                     ),
                   ),
-                  Positioned.fill(
+                  // Subtle diagonal resize grip dots (bottom-right, visual only)
+                  const Positioned(
+                    right: 2,
+                    bottom: 2,
+                    width: 18,
+                    height: 18,
                     child: IgnorePointer(
                       child: CustomPaint(
-                        painter: _CornerAccentPainter(color: AppColors.gold),
+                        painter: _ResizeGripPainter(),
                       ),
                     ),
                   ),
+                  // Invisible touch zone for resize gesture
                   Positioned(
                     right: -8,
                     bottom: -8,

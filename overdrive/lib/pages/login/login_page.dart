@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## login_page.dart - Login screen for user authentication.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## login_page.dart - Legacy login page entry point (redirected via AuthService); kept for route compatibility.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +16,7 @@ import '../../widgets/base/app_button.dart';
 import '../../widgets/base/app_text_field.dart';
 import '../../widgets/base/error_message.dart';
 
+// Legacy login entry point backed by the provider-injected AuthService.
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -23,6 +24,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
+// Manages form controllers, field-level validation, and the async login call.
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController(
     text: 'user@overdrive.eu',
@@ -43,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+  // Returns a localised error when the email is empty or does not match RFC format.
   String? _validateEmail(String value) {
     if (value.isEmpty) return 'Saisis ton adresse email.';
     final pattern = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
@@ -50,12 +53,14 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
+  // Returns a localised error when the password is absent or shorter than 6 characters.
   String? _validatePassword(String value) {
     if (value.isEmpty) return 'Saisis ton mot de passe.';
     if (value.length < 6) return 'Minimum 6 caractères.';
     return null;
   }
 
+  // Validates both fields then delegates the sign-in attempt to the AuthService.
   Future<void> _handleLogin() async {
     FocusScope.of(context).unfocus();
 

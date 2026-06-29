@@ -1,11 +1,11 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## app_text_field.dart - Shared rounded input field with optional icon and inline error state.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## app_text_field.dart - Themed text input field with label, hint, and validation error display.
+ ##
+ */
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
@@ -14,9 +14,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import 'error_message.dart';
 
-// ---------------------------------------------------------------------------
-// Glass theme
-// ---------------------------------------------------------------------------
+// ── Glass theme ───────────────────────────────────────────────────────────
 
 const _kFieldBorderColor = Color(0x22FFFFFF);
 

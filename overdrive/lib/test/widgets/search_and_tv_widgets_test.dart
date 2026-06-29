@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## search_and_tv_widgets_test.dart - Widget tests for search and TV controls.
+ ## search_and_tv_widgets_test.dart - Widget tests for the search bar and TV stream widgets.
  ##
  */
 

@@ -1,14 +1,16 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## ChampionshipPage - Adaptive championship screen driven by mock data.
+ ## championship_page.dart - Adaptive championship page rendering live timing, event-weekend, or off-season layouts from ChampionshipData.
  ##
  */
 
 import 'dart:math' as math;
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -346,6 +348,20 @@ class _SectionDivider extends StatelessWidget {
   }
 }
 
+// ── Liquid glass theme — "Moyen+ — blanc, haut" ──────────────────────────
+
+const _kLiveCardEdgeColor = Color(0x38FFFFFF);
+
+final _kLiveCardTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.20,
+  blurSigma: 26.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.12,
+  vibrancyIntensity: 0.05,
+  edgeLightColor: _kLiveCardEdgeColor,
+  edgeShadowColor: _kLiveCardEdgeColor,
+);
+
 /// Live-session overview with top-three groups and quick action buttons.
 class _LiveOverviewCard extends StatelessWidget {
   const _LiveOverviewCard({required this.groups, required this.accentColor});
@@ -355,35 +371,39 @@ class _LiveOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Direct'.toUpperCase(),
-            style: AppTextStyles.label(
-              color: AppColors.textSecondary,
-            ).copyWith(letterSpacing: 1.1),
-          ),
-          const SizedBox(height: 14),
-          for (var index = 0; index < groups.length; index++) ...[
-            ChampionshipTop3(
-              entries: groups[index].entries,
-              accentColor: accentColor,
-              label: groups.length > 1 ? groups[index].label : null,
+    return CupertinoTheme(
+      data: const CupertinoThemeData(brightness: Brightness.dark),
+      child: CupertinoLiquidGlass(
+        theme: _kLiveCardTheme,
+        borderRadius: BorderRadius.circular(26),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Direct'.toUpperCase(),
+                  style: AppTextStyles.label(
+                    color: AppColors.textSecondary,
+                  ).copyWith(letterSpacing: 1.1),
+                ),
+                const SizedBox(height: 14),
+                for (var index = 0; index < groups.length; index++) ...[
+                  ChampionshipTop3(
+                    entries: groups[index].entries,
+                    accentColor: accentColor,
+                    label: groups.length > 1 ? groups[index].label : null,
+                  ),
+                  if (index < groups.length - 1) const SizedBox(height: 14),
+                ],
+                const SizedBox(height: 16),
+                _LiveActionButtons(accentColor: accentColor),
+              ],
             ),
-            if (index < groups.length - 1) const SizedBox(height: 14),
-          ],
-          const SizedBox(height: 16),
-          _LiveActionButtons(accentColor: accentColor),
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -660,15 +680,10 @@ class _StandingLabelParts {
   final String? category;
 }
 
-// ---------------------------------------------------------------------------
-// Championship background gradient
-// ---------------------------------------------------------------------------
+// ── Championship background gradient ──────────────────────────────────────
 
 /// Full-screen gradient background keyed to the championship identity.
-///
-/// F1   → rouge / blanc  — warm red bloom fading through a white shimmer
-/// WEC  → bleu / blanc   — cool blue bloom fading through a white shimmer
-/// MotoGP → rouge / noir — dramatic red fading directly to black
+/// F1 → rouge/blanc bloom; WEC → bleu/blanc; MotoGP → rouge/noir.
 class _ChampionshipBackground extends StatelessWidget {
   const _ChampionshipBackground({required this.id, super.key});
 

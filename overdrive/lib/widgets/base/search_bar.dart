@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## search_bar.dart - Reusable presentational search bar widget.
+ ## search_bar.dart - Themed search input field with focus-aware styling and a clear button.
  ##
  */
 
@@ -13,9 +13,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Glass themes
-// ---------------------------------------------------------------------------
+// ── Glass themes ──────────────────────────────────────────────────────────
 
 const _kBorderColor = Color(0x26FFFFFF);
 
@@ -37,9 +35,7 @@ final _kCancelBtnTheme = LiquidGlassThemeData.dark().copyWith(
   edgeShadowColor: _kBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// AppSearchBarProps
-// ---------------------------------------------------------------------------
+// ── AppSearchBarProps ─────────────────────────────────────────────────────
 
 /// A typed configuration object for the search bar.
 class AppSearchBarProps {
@@ -64,10 +60,9 @@ class AppSearchBarProps {
   final TextInputAction textInputAction;
 }
 
-// ---------------------------------------------------------------------------
-// AppSearchBar
-// ---------------------------------------------------------------------------
+// ── AppSearchBar ──────────────────────────────────────────────────────────
 
+// Liquid-glass search field that shows a cancel button while focused or when text is present.
 class AppSearchBar extends StatefulWidget {
   const AppSearchBar({required this.props, super.key});
 

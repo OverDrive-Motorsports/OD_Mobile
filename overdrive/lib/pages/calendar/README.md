@@ -2,24 +2,35 @@
 
 ## Purpose
 
-`calendar_page.dart` renders the calendar screen from the temporary calendar service.
-It combines championship filters, a reusable monthly calendar, and event cards.
+`calendar_page.dart` renders the calendar screen. It loads multi-championship race
+schedules from `CalendarService`, applies a championship filter, and composes a
+monthly calendar grid with event cards.
+
+---
 
 ## Responsibilities
 
-- Load championship and schedule data from `CalendarService`.
-- Keep filter, selected date, loading, and archive state local to the route.
-- Compose reusable calendar widgets instead of embedding all rendering in the page.
-- Keep date labels and display formatting close to the page-level locale choices.
+- Load championship list and race schedule from `CalendarService` on first build.
+- Own local state for: active filter, selected date, loading flag, and archive toggle.
+- Resolve the initial selected date via `resolveCalendarSelection` so the calendar
+  opens on the nearest upcoming event rather than today.
+- Compose `MonthlyCalendar` and `EventCalendar` without embedding rendering logic.
+
+---
 
 ## Dependencies
 
-- `CalendarService` from `services/calendar`.
-- `MonthlyCalendar` and `EventCalendar` from `widgets/calendar`.
-- `GlassPill` for compact filter and archive controls.
-- `MenuOverlay` for top-level navigation.
+- `CalendarService` from `services/calendar/calendar_service.dart`.
+- `MonthlyCalendar` and `EventCalendar` from `widgets/calendar/`.
+- `NavigationShell` / bottom nav provided by the GoRouter shell route.
+- Theme tokens from `app_theme.dart`.
+
+---
 
 ## Extension Notes
 
-- Replace the mock backend with the real schedule source behind `CalendarService`.
-- Keep future filters declarative and avoid duplicating event-card rendering in the page.
+- Replace the mock backend in `CalendarMockBackend` with the real API without
+  changing the page — `CalendarService` is the abstraction boundary.
+- Keep future filter logic in `_applyFilter` to avoid scattering it across the widget tree.
+- Additional championship categories (e.g. IndyCar) only require new entries in
+  `CalendarMockBackend._championships`.

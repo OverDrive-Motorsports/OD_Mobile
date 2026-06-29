@@ -2,77 +2,88 @@
 
 ## Purpose
 
-This folder contains the reusable presentation widgets used by the championship
-pages.
+Reusable presentation widgets for all championship pages. Each widget is data-driven
+and works identically for Formula 1, WEC, and MotoGP — no per-series branching.
+
+---
 
 ## Widgets
 
-### `championship_top3.dart`
+### `championship_circuit_weather.dart` — `ChampionshipCircuitWeatherCard`
 
-Compact live top-3 card.
+Combined card displaying circuit metadata (name, location, lap count, circuit length)
+alongside current weather conditions (track temp, air temp, rain chance).
 
 Inputs:
+- `circuit`: `ChampionshipCircuit`
+- `weather`: `ChampionshipWeather`
+- `accentColor`: tints the card border
 
-- `entries`
+### `championship_icon.dart` — `ChampionshipIcon`
+
+Championship series icon resolved by series ID string. Used in cards and page headers.
+
+Inputs:
+- `championshipId`: series identifier (e.g. `'formula_1'`, `'wec'`, `'motogp'`)
+- `size`: icon diameter
+
+Behavior:
+- Maps known IDs to `IconData` symbols; falls back to a generic trophy icon.
+
+### `championship_next_event.dart` — `ChampionshipNextEventCard`
+
+Off-season card showing a live countdown (days / hours / minutes) and event details
+for the next scheduled championship event.
+
+Inputs:
+- `event`: `ChampionshipNextEvent`
 - `accentColor`
-- `label`
 
 Behavior:
+- Countdown recomputes on every rebuild (no internal timer).
 
-- Shows the first 3 live entries in a single row.
-- Highlights P1 differently from P2 and P3.
-- Supports optional per-class labels for multi-class live timing.
+### `championship_schedule.dart` — `ChampionshipScheduleCard`
 
-### `championship_schedule.dart`
-
-Weekend program card.
+Weekend session list with completion status badges for each session.
 
 Inputs:
-
-- `sessions`
-- `now`
-- `title`
+- `sessions`: `List<ChampionshipSession>`
+- `title`: optional card heading
 
 Behavior:
+- Automatically identifies the next upcoming session and highlights it.
+- Status badge distinguishes `completed`, `live`, and `upcoming` sessions.
 
-- Finds the next upcoming session automatically.
-- Shows compact status badges for completed, next, and upcoming sessions.
-- Tapping a row opens the shared modal with the session name as title.
+### `championship_standings.dart` — `ChampionshipStandingsWidget`
 
-### `championship_standings_widget.dart`
-
-Reusable standings card with optional section switching.
+Standings table with an animated pill-switcher tab bar for multiple categories
+(e.g. Drivers / Teams, or multi-class WEC categories).
 
 Inputs:
-
-- `title`
-- `sections`
-- `initialSectionIndex`
+- `tables`: `List<ChampionshipStandingTable>`
+- `accentColor`
 
 Behavior:
+- Animates between standing categories using a custom `_SwitchPillPainter`.
+- Supports text-avatar fallback when no image is available.
 
-- Handles one or multiple tabs of standings data.
-- Keeps rendering concerns separate from championship-specific models.
+### `championship_top3.dart` — `ChampionshipTop3Card`
 
-### `championship_replay_btn.dart`
-
-Replay library CTA card.
+Live timing podium card showing the top-3 race entries with gap, tyre compound,
+and team color strip.
 
 Inputs:
-
-- `replays`
-- `onTap`
+- `group`: `ChampionshipLiveGroup`
+- `accentColor`
 
 Behavior:
+- Renders P1 / P2 / P3 in a three-column layout; P1 gets stronger visual emphasis.
+- Shows a delta row (gap + tyre compound badge) below each driver's name.
+- Supports optional per-class label for multi-class championships (WEC, etc.).
 
-- Renders a compact card with play icon, label, subtitle, and chevron.
-- Delegates navigation to the caller.
+---
 
-### `championship_icon.dart`
+## Header Convention
 
-Centered championship tile used elsewhere in the app.
-
-### Header convention
-
-All active widget files in this folder keep the standard OverDrive header block.
-This makes ownership and intent consistent across the championship module.
+All files in this folder carry the standard OverDrive 2026 file header block,
+keeping ownership and intent consistent across the championship module.
