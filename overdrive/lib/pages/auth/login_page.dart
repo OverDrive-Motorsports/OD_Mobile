@@ -1,21 +1,21 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## login_page.dart - Demo login screen used as the temporary app landing page.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## login_page.dart - Login screen with email/password form, validation, and navigation to register.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth/fake_auth_service.dart';
-import '../../widgets/base/od_button.dart';
-import '../../widgets/base/od_error_message.dart';
-import '../../widgets/base/od_text_field.dart';
-import '../../widgets/base/od_toast.dart';
+import '../../widgets/base/app_button.dart';
+import '../../widgets/base/error_message.dart';
+import '../../widgets/base/app_text_field.dart';
+import '../../widgets/base/app_toast.dart';
 import 'auth_page_shell.dart';
 
 /// Temporary login route used until the real authentication backend is wired.
@@ -105,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    OdToast.show(
+    AppToast.show(
       context,
       message: 'Signed in successfully. Welcome to OverDrive.',
       type: ToastType.success,
@@ -157,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           if (_pageError != null) ...[
             const SizedBox(height: 16),
-            OdErrorMessage(
+            ErrorMessage(
               message: 'Unable to sign in',
               subtitle: _pageError,
               variant: ErrorMessageVariant.banner,
@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
             style: AppTextStyles.label(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
-          OdTextField(
+          AppTextField(
             controller: _emailController,
             placeholder: 'name@email.com',
             keyboardType: TextInputType.emailAddress,
@@ -196,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
             style: AppTextStyles.label(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
-          OdTextField(
+          AppTextField(
             controller: _passwordController,
             placeholder: '1234567890',
             obscureText: true,
@@ -218,7 +218,7 @@ class _LoginPageState extends State<LoginPage> {
             },
           ),
           const SizedBox(height: 22),
-          OdButton(
+          AppButton(
             label: 'Sign in',
             onPressed: _isSubmitting ? null : _submit,
             isLoading: _isSubmitting,

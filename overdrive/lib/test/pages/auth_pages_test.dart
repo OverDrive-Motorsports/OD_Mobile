@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## auth_pages_test.dart - Widget tests for login and registration flows.
+ ## auth_pages_test.dart - Widget tests for LoginPage and RegisterPage authentication flows.
  ##
  */
 

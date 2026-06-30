@@ -1,18 +1,34 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## championship_schedule.dart - Adaptive weekend schedule list.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## championship_schedule.dart - Weekend schedule list showing session names, times, and completion status.
+ ##
+ */
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../services/championship/championship_enums.dart';
 import '../../services/championship/championship_session.dart';
-import '../base/od_modal.dart';
+import '../base/app_modal.dart';
+
+// ── Glass theme ───────────────────────────────────────────────────────────
+
+const _kBorderColor = Color(0x26FFFFFF);
+
+final _kCardTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.20,
+  blurSigma: 28.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.10,
+  vibrancyIntensity: 0.05,
+  edgeLightColor: _kBorderColor,
+  edgeShadowColor: _kBorderColor,
+);
 
 /// Weekend program card for championship sessions.
 class ChampionshipSchedule extends StatelessWidget {
@@ -33,32 +49,40 @@ class ChampionshipSchedule extends StatelessWidget {
       (ChampionshipSession session) => session.status == SessionStatus.upcoming,
     );
 
-    return Container(
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            title,
-            textAlign: TextAlign.center,
-            style: AppTextStyles.bodyBold().copyWith(fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          for (var index = 0; index < sessions.length; index++) ...[
-            _ScheduleRow(
-              session: sessions[index],
-              isNextUpcoming: index == nextUpcomingIndex,
-              now: now,
+    return CupertinoTheme(
+      data: const CupertinoThemeData(brightness: Brightness.dark),
+      child: CupertinoLiquidGlass(
+        theme: _kCardTheme,
+        borderRadius: BorderRadius.circular(22),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  title,
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyBold().copyWith(fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                for (var index = 0; index < sessions.length; index++) ...[
+                  _ScheduleRow(
+                    session: sessions[index],
+                    isNextUpcoming: index == nextUpcomingIndex,
+                    now: now,
+                  ),
+                  if (index < sessions.length - 1)
+                    Divider(
+                      height: 14,
+                      color: AppColors.white.withValues(alpha: 0.06),
+                    ),
+                ],
+              ],
             ),
-            if (index < sessions.length - 1)
-              const Divider(height: 14, color: AppColors.surface),
-          ],
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -146,7 +170,7 @@ class _ScheduleRow extends StatelessWidget {
 
   /// Opens a lightweight modal placeholder for the tapped session.
   Future<void> _openSessionToast(BuildContext context) {
-    return OdModal.show<void>(
+    return AppModal.show<void>(
       context,
       title: session.name,
       child: const SizedBox.shrink(),

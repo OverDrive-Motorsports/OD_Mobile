@@ -1,9 +1,19 @@
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## grid_board.dart - Freeform drag-and-resize grid container managing layout persistence and widget placement.
+ ##
+ */
+
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 import 'grid_item.dart';
 import 'grid_item_widget.dart';
 
+// Stateful grid host that validates moves and resizes, then propagates changes to the parent page.
 class GridBoard extends StatefulWidget {
   const GridBoard({
     super.key,
@@ -143,9 +153,9 @@ class _GridBoardState extends State<GridBoard> {
 
       final item = _items[index];
       final clampedColSpan =
-          newColSpan.clamp(1, widget.cols - item.col).toInt();
+          newColSpan.clamp(item.minColSpan, widget.cols - item.col).toInt();
       final clampedRowSpan =
-          newRowSpan.clamp(1, widget.rows - item.row).toInt();
+          newRowSpan.clamp(item.minRowSpan, widget.rows - item.row).toInt();
 
       if (!_isPlacementValid(
         itemId: id,
@@ -177,9 +187,9 @@ class _GridBoardState extends State<GridBoard> {
       child: Stack(
         children: [
           AnimatedOpacity(
-            duration: const Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 400),
             curve: Curves.easeInOut,
-            opacity: _interactionCount > 0 ? 0.75 : 0.0,
+            opacity: _interactionCount > 0 ? 0.55 : 0.0,
             child: CustomPaint(
               size: Size(boardWidth, boardHeight),
               painter: _GridBackgroundPainter(
@@ -188,6 +198,7 @@ class _GridBoardState extends State<GridBoard> {
                 cellSize: widget.cellSize,
                 gap: widget.gap,
                 borderColor: AppColors.border,
+                isInteracting: _interactionCount > 0,
               ),
             ),
           ),
@@ -216,6 +227,7 @@ class _GridBoardState extends State<GridBoard> {
   }
 }
 
+// CustomPainter that renders the faint cell-outline grid, animated to full opacity during interactions.
 class _GridBackgroundPainter extends CustomPainter {
   const _GridBackgroundPainter({
     required this.cols,
@@ -223,6 +235,7 @@ class _GridBackgroundPainter extends CustomPainter {
     required this.cellSize,
     required this.gap,
     required this.borderColor,
+    required this.isInteracting,
   });
 
   final int cols;
@@ -230,35 +243,21 @@ class _GridBackgroundPainter extends CustomPainter {
   final double cellSize;
   final double gap;
   final Color borderColor;
+  final bool isInteracting;
 
   @override
   void paint(Canvas canvas, Size size) {
     final step = cellSize + gap;
     final borderPaint = Paint()
-      ..color = borderColor.withValues(alpha: 0.45)
+      ..color = borderColor.withValues(alpha: isInteracting ? 0.55 : 0.35)
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.8;
+      ..strokeWidth = isInteracting ? 0.9 : 0.7;
 
     for (var row = 0; row < rows; row++) {
       for (var col = 0; col < cols; col++) {
         final rect = Rect.fromLTWH(col * step, row * step, cellSize, cellSize);
         final rounded = RRect.fromRectAndRadius(rect, const Radius.circular(8));
         canvas.drawRRect(rounded, borderPaint);
-      }
-    }
-
-    // Sub-grid dots at half-step intersections for doubled visual density
-    final dotPaint = Paint()
-      ..color = borderColor.withValues(alpha: 0.35);
-    final halfStep = step / 2;
-
-    for (var ri = 0; ri <= rows * 2; ri++) {
-      for (var ci = 0; ci <= cols * 2; ci++) {
-        final x = ci * halfStep;
-        final y = ri * halfStep;
-        if (x <= size.width && y <= size.height) {
-          canvas.drawCircle(Offset(x, y), 1.2, dotPaint);
-        }
       }
     }
   }
@@ -269,5 +268,6 @@ class _GridBackgroundPainter extends CustomPainter {
       old.rows != rows ||
       old.cellSize != cellSize ||
       old.gap != gap ||
-      old.borderColor != borderColor;
+      old.borderColor != borderColor ||
+      old.isInteracting != isInteracting;
 }

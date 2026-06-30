@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -22,11 +22,9 @@ import '../pages/tv/live_race_page.dart';
 import '../pages/tv/tv_page.dart';
 import '../services/auth_service.dart';
 import '../services/championship/championship_mock_data.dart';
-import '../widgets/navigation_shell.dart';
+import '../widgets/navigation/navigation_shell.dart';
 
-// ---------------------------------------------------------------------------
-// Route paths
-// ---------------------------------------------------------------------------
+// ── Route paths ───────────────────────────────────────────────────────────
 
 /// Typed path constants — single source of truth for navigation targets.
 abstract final class RoutePaths {
@@ -42,15 +40,9 @@ abstract final class RoutePaths {
   static const String settings = '/settings';
 }
 
-// ---------------------------------------------------------------------------
-// Router factory
-// ---------------------------------------------------------------------------
+// ── Router factory ────────────────────────────────────────────────────────
 
-/// Creates the app's [GoRouter].
-///
-/// Auth redirect rules:
-/// - Unauthenticated users are sent to [RoutePaths.login].
-/// - Authenticated users attempting to reach login are sent to [RoutePaths.home].
+/// Creates the app's [GoRouter] with auth redirects: unauthenticated → [RoutePaths.login]; authenticated at login → [RoutePaths.home].
 GoRouter createRouter(AuthService authService) {
   return GoRouter(
     refreshListenable: authService,

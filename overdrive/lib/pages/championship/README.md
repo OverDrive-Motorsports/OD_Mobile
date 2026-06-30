@@ -33,8 +33,9 @@ MotoGP event-weekend flows.
 - `services/championship/*`: enums, models, and mocks.
 - `widgets/championships/championship_top3.dart`
 - `widgets/championships/championship_schedule.dart`
-- `widgets/championships/championship_standings_widget.dart`
-- `widgets/championships/championship_replay_btn.dart`
+- `widgets/championships/championship_standings.dart`
+- `widgets/championships/championship_circuit_weather.dart`
+- `widgets/championships/championship_next_event.dart`
 - `pages/replay/replay_page.dart`
 
 ## Notes

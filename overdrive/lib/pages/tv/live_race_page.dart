@@ -1,16 +1,18 @@
-/**
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## live_race_page.dart - Live race information and updates.
-##
-*/
+/*
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## live_race_page.dart - Full-screen live race TV page embedding TvLivePlayer with stream selection controls.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
+import '../../widgets/base/app_button.dart';
 
+// Full-screen live race page — embeds the TV player and stream controls once wired.
 class LiveRacePage extends StatelessWidget {
 	const LiveRacePage({super.key});
 
@@ -20,8 +22,8 @@ class LiveRacePage extends StatelessWidget {
 		backgroundColor: AppColors.background,
 		appBar: AppBar(
 			backgroundColor: AppColors.surface,
-			leading: IconButton(
-			icon: const Icon(Icons.arrow_back_rounded),
+			leading: AppButton(
+			icon: Icons.arrow_back_rounded,
 			onPressed: () => Navigator.of(context).pop(),
 			),
 			title: Text(

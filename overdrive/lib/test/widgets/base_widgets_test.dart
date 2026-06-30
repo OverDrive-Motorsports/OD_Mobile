@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## base_widgets_test.dart - Widget tests for shared base UI primitives.
+ ## base_widgets_test.dart - Widget tests for shared base components: AppButton, AppTextField, AppModal, AppToast.
  ##
  */
 
@@ -12,18 +12,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:overdrive/widgets/base/od_button.dart';
-import 'package:overdrive/widgets/base/od_error_message.dart';
-import 'package:overdrive/widgets/base/od_modal.dart';
-import 'package:overdrive/widgets/base/od_switch.dart';
-import 'package:overdrive/widgets/base/od_text_field.dart';
-import 'package:overdrive/widgets/base/od_toast.dart';
-import 'package:overdrive/widgets/glass_pill.dart';
+import 'package:overdrive/widgets/base/app_button.dart';
+import 'package:overdrive/widgets/base/error_message.dart';
+import 'package:overdrive/widgets/base/app_modal.dart';
+import 'package:overdrive/widgets/base/app_switch.dart';
+import 'package:overdrive/widgets/base/app_text_field.dart';
+import 'package:overdrive/widgets/base/app_toast.dart';
 
 import '../helpers/test_app.dart';
 
 void main() {
-  group('OdButton', () {
+  group('AppButton', () {
     testWidgets('calls the callback when enabled', (WidgetTester tester) async {
       var tapCount = 0;
 
@@ -31,7 +30,7 @@ void main() {
         tester,
         Scaffold(
           body: Center(
-            child: OdButton(label: 'Save', onPressed: () => tapCount++),
+            child: AppButton(label: 'Save', onPressed: () => tapCount++),
           ),
         ),
       );
@@ -51,7 +50,7 @@ void main() {
         tester,
         Scaffold(
           body: Center(
-            child: OdButton(
+            child: AppButton(
               label: 'Save',
               isLoading: true,
               onPressed: () => tapCount++,
@@ -68,7 +67,7 @@ void main() {
     });
   });
 
-  group('OdTextField', () {
+  group('AppTextField', () {
     testWidgets('emits changes and clears through the suffix action', (
       WidgetTester tester,
     ) async {
@@ -81,7 +80,7 @@ void main() {
         Scaffold(
           body: Padding(
             padding: const EdgeInsets.all(24),
-            child: OdTextField(
+            child: AppTextField(
               controller: controller,
               placeholder: 'Email',
               onChanged: (value) => lastValue = value,
@@ -109,7 +108,7 @@ void main() {
         const Scaffold(
           body: Padding(
             padding: EdgeInsets.all(24),
-            child: OdTextField(
+            child: AppTextField(
               placeholder: 'Password',
               errorMessage: 'Password is required.',
             ),
@@ -118,7 +117,7 @@ void main() {
       );
 
       expect(find.text('Password is required.'), findsOneWidget);
-      expect(find.byType(OdErrorMessage), findsOneWidget);
+      expect(find.byType(ErrorMessage), findsOneWidget);
     });
   });
 
@@ -131,8 +130,8 @@ void main() {
         const Scaffold(
           body: Column(
             children: [
-              OdErrorMessage(message: 'Inline error'),
-              OdErrorMessage(
+              ErrorMessage(message: 'Inline error'),
+              ErrorMessage(
                 message: 'Banner error',
                 subtitle: 'More details',
                 variant: ErrorMessageVariant.banner,
@@ -156,10 +155,10 @@ void main() {
           body: Builder(
             builder: (context) {
               return Center(
-                child: OdButton(
+                child: AppButton(
                   label: 'Toast',
                   onPressed: () {
-                    OdToast.show(
+                    AppToast.show(
                       context,
                       message: 'Saved locally',
                       type: ToastType.success,
@@ -188,10 +187,10 @@ void main() {
           body: Builder(
             builder: (context) {
               return Center(
-                child: OdButton(
+                child: AppButton(
                   label: 'Open modal',
                   onPressed: () {
-                    OdModal.show<void>(
+                    AppModal.show<void>(
                       context,
                       title: 'Storage',
                       child: const Text('Local settings only'),
@@ -213,7 +212,7 @@ void main() {
   });
 
   group('Small primitives', () {
-    testWidgets('OdSwitch forwards value changes', (WidgetTester tester) async {
+    testWidgets('AppSwitch forwards value changes', (WidgetTester tester) async {
       var value = false;
 
       await pumpTestApp(
@@ -222,7 +221,7 @@ void main() {
           builder: (context, setState) {
             return Scaffold(
               body: Center(
-                child: OdSwitch(
+                child: AppSwitch(
                   label: 'Live alerts',
                   value: value,
                   onChanged: (nextValue) => setState(() => value = nextValue),
@@ -240,15 +239,5 @@ void main() {
       expect(find.text('Live alerts'), findsOneWidget);
     });
 
-    testWidgets('GlassPill renders its child', (WidgetTester tester) async {
-      await pumpTestApp(
-        tester,
-        const Scaffold(
-          body: Center(child: GlassPill(child: Text('Pill content'))),
-        ),
-      );
-
-      expect(find.text('Pill content'), findsOneWidget);
-    });
   });
 }

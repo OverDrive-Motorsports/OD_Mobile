@@ -12,8 +12,8 @@
 
 ## Dependencies
 
-- Shared base widgets such as `OdButton`, `OdSwitch`, `OdModal`, and `OdToast`.
-- `MenuOverlay` for top-level navigation.
+- `AppButton`, `AppSwitch`, `AppModal`, `AppToast` from `widgets/base/`.
+- `NavigationShell` provides the bottom navigation frame (injected by GoRouter).
 - Theme tokens from `app_theme.dart`.
 
 ## Data Model

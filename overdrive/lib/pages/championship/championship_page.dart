@@ -1,29 +1,32 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## ChampionshipPage - Adaptive championship screen driven by mock data.
+ ## championship_page.dart - Adaptive championship page rendering live timing, event-weekend, or off-season layouts from ChampionshipData.
  ##
  */
 
 import 'dart:math' as math;
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../pages/replay/replay_page.dart';
-import '../../services/championship/championship_circuit.dart';
 import '../../services/championship/championship_data.dart';
 import '../../services/championship/championship_enums.dart';
 import '../../services/championship/championship_live_entry.dart';
 import '../../services/championship/championship_mock_data.dart';
 import '../../services/championship/championship_standing.dart';
+import '../../widgets/base/app_button.dart';
 import '../../widgets/base/menu_overlay.dart';
-import '../../widgets/championships/championship_replay_btn.dart';
+import '../../widgets/championships/championship_circuit_weather.dart';
+import '../../widgets/championships/championship_next_event.dart';
 import '../../widgets/championships/championship_schedule.dart';
-import '../../widgets/championships/championship_standings_widget.dart'
+import '../../widgets/championships/championship_standings.dart'
     as standings_ui;
 import '../../widgets/championships/championship_top3.dart';
 
@@ -66,45 +69,57 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: ColoredBox(
-        color: AppColors.background,
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(0, 20, 0, 28),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(right: 44),
-                        child: _PageHero(
-                          data: _selectedData,
-                          headline: headline,
-                          now: now,
-                        ),
-                      ),
-                      Positioned(
-                        top: 0,
-                        right: 0,
-                        child: MenuOverlayButton(
-                          items: _championshipMenuItems,
-                          selectedIndex: _selectedMenuIndex.clamp(0, _championshipMenuItems.length - 1),
-                          onSelected: _onChampionshipSelected,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 34),
-                ..._buildSections(context, now),
-              ],
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 600),
+              transitionBuilder: (child, animation) =>
+                  FadeTransition(opacity: animation, child: child),
+              child: _ChampionshipBackground(
+                key: ValueKey(_selectedData.id),
+                id: _selectedData.id,
+              ),
             ),
           ),
-        ),
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(0, 20, 0, 28),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(right: 44),
+                          child: _PageHero(
+                            data: _selectedData,
+                            headline: headline,
+                            now: now,
+                          ),
+                        ),
+                        Positioned(
+                          top: 0,
+                          right: 0,
+                          child: MenuOverlayButton(
+                            items: _championshipMenuItems,
+                            selectedIndex: _selectedMenuIndex.clamp(0, _championshipMenuItems.length - 1),
+                            onSelected: _onChampionshipSelected,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 34),
+                  ..._buildSections(context, now),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -140,9 +155,11 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
     blocks.add(
       _Section(
         label: 'Replays',
-        child: ChampionshipReplayBtn(
-          replays: data.replays,
-          onTap: () {
+        child: AppButton(
+          label: data.replays.label,
+          icon: Icons.play_arrow_rounded,
+          fullWidth: true,
+          onPressed: () {
             Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => ReplayPage(title: data.replays.label),
@@ -176,11 +193,14 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
     }
 
     if (data.circuit != null && data.weather != null) {
-      return _CircuitWeatherCard(circuit: data.circuit, weather: data.weather);
+      return ChampionshipCircuitWeatherCard(
+        circuit: data.circuit!,
+        weather: data.weather!,
+      );
     }
 
     if (data.nextEvent != null) {
-      return _NextEventCard(nextEvent: data.nextEvent!, now: now);
+      return ChampionshipNextEventCard(nextEvent: data.nextEvent!, now: now);
     }
 
     return null;
@@ -328,6 +348,20 @@ class _SectionDivider extends StatelessWidget {
   }
 }
 
+// ── Liquid glass theme — "Moyen+ — blanc, haut" ──────────────────────────
+
+const _kLiveCardEdgeColor = Color(0x38FFFFFF);
+
+final _kLiveCardTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.20,
+  blurSigma: 26.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.12,
+  vibrancyIntensity: 0.05,
+  edgeLightColor: _kLiveCardEdgeColor,
+  edgeShadowColor: _kLiveCardEdgeColor,
+);
+
 /// Live-session overview with top-three groups and quick action buttons.
 class _LiveOverviewCard extends StatelessWidget {
   const _LiveOverviewCard({required this.groups, required this.accentColor});
@@ -337,35 +371,39 @@ class _LiveOverviewCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Direct'.toUpperCase(),
-            style: AppTextStyles.label(
-              color: AppColors.textSecondary,
-            ).copyWith(letterSpacing: 1.1),
-          ),
-          const SizedBox(height: 14),
-          for (var index = 0; index < groups.length; index++) ...[
-            ChampionshipTop3(
-              entries: groups[index].entries,
-              accentColor: accentColor,
-              label: groups.length > 1 ? groups[index].label : null,
+    return CupertinoTheme(
+      data: const CupertinoThemeData(brightness: Brightness.dark),
+      child: CupertinoLiquidGlass(
+        theme: _kLiveCardTheme,
+        borderRadius: BorderRadius.circular(26),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(26),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Direct'.toUpperCase(),
+                  style: AppTextStyles.label(
+                    color: AppColors.textSecondary,
+                  ).copyWith(letterSpacing: 1.1),
+                ),
+                const SizedBox(height: 14),
+                for (var index = 0; index < groups.length; index++) ...[
+                  ChampionshipTop3(
+                    entries: groups[index].entries,
+                    accentColor: accentColor,
+                    label: groups.length > 1 ? groups[index].label : null,
+                  ),
+                  if (index < groups.length - 1) const SizedBox(height: 14),
+                ],
+                const SizedBox(height: 16),
+                _LiveActionButtons(accentColor: accentColor),
+              ],
             ),
-            if (index < groups.length - 1) const SizedBox(height: 14),
-          ],
-          const SizedBox(height: 16),
-          _LiveActionButtons(accentColor: accentColor),
-        ],
+          ),
+        ),
       ),
     );
   }
@@ -382,18 +420,20 @@ class _LiveActionButtons extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _LiveActionButton(
+          child: AppButton(
             icon: Icons.live_tv_outlined,
             label: 'TV Live',
-            onTap: () => context.push('/tv'),
+            onPressed: () => context.push('/tv'),
+            fullWidth: true,
           ),
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _LiveActionButton(
+          child: AppButton(
             icon: Icons.insights_outlined,
             label: 'Telemetrie',
-            onTap: () => context.push('/telemetry'),
+            onPressed: () => context.push('/telemetry'),
+            fullWidth: true,
           ),
         ),
       ],
@@ -401,285 +441,7 @@ class _LiveActionButtons extends StatelessWidget {
   }
 }
 
-/// Single quick action button for live TV or telemetry navigation.
-class _LiveActionButton extends StatelessWidget {
-  const _LiveActionButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
 
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          decoration: BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, color: AppColors.textMuted, size: 16),
-              const SizedBox(width: 6),
-              Text(
-                label,
-                style: AppTextStyles.body(
-                  color: AppColors.textMuted,
-                ).copyWith(fontSize: 15),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// Off-season card showing the next known event and countdown.
-class _NextEventCard extends StatelessWidget {
-  const _NextEventCard({required this.nextEvent, required this.now});
-
-  final ChampionshipNextEvent nextEvent;
-  final DateTime now;
-
-  @override
-  Widget build(BuildContext context) {
-    final countdown = _EventCountdown.from(nextEvent.startsAt.difference(now));
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Prochain event'.toUpperCase(),
-            style: AppTextStyles.label(
-              color: AppColors.textSecondary,
-            ).copyWith(letterSpacing: 1.1),
-          ),
-          const SizedBox(height: 14),
-          Text(
-            nextEvent.name,
-            style: AppTextStyles.bodyBold().copyWith(fontSize: 19),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            nextEvent.location,
-            style: AppTextStyles.body(
-              color: AppColors.textSecondary,
-            ).copyWith(fontSize: 15),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              Expanded(
-                child: _CountdownCell(value: countdown.days, label: 'Jours'),
-              ),
-              const _CountdownDot(),
-              Expanded(
-                child: _CountdownCell(value: countdown.hours, label: 'Heures'),
-              ),
-              const _CountdownDot(),
-              Expanded(
-                child: _CountdownCell(value: countdown.minutes, label: 'Min'),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// One numeric cell in the next-event countdown row.
-class _CountdownCell extends StatelessWidget {
-  const _CountdownCell({required this.value, required this.label});
-
-  final int value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text('$value', style: AppTextStyles.bodyBold().copyWith(fontSize: 24)),
-        const SizedBox(height: 1),
-        Text(
-          label.toUpperCase(),
-          style: AppTextStyles.body(color: AppColors.textSecondary).copyWith(fontSize: 12),
-        ),
-      ],
-    );
-  }
-}
-
-/// Visual separator between countdown cells.
-class _CountdownDot extends StatelessWidget {
-  const _CountdownDot();
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Text(
-        '·',
-        style: AppTextStyles.body(
-          color: AppColors.white.withValues(alpha: 0.16),
-        ).copyWith(fontSize: 24),
-      ),
-    );
-  }
-}
-
-/// Weekend card summarizing circuit length, laps, and weather.
-class _CircuitWeatherCard extends StatelessWidget {
-  const _CircuitWeatherCard({required this.circuit, required this.weather});
-
-  final ChampionshipCircuit? circuit;
-  final ChampionshipWeather? weather;
-
-  @override
-  Widget build(BuildContext context) {
-    if (circuit == null || weather == null) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Circuit · Meteo'.toUpperCase(),
-            style: AppTextStyles.label(
-              color: AppColors.textSecondary,
-            ).copyWith(letterSpacing: 1.1),
-          ),
-          const SizedBox(height: 14),
-          Row(
-            children: [
-              Expanded(
-                flex: 2,
-                child: _MetricColumn(
-                  label: 'Longueur',
-                  value: '${circuit!.lengthKm.toStringAsFixed(3)} km',
-                ),
-              ),
-              const _MetricDivider(),
-              Expanded(
-                child: _MetricColumn(
-                  label: 'Tours',
-                  value: '${circuit!.totalLaps}',
-                ),
-              ),
-              const _MetricDivider(),
-              Expanded(
-                child: _MetricColumn(
-                  label: 'Meteo',
-                  value: '${weather!.rainChancePercent}%',
-                  icon: weather!.rainChancePercent > 0
-                      ? Icons.cloud_rounded
-                      : Icons.wb_sunny_rounded,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Divider used between circuit/weather metrics.
-class _MetricDivider extends StatelessWidget {
-  const _MetricDivider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(width: 1, height: 48, color: AppColors.border);
-  }
-}
-
-/// One metric displayed inside the circuit/weather card.
-class _MetricColumn extends StatelessWidget {
-  const _MetricColumn({required this.label, required this.value, this.icon});
-
-  final String label;
-  final String value;
-  final IconData? icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 6),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: AppTextStyles.body(
-              color: AppColors.textSecondary,
-            ).copyWith(fontSize: 13),
-          ),
-          const SizedBox(height: 4),
-          if (icon == null)
-            FittedBox(
-              alignment: Alignment.centerLeft,
-              fit: BoxFit.scaleDown,
-              child: Text(
-                value,
-                style: AppTextStyles.bodyBold(
-                  color: AppColors.textMuted,
-                ).copyWith(fontSize: 16, height: 1.1),
-              ),
-            )
-          else
-            FittedBox(
-              alignment: Alignment.centerLeft,
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(icon, size: 14, color: AppColors.textMuted),
-                  const SizedBox(width: 3),
-                  Text(
-                    value,
-                    style: AppTextStyles.bodyBold(
-                      color: AppColors.textMuted,
-                    ).copyWith(fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
 
 /// Adapts season standings tables to the reusable standings widget.
 class _StandingsBlock extends StatelessWidget {
@@ -694,7 +456,7 @@ class _StandingsBlock extends StatelessWidget {
     return Column(
       children: [
         for (var index = 0; index < cards.length; index++) ...[
-          standings_ui.ChampionshipStandingsWidget(
+          standings_ui.ChampionshipStandings(
             title: cards[index].title,
             sections: cards[index].sections,
           ),
@@ -714,35 +476,13 @@ class _LiveStandingsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return standings_ui.ChampionshipStandingsWidget(
+    return standings_ui.ChampionshipStandings(
       title: title,
       sections: [
         for (final group in groups) _buildLiveStandingSection(group, groups),
       ],
     );
   }
-}
-
-/// Immutable countdown pieces derived from a duration.
-class _EventCountdown {
-  const _EventCountdown({
-    required this.days,
-    required this.hours,
-    required this.minutes,
-  });
-
-  factory _EventCountdown.from(Duration duration) {
-    final safe = duration.isNegative ? Duration.zero : duration;
-    return _EventCountdown(
-      days: safe.inDays,
-      hours: safe.inHours.remainder(24),
-      minutes: safe.inMinutes.remainder(60),
-    );
-  }
-
-  final int days;
-  final int hours;
-  final int minutes;
 }
 
 /// Resolves the hero headline from explicit copy or championship state.
@@ -938,4 +678,63 @@ class _StandingLabelParts {
 
   final String sectionLabel;
   final String? category;
+}
+
+// ── Championship background gradient ──────────────────────────────────────
+
+/// Full-screen gradient background keyed to the championship identity.
+/// F1 → rouge/blanc bloom; WEC → bleu/blanc; MotoGP → rouge/noir.
+class _ChampionshipBackground extends StatelessWidget {
+  const _ChampionshipBackground({required this.id, super.key});
+
+  final String id;
+
+  static const _kStops3 = [0.0, 0.28, 0.62];
+  static const _kStops2 = [0.0, 0.55];
+
+  static LinearGradient _gradientFor(String id) => switch (id) {
+    'formula_1' => const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0x42E80000), // red bloom — ~26 % opacity
+        Color(0x12FFFFFF), // white shimmer — ~7 %
+        Color(0x00000000), // transparent → dark background shows through
+      ],
+      stops: _kStops3,
+    ),
+    'wec' => const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0x421B52D4), // blue bloom — ~26 %
+        Color(0x12FFFFFF), // white shimmer — ~7 %
+        Color(0x00000000),
+      ],
+      stops: _kStops3,
+    ),
+    'motogp' => const LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [
+        Color(0x52CC0000), // red bloom — ~32 %, deeper for the dramatic look
+        Color(0x00000000),
+      ],
+      stops: _kStops2,
+    ),
+    _ => const LinearGradient(
+      colors: [Color(0x00000000), Color(0x00000000)],
+    ),
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: AppColors.background,
+        gradient: _gradientFor(id),
+      ),
+      child: const SizedBox.expand(),
+    );
+  }
 }

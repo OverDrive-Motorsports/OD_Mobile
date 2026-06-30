@@ -1,19 +1,34 @@
 /*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## calendar_page.dart - Calendar screen with championship filters and event cards.
-##
-*/
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## calendar_page.dart - Calendar screen combining championship filters, monthly calendar, and race event cards.
+ ##
+ */
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../services/calendar/calendar_service.dart';
 import '../../widgets/calendar/event_calendar.dart';
 import '../../widgets/calendar/monthly_calendar.dart';
-import '../../widgets/glass_pill.dart';
+
+// ── Glass themes ──────────────────────────────────────────────────────────
+
+const _kGlassBorderColor = Color(0x26FFFFFF);
+
+final _kArchiveTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.12,
+  blurSigma: 22.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.07,
+  vibrancyIntensity: 0.03,
+  edgeLightColor: _kGlassBorderColor,
+  edgeShadowColor: _kGlassBorderColor,
+);
 
 const String _allChampionshipsFilterId = 'all';
 const List<String> _calendarWeekdayLabels = <String>[
@@ -184,15 +199,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
     return <Widget>[
       if (viewData.pastEvents.isNotEmpty) ...[
-        _PastEventsInlineToggle(
+        _ArchivesSection(
           pastEventsCount: viewData.pastEvents.length,
           isExpanded: _showPastEvents,
           hasSelectedPastEvent: viewData.selectedDateHasPastEvent,
-          onTap: _togglePastEvents,
-        ),
-        if (_showPastEvents) ...[
-          const SizedBox(height: 12),
-          EventCalendar(
+          onToggle: _togglePastEvents,
+          child: EventCalendar(
             events: viewData.pastEvents,
             today: _today,
             selectedDate: _selectedDate,
@@ -200,9 +212,8 @@ class _CalendarPageState extends State<CalendarPage> {
             emptySubtitle:
                 'Les courses passees apparaitront ici quand il y en aura.',
           ),
-          const SizedBox(height: 20),
-        ] else
-          const SizedBox(height: 20),
+        ),
+        const SizedBox(height: 20),
       ],
       _SectionHeader(
         title: 'Courses',
@@ -238,39 +249,16 @@ class _CalendarPageState extends State<CalendarPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                    const _SectionHeader(
-                      title: 'Championships',
-                      subtitle: 'Filtre les 10 courses par serie.',
+                    Text(
+                      'Calendrier',
+                      style: AppTextStyles.bodyBold().copyWith(fontSize: 28),
                     ),
-                    const SizedBox(height: 12),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          _ChampionshipFilterChip(
-                            label: 'All',
-                            accentColor: AppColors.white,
-                            isSelected:
-                                _selectedChampionshipId ==
-                                _allChampionshipsFilterId,
-                            onTap: () => _handleChampionshipSelected(
-                              _allChampionshipsFilterId,
-                            ),
-                          ),
-                          for (final CalendarChampionship championship
-                              in _championships) ...[
-                            const SizedBox(width: 10),
-                            _ChampionshipFilterChip(
-                              label: championship.name,
-                              accentColor: championship.accentColor,
-                              isSelected:
-                                  championship.id == _selectedChampionshipId,
-                              onTap: () =>
-                                  _handleChampionshipSelected(championship.id),
-                            ),
-                          ],
-                        ],
-                      ),
+                    const SizedBox(height: 18),
+                    _FilterChipRow(
+                      allId: _allChampionshipsFilterId,
+                      championships: _championships,
+                      selectedId: _selectedChampionshipId,
+                      onSelected: _handleChampionshipSelected,
                     ),
                     const SizedBox(height: 20),
                     MonthlyCalendar(
@@ -401,134 +389,387 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// Inline control that expands or collapses archived events.
-class _PastEventsInlineToggle extends StatelessWidget {
-  const _PastEventsInlineToggle({
+/// Collapsible glass card housing the archived event list.
+class _ArchivesSection extends StatefulWidget {
+  const _ArchivesSection({
     required this.pastEventsCount,
     required this.isExpanded,
     required this.hasSelectedPastEvent,
-    required this.onTap,
+    required this.onToggle,
+    required this.child,
   });
 
   final int pastEventsCount;
   final bool isExpanded;
   final bool hasSelectedPastEvent;
-  final VoidCallback onTap;
+  final VoidCallback onToggle;
+  final Widget child;
+
+  @override
+  State<_ArchivesSection> createState() => _ArchivesSectionState();
+}
+
+class _ArchivesSectionState extends State<_ArchivesSection>
+    with TickerProviderStateMixin {
+  late final AnimationController _chevron;
+  late final AnimationController _press;
+  late final Animation<double> _chevronTurn;
+  late final Animation<double> _pressScale;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _chevron = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 260),
+      value: widget.isExpanded ? 1.0 : 0.0,
+    );
+    _chevronTurn = Tween<double>(begin: 0.0, end: 0.5).animate(
+      CurvedAnimation(parent: _chevron, curve: Curves.easeOutCubic),
+    );
+
+    _press = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 90),
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+    _pressScale = Tween<double>(begin: 1.0, end: 0.96).animate(
+      CurvedAnimation(parent: _press, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _ArchivesSection oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isExpanded != widget.isExpanded) {
+      if (widget.isExpanded) {
+        _chevron.forward();
+      } else {
+        _chevron.reverse();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _chevron.dispose();
+    _press.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(18),
-        child: Row(
-          children: [
-            Text(
-              'Archives',
-              style: AppTextStyles.bodyBold(
-                color: hasSelectedPastEvent
-                    ? AppColors.textPrimary
-                    : AppColors.textSecondary,
-              ).copyWith(fontSize: 13),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                hasSelectedPastEvent
-                    ? 'Une course passee correspond a la date choisie.'
-                    : '$pastEventsCount course${pastEventsCount > 1 ? 's' : ''} passee${pastEventsCount > 1 ? 's' : ''}.',
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppTextStyles.caption(color: AppColors.textSecondary),
+    final highlightSelected = widget.hasSelectedPastEvent;
+    final count = widget.pastEventsCount;
+
+    return CupertinoTheme(
+      data: const CupertinoThemeData(brightness: Brightness.dark),
+      child: AnimatedBuilder(
+        animation: _pressScale,
+        builder: (context, child) =>
+            Transform.scale(scale: _pressScale.value, child: child),
+        child: GestureDetector(
+          onTapDown: (_) => _press.forward(),
+          onTapUp: (_) {
+            _press.reverse();
+            widget.onToggle();
+          },
+          onTapCancel: () => _press.reverse(),
+          child: CupertinoLiquidGlass(
+            theme: _kArchiveTheme,
+            borderRadius: BorderRadius.circular(24),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(24),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ── Header row ──────────────────────────────────────
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.inventory_2_outlined,
+                          size: 17,
+                          color: highlightSelected
+                              ? AppColors.textPrimary
+                              : AppColors.textSecondary,
+                        ),
+                        const SizedBox(width: 9),
+                        Text(
+                          'Archives',
+                          style: AppTextStyles.bodyBold(
+                            color: highlightSelected
+                                ? AppColors.textPrimary
+                                : AppColors.textSecondary,
+                          ).copyWith(fontSize: 14),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.white.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(999),
+                            border: Border.all(
+                              color: AppColors.white.withValues(alpha: 0.12),
+                            ),
+                          ),
+                          child: Text(
+                            '$count',
+                            style: AppTextStyles.bodyBold(
+                              color: AppColors.textSecondary,
+                            ).copyWith(fontSize: 11),
+                          ),
+                        ),
+                        if (highlightSelected) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.gold.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: AppColors.gold.withValues(alpha: 0.22),
+                              ),
+                            ),
+                            child: Text(
+                              'Date choisie',
+                              style: AppTextStyles.bodyBold(
+                                color: AppColors.gold,
+                              ).copyWith(fontSize: 11),
+                            ),
+                          ),
+                        ],
+                        const Spacer(),
+                        RotationTransition(
+                          turns: _chevronTurn,
+                          child: const Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            size: 20,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    // ── Expandable content ───────────────────────────────
+                    AnimatedSize(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOutCubic,
+                      child: widget.isExpanded
+                          ? Padding(
+                              padding: const EdgeInsets.only(top: 14),
+                              child: widget.child,
+                            )
+                          : const SizedBox.shrink(),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(width: 10),
-            GlassPill(
-              highlighted: isExpanded,
-              backgroundColor: isExpanded
-                  ? AppColors.white.withValues(alpha: 0.14)
-                  : AppColors.white.withValues(alpha: 0.06),
-              borderColor: AppColors.white.withValues(alpha: 0.10),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    isExpanded ? 'Masquer' : 'Voir',
-                    style: AppTextStyles.bodyBold().copyWith(fontSize: 11),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(
-                    isExpanded
-                        ? Icons.keyboard_arrow_up_rounded
-                        : Icons.keyboard_arrow_down_rounded,
-                    size: 15,
-                    color: AppColors.white,
-                  ),
-                ],
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
 }
 
-/// Horizontal filter chip for championship selection.
-class _ChampionshipFilterChip extends StatelessWidget {
-  const _ChampionshipFilterChip({
+// ── Filter chip row ───────────────────────────────────────────────────────
+
+/// Horizontally scrollable chip row. Selected chip uses liquid glass;
+/// unselected chips are subtle transparent pills.
+class _FilterChipRow extends StatelessWidget {
+  const _FilterChipRow({
+    required this.allId,
+    required this.championships,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  final String allId;
+  final List<CalendarChampionship> championships;
+  final String selectedId;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        children: [
+          _FilterChip(
+            label: 'Tout',
+            color: AppColors.white,
+            isSelected: selectedId == allId,
+            onTap: () => onSelected(allId),
+          ),
+          for (final c in championships) ...[
+            const SizedBox(width: 8),
+            _FilterChip(
+              label: c.name,
+              color: c.accentColor,
+              isSelected: selectedId == c.id,
+              onTap: () => onSelected(c.id),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Individual filter chip: glass when selected, plain pill when not.
+class _FilterChip extends StatefulWidget {
+  const _FilterChip({
     required this.label,
-    required this.accentColor,
+    required this.color,
     required this.isSelected,
     required this.onTap,
   });
 
   final String label;
-  final Color accentColor;
+  final Color color;
   final bool isSelected;
   final VoidCallback onTap;
 
   @override
+  State<_FilterChip> createState() => _FilterChipState();
+}
+
+class _FilterChipState extends State<_FilterChip>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _press;
+  late final Animation<double> _scale;
+
+  LiquidGlassThemeData get _chipTheme =>
+      LiquidGlassThemeData.dark().copyWith(
+        tintOpacity: 0.16,
+        blurSigma: 20.0,
+        noiseOpacity: 0.0,
+        specularOpacity: 0.10,
+        vibrancyIntensity: 0.04,
+        edgeLightColor: widget.color.withValues(alpha: 0.35),
+        edgeShadowColor: widget.color.withValues(alpha: 0.20),
+      );
+
+  @override
+  void initState() {
+    super.initState();
+    _press = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 90),
+      reverseDuration: const Duration(milliseconds: 220),
+    );
+    _scale = Tween<double>(begin: 1.0, end: 0.92).animate(
+      CurvedAnimation(parent: _press, curve: Curves.easeOut),
+    );
+  }
+
+  @override
+  void dispose() {
+    _press.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: GlassPill(
-          highlighted: isSelected,
-          backgroundColor: isSelected
-              ? accentColor.withValues(alpha: 0.18)
-              : AppColors.white.withValues(alpha: 0.08),
-          borderColor: isSelected
-              ? accentColor.withValues(alpha: 0.36)
-              : AppColors.white.withValues(alpha: 0.10),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 8,
-                height: 8,
+    return GestureDetector(
+      onTapDown: (_) => _press.forward(),
+      onTapUp: (_) {
+        _press.reverse();
+        widget.onTap();
+      },
+      onTapCancel: () => _press.reverse(),
+      child: AnimatedBuilder(
+        animation: _scale,
+        builder: (context, child) =>
+            Transform.scale(scale: _scale.value, child: child),
+        child: widget.isSelected
+            ? CupertinoTheme(
+                data: const CupertinoThemeData(brightness: Brightness.dark),
+                child: CupertinoLiquidGlass(
+                  theme: _chipTheme,
+                  borderRadius: BorderRadius.circular(999),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14,
+                      vertical: 9,
+                    ),
+                    child: _ChipContent(
+                      label: widget.label,
+                      color: widget.color,
+                      isSelected: true,
+                    ),
+                  ),
+                ),
+              )
+            : AnimatedContainer(
+                duration: const Duration(milliseconds: 180),
+                curve: Curves.easeOut,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 9,
+                ),
                 decoration: BoxDecoration(
-                  color: accentColor,
-                  shape: BoxShape.circle,
+                  color: AppColors.white.withValues(alpha: 0.06),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(
+                    color: AppColors.white.withValues(alpha: 0.10),
+                  ),
+                ),
+                child: _ChipContent(
+                  label: widget.label,
+                  color: widget.color,
+                  isSelected: false,
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                label,
-                style: AppTextStyles.bodyBold(
-                  color: isSelected
-                      ? AppColors.textPrimary
-                      : AppColors.textSecondary,
-                ).copyWith(fontSize: 13),
-              ),
-            ],
+      ),
+    );
+  }
+}
+
+class _ChipContent extends StatelessWidget {
+  const _ChipContent({
+    required this.label,
+    required this.color,
+    required this.isSelected,
+  });
+
+  final String label;
+  final Color color;
+  final bool isSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 7,
+          height: 7,
+          decoration: BoxDecoration(
+            color: isSelected ? color : color.withValues(alpha: 0.45),
+            shape: BoxShape.circle,
           ),
         ),
-      ),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: AppTextStyles.bodyBold(
+            color: isSelected
+                ? AppColors.textPrimary
+                : AppColors.textSecondary,
+          ).copyWith(fontSize: 13),
+        ),
+      ],
     );
   }
 }

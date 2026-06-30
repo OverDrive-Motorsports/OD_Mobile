@@ -3,20 +3,46 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## tv_page.dart - TV experience page with a full-screen live player shell.
+ ## tv_page.dart - TV hub page listing available live streams and navigating to the live race view.
  ##
  */
 
+import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/navigation/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/tv/tv_mock_data.dart';
 import '../../services/tv/tv_stream.dart';
-import '../../widgets/base/od_modal.dart';
-import '../../widgets/glass_pill.dart';
+import '../../widgets/base/app_modal.dart';
 import '../../widgets/tv/tv_live_player.dart';
 import '../../widgets/tv/tv_stream_selector_sheet.dart';
+
+// ── Glass themes — TV page floating controls ──────────────────────────────
+
+const _kControlEdge = Color(0x22FFFFFF);
+const _kFluxEdge = Color(0x30FFFFFF);
+
+final _kControlTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.08,
+  blurSigma: 16.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.06,
+  vibrancyIntensity: 0.03,
+  edgeLightColor: _kControlEdge,
+  edgeShadowColor: _kControlEdge,
+);
+
+final _kFluxBtnTheme = LiquidGlassThemeData.dark().copyWith(
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
+  noiseOpacity: 0.0,
+  specularOpacity: 0.10,
+  vibrancyIntensity: 0.04,
+  edgeLightColor: _kFluxEdge,
+  edgeShadowColor: _kFluxEdge,
+);
 
 /// Full-screen TV page that combines the player and floating controls.
 class TvPage extends StatefulWidget {
@@ -37,7 +63,7 @@ class _TvPageState extends State<TvPage> {
 
   /// Opens the stream picker and updates the selected stream on selection.
   Future<void> _openStreamSelector() {
-    return OdModal.show<void>(
+    return AppModal.show<void>(
       context,
       child: TvStreamSelectorSheet(
         options: _streams,
@@ -96,37 +122,44 @@ class _TvPageState extends State<TvPage> {
                     const SizedBox(width: 12),
                     GestureDetector(
                       onTap: _openStreamSelector,
-                      child: GlassPill(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 18,
-                          vertical: 12,
-                        ),
-                        backgroundColor: AppColors.gold.withValues(alpha: 0.12),
-                        borderColor: AppColors.gold.withValues(alpha: 0.24),
-                        borderRadius: BorderRadius.circular(22),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              Icons.grid_view_rounded,
-                              size: 16,
-                              color: AppColors.white.withValues(alpha: 0.78),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              'Flux',
-                              style: AppTextStyles.bodyBold().copyWith(
-                                fontSize: 13,
-                                color: AppColors.white,
+                      child: CupertinoTheme(
+                        data: const CupertinoThemeData(brightness: Brightness.dark),
+                        child: CupertinoLiquidGlass(
+                          theme: _kFluxBtnTheme,
+                          borderRadius: BorderRadius.circular(22),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(22),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 12,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Icon(
+                                    Icons.grid_view_rounded,
+                                    size: 16,
+                                    color: AppColors.white.withValues(alpha: 0.78),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    'Flux',
+                                    style: AppTextStyles.bodyBold().copyWith(
+                                      fontSize: 13,
+                                      color: AppColors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    Icons.keyboard_arrow_up_rounded,
+                                    size: 18,
+                                    color: AppColors.gold.withValues(alpha: 0.88),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.keyboard_arrow_up_rounded,
-                              size: 18,
-                              color: AppColors.gold.withValues(alpha: 0.88),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -156,23 +189,30 @@ class _LiveBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GlassPill(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      backgroundColor: AppColors.gold.withValues(alpha: 0.12),
-      borderColor: AppColors.gold.withValues(alpha: isActive ? 0.28 : 0.12),
-      borderRadius: BorderRadius.circular(99),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          _LivePulseDot(isActive: isActive),
-          const SizedBox(width: 8),
-          Text(
-            'LIVE',
-            style: AppTextStyles.bodyBold(
-              color: isActive ? AppColors.white : AppColors.textMuted,
-            ).copyWith(letterSpacing: 0.6),
+    return CupertinoTheme(
+      data: const CupertinoThemeData(brightness: Brightness.dark),
+      child: CupertinoLiquidGlass(
+        theme: _kControlTheme,
+        borderRadius: BorderRadius.circular(99),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(99),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                _LivePulseDot(isActive: isActive),
+                const SizedBox(width: 8),
+                Text(
+                  'LIVE',
+                  style: AppTextStyles.bodyBold(
+                    color: isActive ? AppColors.white : AppColors.textMuted,
+                  ).copyWith(letterSpacing: 0.6),
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -189,15 +229,22 @@ class _TopControlButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: GlassPill(
-        padding: const EdgeInsets.all(10),
-        backgroundColor: AppColors.black.withValues(alpha: 0.24),
-        borderColor: AppColors.gold.withValues(alpha: 0.20),
-        borderRadius: BorderRadius.circular(18),
-        child: Icon(
-          icon,
-          color: AppColors.white.withValues(alpha: 0.88),
-          size: 18,
+      child: CupertinoTheme(
+        data: const CupertinoThemeData(brightness: Brightness.dark),
+        child: CupertinoLiquidGlass(
+          theme: _kControlTheme,
+          borderRadius: BorderRadius.circular(18),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Icon(
+                icon,
+                color: AppColors.white.withValues(alpha: 0.88),
+                size: 18,
+              ),
+            ),
+          ),
         ),
       ),
     );

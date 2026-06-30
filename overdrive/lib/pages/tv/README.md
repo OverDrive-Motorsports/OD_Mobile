@@ -12,12 +12,18 @@ live player, top overlay controls, stream metadata, and a stream picker sheet.
 - Provide floating controls for leaving the TV page and opening stream selection.
 - Keep stream selection inside a reusable modal sheet.
 
+## Files
+
+- `tv_page.dart` — TV hub listing available streams and navigating to the live race view.
+- `live_race_page.dart` — Full-screen live race page embedding `TvLivePlayer` with
+  stream selection controls and a back button.
+
 ## Dependencies
 
-- `tv_mock_data.dart` for temporary stream data.
+- `tv_mock_data.dart` for temporary stream data (`tvStreamsMonacoMock`).
 - `TvLivePlayer` from `widgets/tv/tv_live_player.dart`.
 - `TvStreamSelectorSheet` from `widgets/tv/tv_stream_selector_sheet.dart`.
-- `OdModal` for stream selection.
+- `AppModal` for stream selection bottom sheet.
 
 ## Extension Notes
 

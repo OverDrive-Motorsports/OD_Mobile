@@ -1,9 +1,9 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## MenuOverlay - Morphing liquid-glass pill button that expands into a floating menu panel.
+ ## menu_overlay.dart - App-wide navigation overlay providing the bottom navigation bar and page shortcuts.
  ##
  */
 
@@ -12,9 +12,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
-// ---------------------------------------------------------------------------
-// Layout constants
-// ---------------------------------------------------------------------------
+// ── Layout constants ──────────────────────────────────────────────────────
 
 const double _kGlassRadius = 18.0;
 const double _kPanelWidth = 160.0;
@@ -27,37 +25,34 @@ const double _kBtnPaddingV = 7.0;
 const double _kBtnFontSize = 14.0;
 const double _kBtnChevronSize = 15.0;
 
-// ---------------------------------------------------------------------------
-// Glass themes — explicit dark so CupertinoTheme context is irrelevant.
-//
-// edgeLightColor == edgeShadowColor → uniform border (no directional gradient).
-// ---------------------------------------------------------------------------
+// ── Glass themes — "Moyen — gris" (edgeLightColor == edgeShadowColor → uniform border) ──
 
-const _kBorderColor = Color(0x1AFFFFFF);
+const _kBorderColor = Color(0x28888888);
+const _kFillColor = Color(0x12888888);
 
 final _kDarkPanelTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.30,
-  blurSigma: 35.0,
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
   noiseOpacity: 0.0,
   specularOpacity: 0.08,
-  vibrancyIntensity: 0.06,
+  vibrancyIntensity: 0.04,
   edgeLightColor: _kBorderColor,
   edgeShadowColor: _kBorderColor,
 );
 
 final _kDarkBtnTheme = LiquidGlassThemeData.dark().copyWith(
-  tintOpacity: 0.28,
-  blurSigma: 20.0,
+  tintOpacity: 0.14,
+  blurSigma: 22.0,
   noiseOpacity: 0.0,
   specularOpacity: 0.08,
+  vibrancyIntensity: 0.04,
   edgeLightColor: _kBorderColor,
   edgeShadowColor: _kBorderColor,
 );
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
+// ── Public API ────────────────────────────────────────────────────────────
 
+// Immutable data entry describing one item in the navigation overlay menu.
 @immutable
 class MenuOverlayItem {
   const MenuOverlayItem({required this.label, required this.icon});
@@ -84,9 +79,7 @@ class MenuOverlayButton extends StatefulWidget {
   State<MenuOverlayButton> createState() => _MenuOverlayButtonState();
 }
 
-// ---------------------------------------------------------------------------
-// State
-// ---------------------------------------------------------------------------
+// ── State ─────────────────────────────────────────────────────────────────
 
 class _MenuOverlayButtonState extends State<MenuOverlayButton>
     with SingleTickerProviderStateMixin {
@@ -125,9 +118,7 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
     super.dispose();
   }
 
-  // ---------------------------------------------------------------------------
-  // Open / close
-  // ---------------------------------------------------------------------------
+  // ── Open / close ──────────────────────────────────────────────────────────
 
   void _open() {
     if (!_buttonVisible) return;
@@ -162,9 +153,7 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
     widget.onSelected(index);
   }
 
-  // ---------------------------------------------------------------------------
-  // Overlay
-  // ---------------------------------------------------------------------------
+  // ── Overlay ───────────────────────────────────────────────────────────────
 
   Widget _buildOverlay(BuildContext context) {
     final t = _curved.value;
@@ -212,6 +201,9 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
               child: Stack(
                 clipBehavior: Clip.hardEdge,
                 children: [
+                  // Grey fill layer — "Moyen — gris".
+                  const Positioned.fill(child: ColoredBox(color: _kFillColor)),
+
                   // Button replica — fades out as panel opens.
                   // Anchored to top-right to stay aligned with the real button.
                   if (labelOpacity > 0)
@@ -283,9 +275,7 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Real button — pill showing the current page label
-  // ---------------------------------------------------------------------------
+  // ── Real button — pill showing the current page label ─────────────────────
 
   @override
   Widget build(BuildContext context) {
@@ -297,27 +287,35 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
         child: CupertinoLiquidGlass(
           theme: _kDarkBtnTheme,
           borderRadius: const BorderRadius.all(Radius.circular(100)),
-          padding: const EdgeInsets.symmetric(
-            horizontal: _kBtnPaddingH,
-            vertical: _kBtnPaddingV,
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                widget.items[widget.selectedIndex].label,
-                style: AppTextStyles.body(color: AppColors.white).copyWith(
-                  fontSize: _kBtnFontSize,
-                  fontWeight: FontWeight.w500,
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(100)),
+            child: ColoredBox(
+              color: _kFillColor,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: _kBtnPaddingH,
+                  vertical: _kBtnPaddingV,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.items[widget.selectedIndex].label,
+                      style: AppTextStyles.body(color: AppColors.white).copyWith(
+                        fontSize: _kBtnFontSize,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      color: AppColors.white,
+                      size: _kBtnChevronSize,
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 4),
-              const Icon(
-                Icons.keyboard_arrow_down_rounded,
-                color: AppColors.white,
-                size: _kBtnChevronSize,
-              ),
-            ],
+            ),
           ),
         ),
       ),
@@ -325,9 +323,7 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
   }
 }
 
-// ---------------------------------------------------------------------------
-// Menu row — LiquidGlassBloom on selected icon
-// ---------------------------------------------------------------------------
+// ── Menu row — LiquidGlassBloom on selected icon ─────────────────────────
 
 class _MenuRow extends StatelessWidget {
   const _MenuRow({

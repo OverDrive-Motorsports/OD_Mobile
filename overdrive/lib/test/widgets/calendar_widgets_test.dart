@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## calendar_widgets_test.dart - Widget tests for reusable calendar components.
+ ## calendar_widgets_test.dart - Widget tests for the monthly calendar and event list calendar widgets.
  ##
  */
 
