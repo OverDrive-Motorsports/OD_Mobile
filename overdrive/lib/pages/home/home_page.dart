@@ -13,16 +13,20 @@ import '../../core/theme/app_theme.dart';
 import '../../widgets/menu_overlay.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+	const HomePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.black,
-      body: ColoredBox(
-        color: AppColors.black,
-        child: Stack(children: [MenuOverlay()]),
-      ),
-    );
-  }
+	static Route<void> route() {
+		return MaterialPageRoute<void>(builder: (_) => const HomePage());
+	}
+
+	@override
+	Widget build(BuildContext context) {
+		return const Scaffold(
+			backgroundColor: AppColors.black,
+			body: ColoredBox(
+				color: AppColors.black,
+				child: Stack(children: [MenuOverlay()]),
+			),
+		);
+	}
 }

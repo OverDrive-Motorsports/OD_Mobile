@@ -12,306 +12,325 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import '../core/theme/app_theme.dart';
+import '../pages/auth/login_page.dart';
+import '../services/auth_service.dart';
 import '../services/health_service.dart';
 
 class MenuOverlay extends StatefulWidget {
-  const MenuOverlay({super.key});
+	const MenuOverlay({super.key});
 
-  @override
-  State<MenuOverlay> createState() => _MenuOverlayState();
+	@override
+	State<MenuOverlay> createState() => _MenuOverlayState();
 }
 
 class _MenuOverlayState extends State<MenuOverlay>
-    with SingleTickerProviderStateMixin {
-  final HealthService _healthService = HealthService();
+		with SingleTickerProviderStateMixin {
+	final HealthService _healthService = HealthService();
 
-  bool _isOpen = false;
-  bool _isLoadingHealth = false;
-  late final AnimationController _animationController;
-  late final Animation<double> _fadeAnimation;
-  late final Animation<Offset> _slideAnimation;
+	bool _isOpen = false;
+	bool _isLoadingHealth = false;
+	late final AnimationController _animationController;
+	late final Animation<double> _fadeAnimation;
+	late final Animation<Offset> _slideAnimation;
 
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 200),
-    );
-    _fadeAnimation = CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOut,
-    );
-    _slideAnimation =
-        Tween<Offset>(
-          begin: const Offset(0.06, -0.05),
-          end: Offset.zero,
-        ).animate(
-          CurvedAnimation(
-            parent: _animationController,
-            curve: Curves.easeOutCubic,
-          ),
-        );
-  }
+	@override
+	void initState() {
+		super.initState();
+		_animationController = AnimationController(
+			vsync: this,
+			duration: const Duration(milliseconds: 200),
+		);
+		_fadeAnimation = CurvedAnimation(
+			parent: _animationController,
+			curve: Curves.easeOut,
+		);
+		_slideAnimation =
+				Tween<Offset>(
+					begin: const Offset(0.06, -0.05),
+					end: Offset.zero,
+				).animate(
+					CurvedAnimation(
+						parent: _animationController,
+						curve: Curves.easeOutCubic,
+					),
+				);
+	}
 
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+	@override
+	void dispose() {
+		_animationController.dispose();
+		super.dispose();
+	}
 
-  void _toggleMenu() {
-    setState(() => _isOpen = !_isOpen);
-    _isOpen ? _animationController.forward() : _animationController.reverse();
-  }
+	void _toggleMenu() {
+		setState(() => _isOpen = !_isOpen);
+		_isOpen ? _animationController.forward() : _animationController.reverse();
+	}
 
-  void _closeMenu() {
-    if (!_isOpen) {
-      return;
-    }
+	void _closeMenu() {
+		if (!_isOpen) {
+			return;
+		}
 
-    setState(() => _isOpen = false);
-    _animationController.reverse();
-  }
+		setState(() => _isOpen = false);
+		_animationController.reverse();
+	}
 
-  void _goHome() {
-    _closeMenu();
-    Navigator.of(context).popUntil((route) => route.isFirst);
-  }
+	void _goHome() {
+		_closeMenu();
+		Navigator.of(context).popUntil((route) => route.isFirst);
+	}
 
-  Future<void> _showHealthStatus() async {
-    if (_isLoadingHealth) {
-      return;
-    }
+	Future<void> _logout() async {
+		_closeMenu();
+		await AuthService.instance.logout();
+		if (!mounted) {
+			return;
+		}
 
-    _closeMenu();
-    setState(() => _isLoadingHealth = true);
+		Navigator.of(context).pushAndRemoveUntil(
+			LoginPage.route(),
+			(route) => false,
+		);
+	}
 
-    try {
-      final health = await _healthService.getHealth();
-      if (!mounted) {
-        return;
-      }
+	Future<void> _showHealthStatus() async {
+		if (_isLoadingHealth) {
+			return;
+		}
 
-      _showMessage(
-        message: 'Backend health: ${health.status} (${health.timestampLabel})',
-        backgroundColor: AppColors.success,
-      );
-    } on HealthServiceException catch (exception) {
-      if (!mounted) {
-        return;
-      }
+		_closeMenu();
+		setState(() => _isLoadingHealth = true);
 
-      _showMessage(
-        message: 'Backend indisponible: ${exception.message}',
-        backgroundColor: AppColors.error,
-      );
-    } finally {
-      if (mounted) {
-        setState(() => _isLoadingHealth = false);
-      }
-    }
-  }
+		try {
+			final health = await _healthService.getHealth();
+			if (!mounted) {
+				return;
+			}
 
-  void _showMessage({required String message, required Color backgroundColor}) {
-    final messenger = ScaffoldMessenger.maybeOf(context);
-    if (messenger == null) {
-      return;
-    }
+			_showMessage(
+				message: 'Backend health: ${health.status} (${health.timestampLabel})',
+				backgroundColor: AppColors.success,
+			);
+		} on HealthServiceException catch (exception) {
+			if (!mounted) {
+				return;
+			}
 
-    messenger.showSnackBar(
-      SnackBar(backgroundColor: backgroundColor, content: Text(message)),
-    );
-  }
+			_showMessage(
+				message: 'Backend indisponible: ${exception.message}',
+				backgroundColor: AppColors.error,
+			);
+		} finally {
+			if (mounted) {
+				setState(() => _isLoadingHealth = false);
+			}
+		}
+	}
 
-  @override
-  Widget build(BuildContext context) {
-    final topPadding = MediaQuery.paddingOf(context).top;
+	void _showMessage({required String message, required Color backgroundColor}) {
+		final messenger = ScaffoldMessenger.maybeOf(context);
+		if (messenger == null) {
+			return;
+		}
 
-    return Stack(
-      children: [
-        if (_isOpen)
-          Positioned.fill(
-            child: GestureDetector(
-              onTap: _closeMenu,
-              behavior: HitTestBehavior.translucent,
-              child: Container(color: Colors.black.withValues(alpha: 0.12)),
-            ),
-          ),
-        Positioned(
-          top: topPadding + 7,
-          left: 12,
-          child: Text('OD', style: AppTextStyles.display()),
-        ),
-        Positioned(
-          top: topPadding + 8,
-          right: 12,
-          child: MenuButton(isOpen: _isOpen, onTap: _toggleMenu),
-        ),
-        Positioned(
-          top: topPadding + 54,
-          right: 12,
-          child: FadeTransition(
-            opacity: _fadeAnimation,
-            child: SlideTransition(
-              position: _slideAnimation,
-              child: IgnorePointer(
-                ignoring: !_isOpen,
-                child: MenuPanel(
-                  isLoadingHealth: _isLoadingHealth,
-                  onHealthTap: _showHealthStatus,
-                  onHomeTap: _goHome,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
+		messenger.showSnackBar(
+			SnackBar(backgroundColor: backgroundColor, content: Text(message)),
+		);
+	}
+
+	@override
+	Widget build(BuildContext context) {
+		final topPadding = MediaQuery.paddingOf(context).top;
+
+		return Stack(
+			children: [
+				if (_isOpen)
+					Positioned.fill(
+						child: GestureDetector(
+							onTap: _closeMenu,
+							behavior: HitTestBehavior.translucent,
+							child: Container(color: Colors.black.withValues(alpha: 0.12)),
+						),
+					),
+				Positioned(
+					top: topPadding + 7,
+					left: 12,
+					child: Text('OD', style: AppTextStyles.display()),
+				),
+				Positioned(
+					top: topPadding + 8,
+					right: 12,
+					child: MenuButton(isOpen: _isOpen, onTap: _toggleMenu),
+				),
+				Positioned(
+					top: topPadding + 54,
+					right: 12,
+					child: FadeTransition(
+						opacity: _fadeAnimation,
+						child: SlideTransition(
+							position: _slideAnimation,
+							child: IgnorePointer(
+								ignoring: !_isOpen,
+								child: MenuPanel(
+									isLoadingHealth: _isLoadingHealth,
+									onHealthTap: _showHealthStatus,
+									onHomeTap: _goHome,
+									onLogoutTap: _logout,
+								),
+							),
+						),
+					),
+				),
+			],
+		);
+	}
 }
 
 class MenuButton extends StatelessWidget {
-  const MenuButton({required this.isOpen, required this.onTap, super.key});
+	const MenuButton({required this.isOpen, required this.onTap, super.key});
 
-  final bool isOpen;
-  final VoidCallback onTap;
+	final bool isOpen;
+	final VoidCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
-        decoration: BoxDecoration(
-          color: isOpen
-              ? Colors.white.withValues(alpha: 0.24)
-              : Colors.white.withValues(alpha: 0.16),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.menu_rounded, size: 16, color: Colors.white),
-            const SizedBox(width: 6),
-            Text(
-              'Menu',
-              style: AppTextStyles.bodyBold().copyWith(fontSize: 12),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+	@override
+	Widget build(BuildContext context) {
+		return GestureDetector(
+			onTap: onTap,
+			child: AnimatedContainer(
+				duration: const Duration(milliseconds: 150),
+				padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 8),
+				decoration: BoxDecoration(
+					color: isOpen
+							? Colors.white.withValues(alpha: 0.24)
+							: Colors.white.withValues(alpha: 0.16),
+					borderRadius: BorderRadius.circular(22),
+					border: Border.all(color: Colors.white.withValues(alpha: 0.28)),
+				),
+				child: Row(
+					mainAxisSize: MainAxisSize.min,
+					children: [
+						const Icon(Icons.menu_rounded, size: 16, color: Colors.white),
+						const SizedBox(width: 6),
+						Text(
+							'Menu',
+							style: AppTextStyles.bodyBold().copyWith(fontSize: 12),
+						),
+					],
+				),
+			),
+		);
+	}
 }
 
 class MenuPanel extends StatelessWidget {
-  const MenuPanel({
-    required this.isLoadingHealth,
-    required this.onHealthTap,
-    required this.onHomeTap,
-    super.key,
-  });
+	const MenuPanel({
+		required this.isLoadingHealth,
+		required this.onHealthTap,
+		required this.onHomeTap,
+		required this.onLogoutTap,
+		super.key,
+	});
 
-  final bool isLoadingHealth;
-  final VoidCallback onHealthTap;
-  final VoidCallback onHomeTap;
+	final bool isLoadingHealth;
+	final VoidCallback onHealthTap;
+	final VoidCallback onHomeTap;
+	final VoidCallback onLogoutTap;
 
-  @override
-  Widget build(BuildContext context) {
-    final actions = <MenuEntry>[
-      MenuEntry(icon: Icons.home_outlined, label: 'Home', onTap: onHomeTap),
-      MenuEntry(
-        icon: Icons.monitor_heart_outlined,
-        label: isLoadingHealth ? 'Health...' : 'Health',
-        onTap: onHealthTap,
-      ),
-    ];
+	@override
+	Widget build(BuildContext context) {
+		final actions = <MenuEntry>[
+			MenuEntry(icon: Icons.home_outlined, label: 'Home', onTap: onHomeTap),
+			MenuEntry(
+				icon: Icons.monitor_heart_outlined,
+				label: isLoadingHealth ? 'Health...' : 'Health',
+				onTap: onHealthTap,
+			),
+			MenuEntry(icon: Icons.logout_rounded, label: 'Logout', onTap: onLogoutTap),
+		];
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(24),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-        child: Container(
-          width: 212,
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            gradient: const LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Color(0xDB1C1C1E), Color(0xCF111113)],
-            ),
-            borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              for (final action in actions) ...[
-                MenuAction(
-                  icon: action.icon,
-                  label: action.label,
-                  onTap: action.onTap,
-                ),
-                if (action != actions.last) const SizedBox(height: 8),
-              ],
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+		return ClipRRect(
+			borderRadius: BorderRadius.circular(24),
+			child: BackdropFilter(
+				filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+				child: Container(
+					width: 212,
+					padding: const EdgeInsets.all(10),
+					decoration: BoxDecoration(
+						gradient: const LinearGradient(
+							begin: Alignment.topLeft,
+							end: Alignment.bottomRight,
+							colors: [Color(0xDB1C1C1E), Color(0xCF111113)],
+						),
+						borderRadius: BorderRadius.circular(24),
+						border: Border.all(color: Colors.white.withValues(alpha: 0.22)),
+					),
+					child: Column(
+						mainAxisSize: MainAxisSize.min,
+						children: [
+							for (final action in actions) ...[
+								MenuAction(
+									icon: action.icon,
+									label: action.label,
+									onTap: action.onTap,
+								),
+								if (action != actions.last) const SizedBox(height: 8),
+							],
+						],
+					),
+				),
+			),
+		);
+	}
 }
 
 class MenuEntry {
-  const MenuEntry({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+	const MenuEntry({
+		required this.icon,
+		required this.label,
+		required this.onTap,
+	});
 
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
+	final IconData icon;
+	final String label;
+	final VoidCallback onTap;
 }
 
 class MenuAction extends StatelessWidget {
-  const MenuAction({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    super.key,
-  });
+	const MenuAction({
+		required this.icon,
+		required this.label,
+		required this.onTap,
+		super.key,
+	});
 
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
+	final IconData icon;
+	final String label;
+	final VoidCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(14),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, size: 20, color: Colors.white),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                label,
-                style: AppTextStyles.body().copyWith(fontSize: 13),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+	@override
+	Widget build(BuildContext context) {
+		return GestureDetector(
+			onTap: onTap,
+			child: Container(
+				padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 9),
+				decoration: BoxDecoration(
+					color: Colors.white.withValues(alpha: 0.08),
+					borderRadius: BorderRadius.circular(14),
+				),
+				child: Row(
+					children: [
+						Icon(icon, size: 20, color: Colors.white),
+						const SizedBox(width: 10),
+						Expanded(
+							child: Text(
+								label,
+								style: AppTextStyles.body().copyWith(fontSize: 13),
+							),
+						),
+					],
+				),
+			),
+		);
+	}
 }
