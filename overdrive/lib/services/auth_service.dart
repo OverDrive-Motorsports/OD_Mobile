@@ -48,6 +48,7 @@ class AuthService {
 					BaseOptions(
 						connectTimeout: const Duration(seconds: 15),
 						receiveTimeout: const Duration(seconds: 60),
+						validateStatus: (status) => status != null && status < 500,
 					),
 				) {
 		if (_isValidUrl(_baseUrl)) {
@@ -91,10 +92,17 @@ class AuthService {
 				data: {'refresh_token': refreshToken},
 			);
 
+			if (response.statusCode != null && response.statusCode! >= 400) {
+				final errorMessage = _extractErrorMessage(response.data);
+				throw AuthServiceException(errorMessage);
+			}
+
 			final payload = _validatePayload(response.data);
 			final tokens = _extractTokens(payload);
 			await _persistTokens(tokens);
 			return tokens;
+		} on AuthServiceException {
+			rethrow;
 		} on DioException catch (exception) {
 			throw AuthServiceException(_resolveError(exception));
 		} catch (_) {
@@ -141,10 +149,18 @@ class AuthService {
 
 		try {
 			final response = await _dio.post(path, data: body);
+
+			if (response.statusCode != null && response.statusCode! >= 400) {
+				final errorMessage = _extractErrorMessage(response.data);
+				throw AuthServiceException(errorMessage);
+			}
+
 			final payload = _validatePayload(response.data);
 			final tokens = _extractTokens(payload);
 			await _persistTokens(tokens);
 			return tokens;
+		} on AuthServiceException {
+			rethrow;
 		} on DioException catch (exception) {
 			throw AuthServiceException(_resolveError(exception));
 		} catch (_) {
@@ -184,6 +200,16 @@ class AuthService {
 			refreshToken: refreshToken,
 			expiresAt: expiresAt,
 		);
+	}
+
+	String _extractErrorMessage(dynamic data) {
+		if (data is Map<String, dynamic>) {
+			final error = data['error'] ?? data['message'] ?? data['detail'] ?? data['msg'];
+			if (error is String && error.trim().isNotEmpty) {
+				return error.trim();
+			}
+		}
+		return 'Invalid email or password.';
 	}
 
 	Map<String, dynamic> _validatePayload(dynamic payload) {
