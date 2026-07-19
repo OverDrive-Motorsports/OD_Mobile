@@ -29,6 +29,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
 	final _formKey = GlobalKey<FormState>();
 	final _emailController = TextEditingController();
+	final _usernameController = TextEditingController();
 	final _passwordController = TextEditingController();
 	final _confirmPasswordController = TextEditingController();
 
@@ -38,6 +39,7 @@ class _SignupPageState extends State<SignupPage> {
 	@override
 	void dispose() {
 		_emailController.dispose();
+		_usernameController.dispose();
 		_passwordController.dispose();
 		_confirmPasswordController.dispose();
 		super.dispose();
@@ -57,6 +59,7 @@ class _SignupPageState extends State<SignupPage> {
 			await AuthService.instance.signup(
 				_emailController.text,
 				_passwordController.text,
+				_usernameController.text,
 			);
 
 			if (!mounted) {
@@ -102,6 +105,17 @@ class _SignupPageState extends State<SignupPage> {
 		return null;
 	}
 
+	String? _validateUsername(String? raw) {
+		final value = raw?.trim() ?? '';
+		if (value.isEmpty) {
+			return 'Username is required.';
+		}
+		if (value.length < 3) {
+			return 'Username must be at least 3 characters.';
+		}
+		return null;
+	}
+
 	String? _validateConfirmation(String? raw) {
 		final value = raw ?? '';
 		if (value.isEmpty) {
@@ -142,6 +156,14 @@ class _SignupPageState extends State<SignupPage> {
 												hint: 'name@example.com',
 												validator: _validateEmail,
 												keyboardType: TextInputType.emailAddress,
+											),
+											const SizedBox(height: 16),
+											_buildInputField(
+												controller: _usernameController,
+												label: 'Username',
+												hint: 'AssassinMaster78541',
+												validator: _validateUsername,
+												keyboardType: TextInputType.name,
 											),
 											const SizedBox(height: 16),
 											_buildInputField(
