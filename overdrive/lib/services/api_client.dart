@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## api_client.dart - Shared Dio client with JWT token injection.
+ ## api_client.dart - Shared Dio client with auth token injection and refresh support(to do).
  ##
  */
 
