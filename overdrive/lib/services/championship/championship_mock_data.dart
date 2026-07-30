@@ -280,7 +280,7 @@ final ChampionshipData championshipFormula1Mock = ChampionshipData(
       ],
     ),
   ],
-  replays: ChampionshipReplays(label: 'Toutes les courses de la saison'),
+  replays: ChampionshipReplays(label: 'Bibliotheque de replays'),
 );
 
 final ChampionshipData championshipWecMock = ChampionshipData(
@@ -481,7 +481,7 @@ final ChampionshipData championshipWecMock = ChampionshipData(
       ],
     ),
   ],
-  replays: ChampionshipReplays(label: 'Toutes les courses de la saison'),
+  replays: ChampionshipReplays(label: 'Bibliotheque de replays'),
 );
 
 final ChampionshipData championshipMotoGpMock = ChampionshipData(
@@ -567,7 +567,7 @@ final ChampionshipData championshipMotoGpMock = ChampionshipData(
       ],
     ),
   ],
-  replays: ChampionshipReplays(label: 'Toutes les courses de la saison'),
+  replays: ChampionshipReplays(label: 'Bibliotheque de replays'),
 );
 
 final List<ChampionshipData> championshipMocks = <ChampionshipData>[

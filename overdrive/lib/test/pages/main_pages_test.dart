@@ -23,12 +23,13 @@ import '../helpers/test_app.dart';
 
 void main() {
   group('Routed pages', () {
-    testWidgets('placeholder-backed routes render their injected titles', (
+    testWidgets('ReplayPage only lists the Bahrein 2024 replay', (
       WidgetTester tester,
     ) async {
-      await pumpTestApp(tester, const ReplayPage(title: 'Race replays'));
+      await pumpTestApp(tester, const ReplayPage());
 
-      expect(find.text('Race replays'), findsOneWidget);
+      expect(find.text('Rechercher un replay'), findsOneWidget);
+      expect(find.text('Grand Prix de Bahrein 2024'), findsOneWidget);
 
       await pumpTestApp(tester, const TelemetryPage());
 
