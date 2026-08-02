@@ -1,19 +1,18 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## placeholder_page.dart - Reusable placeholder screen with centered page title.
+ ## placeholder_page.dart - Generic placeholder screen displaying a centered title, used by unfinished routes.
  ##
  */
 
 import 'package:flutter/material.dart';
-
 import '../../core/theme/app_theme.dart';
-import '../../widgets/menu_overlay.dart';
 
+/// Reusable shell for pages that only need a centered title for now.
 class PlaceholderPage extends StatelessWidget {
-  const PlaceholderPage({required this.title, super.key});
+  const PlaceholderPage({super.key, required this.title});
 
   final String title;
 
@@ -21,16 +20,8 @@ class PlaceholderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
-      body: ColoredBox(
-        color: AppColors.black,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Center(child: Text(title, style: AppTextStyles.display())),
-            ),
-            const MenuOverlay(),
-          ],
-        ),
+      body: Center(
+        child: Text(title, style: AppTextStyles.display()),
       ),
     );
   }

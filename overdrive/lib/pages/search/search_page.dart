@@ -1,21 +1,85 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## search_page.dart - Search screen placeholder.
+ ## search_page.dart - Search screen with a local text controller and shared search bar widget.
  ##
  */
 
 import 'package:flutter/material.dart';
+import '../../core/theme/app_theme.dart';
+import '../../widgets/base/search_bar.dart';
 
-import '../shared/placeholder_page.dart';
+const SearchPageContent _searchPageContent = SearchPageContent(
+  title: 'Search',
+  placeholder: 'Rechercher',
+);
 
-class SearchPage extends StatelessWidget {
+/// Copy rendered by the search page shell.
+class SearchPageContent {
+  const SearchPageContent({required this.title, required this.placeholder});
+
+  final String title;
+  final String placeholder;
+}
+
+/// Search screen shell with an externalized search bar state.
+class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
   @override
+  State<SearchPage> createState() => _SearchPageState();
+}
+
+/// State holder for the search input controller lifecycle.
+class _SearchPageState extends State<SearchPage> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const PlaceholderPage(title: 'Search');
+    return Scaffold(
+      backgroundColor: AppColors.black,
+      body: ColoredBox(
+        color: AppColors.black,
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      _searchPageContent.title,
+                      style: AppTextStyles.display(),
+                    ),
+                  ),
+                ),
+                AppSearchBar(
+                  props: AppSearchBarProps(
+                    controller: _searchController,
+                    placeholder: _searchPageContent.placeholder,
+                    onSearch: (_) {},
+                    onClear: () {},
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
