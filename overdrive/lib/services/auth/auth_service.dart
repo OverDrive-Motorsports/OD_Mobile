@@ -145,11 +145,6 @@ class AuthService extends ChangeNotifier {
 		Map<String, dynamic> body,
 	) async {
 		try {
-			debugPrint("========== AUTH START ==========");
-			debugPrint("POST $path");
-			debugPrint("REQUEST BODY: $body");
-			debugPrint("URL: ${_dio.options.baseUrl}$path");
-
 			final response = await _dio.post(
 				path,
 				data: body,
@@ -157,10 +152,6 @@ class AuthService extends ChangeNotifier {
 
 			debugPrint(
 				"AUTH STATUS: ${response.statusCode}",
-			);
-
-			debugPrint(
-				"AUTH BODY: ${response.data}",
 			);
 
 			// Validate backend response before processing authentication data.
@@ -214,10 +205,7 @@ class AuthService extends ChangeNotifier {
 			// Persist credentials securely on device.
 			// Needed to restore user session after application restart.
 			await _saveToken(tokens);
-
-			debugPrint("Tokens saved.");
-			debugPrint("========== AUTH END ==========");
-
+            
 			return tokens;
 		} on DioException catch (e) {
 			throw AuthServiceException(
@@ -248,8 +236,6 @@ class AuthService extends ChangeNotifier {
 			key: _expiresAtKey,
 			value: tokens.expiresAt?.toIso8601String(),
 		);
-
-		debugPrint("Authentication tokens saved.");
 	}
 
 	/// Retrieves stored JWT access token.
@@ -278,8 +264,6 @@ class AuthService extends ChangeNotifier {
 	/// Refreshes expired authentication tokens using stored session credentials.
 	/// Needed to keep the user session active without requiring a new login.
 	Future<AuthTokens> refreshTokens() async {
-		debugPrint("========== REFRESH START ==========");
-
 		final refresh = await refreshToken;
 
 		// Validate refresh token availability before contacting backend.
@@ -351,14 +335,6 @@ class AuthService extends ChangeNotifier {
 		// Stores refreshed tokens securely for future authenticated requests.
 		// Needed to persist the renewed session after application restart.
 		await _saveToken(tokens);
-
-		debugPrint(
-			"Refresh tokens saved.",
-		);
-
-		debugPrint(
-			"========== REFRESH END ==========",
-		);
 
 		return tokens;
 	}
