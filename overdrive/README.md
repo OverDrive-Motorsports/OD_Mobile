@@ -1,76 +1,380 @@
 # OverDrive Flutter App
 
-A minimalist Flutter application focused on a `Home` page and several placeholder pages accessible from the menu.
+OverDrive is a Flutter mobile application designed for a motorsport platform.
+The application provides race information, live telemetry visualization,
+championship tracking, TV streaming, user profile management and authentication.
 
-## Detailed Documentation
+---
 
-- `ARCHITECTURE_LIB.md`
+# Project Structure
 
-## Current Structure
+The application follows a layered Flutter architecture separating:
 
-- `lib/main.dart` directly launches `HomePage` and configures the global theme  
-- `lib/pages/home/home_page.dart` displays the home screen shell with a solid black background and the floating menu overlay  
-- `lib/widgets/menu_overlay.dart` displays `OD`, the `Menu` button, navigation shortcuts, and the `Health` action  
-- `lib/widgets/calendar/` contains reusable calendar widgets and models kept independent from page-level demo data  
-- `lib/pages/shared/placeholder_page.dart` provides a reusable placeholder screen with a centered title  
-- `lib/pages/profile/profile_page.dart` displays the `Profile` page  
-- `lib/pages/settings/settings_page.dart` displays the `Settings` page  
-- `lib/pages/calendar/calendar_page.dart` displays the `Calendar` page  
-- `lib/pages/championship/championship_page.dart` displays the `Championship` page  
-- `lib/pages/tv/tv_page.dart` displays the `TV` page  
-- `lib/pages/telemetry/telemetry_page.dart` — live telemetry dashboard with a freeform 15-row drag-and-resize widget grid, powered by `TelemetrySimulator` (5 Hz mock data). 14 widget types available. See `lib/pages/telemetry/README.md` for full architecture and data reference.  
-- `lib/pages/search/search_page.dart` displays the `Search` page  
-- `lib/services/health_service.dart` handles the only backend interaction: `GET /health`  
-- `lib/core/theme/app_theme.dart` centralizes the theme, colors, and styles  
+- Presentation layer (pages and widgets)
+- Services layer (business and API communication)
+- Core layer (theme, navigation, shared configuration)
 
-## Header Convention
+```
+lib/
+├── config/             Application configuration and routing
+├── core/               Shared application logic (theme, navigation)
+├── pages/              Application screens
+├── services/           Business logic and backend communication
+├── widgets/            Reusable UI components
+└── main.dart           Application entry point
+```
 
-All Dart files in `lib/` now start with the following standard header, adapted to each file:
+---
+
+# Application Entry
+
+## `lib/main.dart`
+
+Responsible for:
+
+- Initializing the Flutter application.
+- Loading environment configuration.
+- Configuring application theme.
+- Initializing authentication state.
+- Starting application routing.
+
+---
+
+# Navigation
+
+## `lib/config/app_router.dart`
+
+The application uses `GoRouter` for navigation.
+
+Responsibilities:
+
+- Define application routes.
+- Manage authentication redirects.
+- Handle page transitions.
+
+---
+
+# Pages
+
+All application screens are located in:
+
+```
+lib/pages/
+```
+
+## Authentication
+
+### `pages/login/`
+
+Provides user login functionality.
+
+Features:
+
+- Email/password authentication.
+- Form validation.
+- Backend authentication request.
+- Session creation.
+
+---
+
+### `pages/signup/`
+
+Provides account creation.
+
+Features:
+
+- Username validation.
+- Email validation.
+- Password validation.
+- Password confirmation.
+- Backend registration request.
+
+---
+
+## Main Application Pages
+
+| Page | Purpose |
+|------|---------|
+| `home/` | Main application dashboard |
+| `profile/` | User information and profile actions |
+| `settings/` | Application preferences |
+| `calendar/` | Race event calendar |
+| `championship/` | Championship information |
+| `telemetry/` | Live race telemetry dashboard |
+| `tv/` | Race video streaming |
+| `search/` | Search functionality |
+| `shared/` | Shared placeholder pages |
+
+---
+
+# Authentication
+
+Authentication logic is isolated inside:
+
+```
+lib/services/auth/
+```
+
+## `auth_service.dart`
+
+Responsible for:
+
+- Login.
+- Signup.
+- Session management.
+- JWT storage.
+- Refresh token handling.
+- Logout.
+- Session validation.
+
+Authentication data is stored securely using:
+
+```
+FlutterSecureStorage
+```
+
+Storage:
+
+- Android → Keystore
+- iOS → Keychain
+
+---
+
+## Authentication Flow
+
+```
+Application Start
+        |
+        v
+Restore Stored Session
+        |
+        v
+Validate Token
+        |
+        +------ Valid ------> Home
+        |
+        +------ Expired -----> Refresh Token
+                                      |
+                                      +---- Success ---> Home
+                                      |
+                                      +---- Failed ----> Login
+```
+
+---
+
+# Services
+
+Business logic and backend communication are located in:
+
+```
+lib/services/
+```
+
+Structure:
+
+```
+services/
+├── auth/              Authentication and session management
+├── calendar/          Calendar data handling
+├── championship/      Championship models and data
+├── tv/                TV stream management
+└── health/            Backend health checking
+```
+
+---
+
+# API Communication
+
+HTTP communication is handled through:
+
+```
+services/auth/api_client.dart
+```
+
+Responsibilities:
+
+- Configure Dio client.
+- Add authorization headers.
+- Handle expired tokens.
+- Refresh authentication session.
+- Retry failed requests.
+
+---
+
+# Backend Configuration
+
+Backend URL is configured using:
+
+```env
+API_BASE_URL=http://localhost:3001
+```
+
+Resolution priority:
+
+1. `.env` configuration.
+2. Platform defaults.
+
+## Android Emulator
+
+```
+http://10.0.2.2:3001
+```
+
+## Web / Desktop / iOS Simulator
+
+```
+http://localhost:3001
+```
+
+For physical devices:
+
+```
+http://YOUR_LOCAL_IP:3001
+```
+
+---
+
+# Widgets
+
+Reusable UI components are stored in:
+
+```
+lib/widgets/
+```
+
+Structure:
+
+```
+widgets/
+├── base/
+├── calendar/
+├── championships/
+├── navigation/
+├── telemetry/
+└── tv/
+```
+
+---
+
+# Base Widgets
+
+Located in:
+
+```
+widgets/base/
+```
+
+Contains shared design components:
+
+| Widget | Purpose |
+|-|-|
+| `AppButton` | Application buttons |
+| `AppModal` | Bottom sheet dialogs |
+| `AppTextField` | Styled input fields |
+| `AppToast` | Notifications |
+| `ErrorMessage` | Error display component |
+| `AppSwitch` | Toggle controls |
+| `MenuOverlay` | Navigation overlay |
+
+---
+
+# Telemetry System
+
+Located in:
+
+```
+pages/telemetry/
+widgets/telemetry/
+```
+
+Provides:
+
+- Live telemetry dashboard.
+- Draggable widgets.
+- Resizable grid layout.
+- Race data visualization.
+
+Supported widgets include:
+
+- Speedometer.
+- RPM indicator.
+- Gear display.
+- Throttle/brake visualization.
+- Lap timing.
+- Tire temperatures.
+- Fuel information.
+- Weather data.
+- Race standings.
+
+---
+
+# Theme System
+
+Global styling is centralized in:
+
+```
+lib/core/theme/app_theme.dart
+```
+
+Contains:
+
+- Application colors.
+- Typography.
+- Shared design tokens.
+
+All UI components should use:
 
 ```dart
-/**
- ##
- ## OverDrive 2026
- ## All Technical rights reserved
- ##
- ## [FileName] - [Brief description of the file's purpose]
- ##
- */
+AppColors
+AppTextStyles
+```
 
-## Backend
+instead of hardcoded values.
 
-The only backend interaction retained is:
+---
 
-- `GET /health`
-
-The backend URL is read from API_BASE_URL if defined. Otherwise, the application uses:
-
-- `http://10.0.2.2:8080` on Android
-- `http://localhost:8080` elsewhere
-
-## Environment
+# Environment
 
 Supported environment files:
 
-- `.env` for development
-- `.env.prod` for production
+```
+.env
+.env.prod
+```
 
 Required variables:
 
-- `API_BASE_URL`
-- `APP_ENV`
+```env
+API_BASE_URL
+APP_ENV
+```
 
-Run with the production environment file:
+Production launch:
 
 ```bash
 flutter run --dart-define=ENV_FILE=.env.prod
 ```
 
-## Code Quality
+---
 
-Useful commands :
+# Development Commands
+
+Format project:
 
 ```bash
 dart format lib
+```
+
+Analyze code:
+
+```bash
 flutter analyze
 ```
+
+Run tests:
+
+```bash
+flutter test
+```
+
+---

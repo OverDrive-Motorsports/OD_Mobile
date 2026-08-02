@@ -1,81 +1,108 @@
-/*
-##
-## OverDrive 2026
-## All Technical rights reserved
-##
-## login_page.dart - Login screen with email/password form
-##
-*/
+/**
+ ##
+ ## OverDrive 2026
+ ## All Technical rights reserved
+ ##
+ ## signup_page.dart - Signup screen with password confirmation.
+ ##
+ */
 
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 import '../../services/auth/auth_service.dart';
 import 'package:go_router/go_router.dart';
+import '../../config/app_router.dart';
 
-/// Login screen responsible for user authentication flow.
-class LoginPage extends StatefulWidget {
-	static const routeName = '/login';
+class SignupPage extends StatefulWidget {
+	static const routeName = '/signup';
 
-	const LoginPage({super.key});
+	const SignupPage({super.key});
 
 	static Route<void> route() {
-		return MaterialPageRoute<void>(builder: (_) => const LoginPage());
+		return MaterialPageRoute<void>(builder: (_) => const SignupPage());
 	}
 
 	@override
-	State<LoginPage> createState() => _LoginPageState();
+	State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
-	// Form key controls validation lifecycle before sending credentials.
+class _SignupPageState extends State<SignupPage> {
 	final _formKey = GlobalKey<FormState>();
-	// Controllers store user input before authentication request.
 	final _emailController = TextEditingController();
+	final _usernameController = TextEditingController();
 	final _passwordController = TextEditingController();
+	final _confirmPasswordController = TextEditingController();
 
-	// Prevents multiple authentication requests and tracks backend errors.
 	bool _isLoading = false;
 	String? _submissionError;
 
-	// Release controllers to avoid memory leaks.
 	@override
 	void dispose() {
 		_emailController.dispose();
+		_usernameController.dispose();
 		_passwordController.dispose();
+		_confirmPasswordController.dispose();
 		super.dispose();
 	}
 
-	/// Validates credentials, authenticates user and updates application session.
+	/// Handles account creation flow: validates input, sends registration request and redirects user to login.
 	Future<void> _onSubmit() async {
-		// Stop submission if local validation fails.
+		// Debug checkpoint to confirm that the submit action was triggered.
+		debugPrint("SUBMIT PRESSED");
+
+		// Prevents sending invalid registration data to backend.
 		if (!_formKey.currentState!.validate()) {
+			debugPrint("VALIDATION FAILED");
 			return;
 		}
 
+		debugPrint("VALIDATION OK");
+
 		setState(() {
+			// Locks the form during request and clears previous errors.
 			_isLoading = true;
 			_submissionError = null;
 		});
 
 		try {
-			// Sends credentials to backend and stores received tokens.
-			await AuthService.instance.login(
-				_emailController.text,
+			// Sends user registration data to authentication service.
+			debugPrint("CALLING SIGNUP");
+
+			await AuthService.instance.signup(
+				_emailController.text.trim(),
 				_passwordController.text,
+				_usernameController.text.trim(),
 			);
 
+			debugPrint("SIGNUP DONE");
+
+			// Prevents navigation if widget was removed during async request.
 			if (!mounted) {
+				debugPrint("NOT MOUNTED");
 				return;
 			}
-		
-			// Redirect to main application after successful authentication.
-			context.go('/');
-		} on AuthServiceException catch (exception) {
+
+			// Redirects user to login after successful account creation.
+			debugPrint("GOING LOGIN");
+			debugPrint(
+				"AUTH STATUS = ${AuthService.instance.isAuthenticated}",
+			);
+
+			context.go('/login');
+
+			debugPrint("AFTER GO");
+
+		} on AuthServiceException catch (e) {
+			// Displays backend authentication errors to the user.
+			debugPrint("AUTH ERROR: ${e.message}");
+
 			setState(() {
-				_submissionError = exception.message;
+				_submissionError = e.message;
 			});
+
 		} finally {
+			// Unlocks the form after request completion.
 			if (mounted) {
 				setState(() {
 					_isLoading = false;
@@ -84,7 +111,6 @@ class _LoginPageState extends State<LoginPage> {
 		}
 	}
 
-	/// Checks that email has a minimal valid format.
 	String? _validateEmail(String? raw) {
 		final value = raw?.trim() ?? '';
 		if (value.isEmpty) {
@@ -95,8 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 		}
 		return null;
 	}
-	
-	/// Checks password presence and minimal security requirement
+
 	String? _validatePassword(String? raw) {
 		final value = raw ?? '';
 		if (value.isEmpty) {
@@ -104,6 +129,28 @@ class _LoginPageState extends State<LoginPage> {
 		}
 		if (value.length < 8) {
 			return 'Password must be at least 8 characters.';
+		}
+		return null;
+	}
+
+	String? _validateUsername(String? raw) {
+		final value = raw?.trim() ?? '';
+		if (value.isEmpty) {
+			return 'Username is required.';
+		}
+		if (value.length < 3) {
+			return 'Username must be at least 3 characters.';
+		}
+		return null;
+	}
+
+	String? _validateConfirmation(String? raw) {
+		final value = raw ?? '';
+		if (value.isEmpty) {
+			return 'Confirm your password.';
+		}
+		if (value != _passwordController.text) {
+			return 'Passwords do not match.';
 		}
 		return null;
 	}
@@ -119,10 +166,10 @@ class _LoginPageState extends State<LoginPage> {
 						child: Column(
 							mainAxisSize: MainAxisSize.min,
 							children: [
-								Text('Welcome back', style: AppTextStyles.display()),
+								Text('Create your account', style: AppTextStyles.display()),
 								const SizedBox(height: 8),
 								Text(
-									'Log in to access OverDrive.',
+									'Signup with email and password to continue.',
 									style: AppTextStyles.body(color: AppColors.textSecondary),
 									textAlign: TextAlign.center,
 								),
@@ -140,10 +187,26 @@ class _LoginPageState extends State<LoginPage> {
 											),
 											const SizedBox(height: 16),
 											_buildInputField(
+												controller: _usernameController,
+												label: 'Username',
+												hint: 'AssassinMaster78541',
+												validator: _validateUsername,
+												keyboardType: TextInputType.name,
+											),
+											const SizedBox(height: 16),
+											_buildInputField(
 												controller: _passwordController,
 												label: 'Password',
-												hint: 'Enter your password',
+												hint: 'Create a password',
 												validator: _validatePassword,
+												obscureText: true,
+											),
+											const SizedBox(height: 16),
+											_buildInputField(
+												controller: _confirmPasswordController,
+												label: 'Confirm Password',
+												hint: 'Repeat your password',
+												validator: _validateConfirmation,
 												obscureText: true,
 											),
 										],
@@ -172,7 +235,7 @@ class _LoginPageState extends State<LoginPage> {
 																strokeWidth: 2,
 															),
 														)
-													: const Text('Login'),
+													: const Text('Sign Up'),
 										),
 									),
 								),
@@ -180,14 +243,14 @@ class _LoginPageState extends State<LoginPage> {
 								Row(
 									mainAxisAlignment: MainAxisAlignment.center,
 									children: [
-										Text('Need an account?', style: AppTextStyles.caption()),
+										Text('Already have an account?', style: AppTextStyles.caption()),
 										TextButton(
 											onPressed: _isLoading
 													? null
 													: () {
-															context.go('/signup');
+															Navigator.of(context).pop();
 														},
-											child: const Text('Sign Up'),
+											child: const Text('Login'),
 										),
 									],
 								),
@@ -199,7 +262,6 @@ class _LoginPageState extends State<LoginPage> {
 		);
 	}
 
-	/// Reusable input component to keep authentication fields consistent.
 	Widget _buildInputField({
 		required TextEditingController controller,
 		required String label,

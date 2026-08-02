@@ -15,6 +15,9 @@ import '../../widgets/base/menu_overlay.dart';
 import '../../widgets/base/app_button.dart';
 import '../../widgets/base/app_modal.dart';
 import '../../widgets/base/app_toast.dart';
+import '../../services/auth/auth_service.dart';
+import '../../config/app_router.dart';
+import '../../services/auth/auth_service.dart';
 
 /// Fallback data rendered when no live [ProfilePageData] is injected.
 const ProfilePageData profilePagePreviewData = ProfilePageData(
@@ -224,6 +227,9 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+Future<void> _logout() async {
+  await AuthService.instance.logout();
+}
   void _handleAction(BuildContext context, ProfileActionType actionType) {
     switch (actionType) {
       case ProfileActionType.addProvider:
@@ -233,13 +239,9 @@ class _ProfilePageState extends State<ProfilePage> {
       case ProfileActionType.shareProfile:
         AppToast.show(context, message: _content.shareProfileToastMessage);
         return;
-      case ProfileActionType.signOut:
-        AppToast.show(
-          context,
-          message: _content.signOutToastMessage,
-          type: ToastType.info,
-        );
-        return;
+case ProfileActionType.signOut:
+  _logout();
+  return;
       case ProfileActionType.deleteAccount:
         _showModal(context, _content.deleteAccountModal);
         return;
