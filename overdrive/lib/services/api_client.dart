@@ -3,12 +3,11 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## api_client.dart - Shared Dio client with auth token injection and refresh support(to do).
+ ## api_client.dart - Shared Dio client with auth token injection and refresh support
  ##
  */
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'auth_service.dart';
@@ -96,29 +95,29 @@ class ApiClient {
 	Completer<void>? _refreshCompleter;
 
 	Dio get dio => _dio;
-	static String _resolveBaseUrl(String? explicitBaseUrl){
-		final fromArg =	(explicitBaseUrl ?? '').trim();
-		if(_isValidUrl(fromArg)){
+
+	static String _resolveBaseUrl(String? explicitBaseUrl) {
+		final fromArg = (explicitBaseUrl ?? '').trim();
+
+		if (_isValidUrl(fromArg)) {
 			return fromArg;
 		}
 
-		final fromEnv =	dotenv.isInitialized ? (dotenv.env['API_BASE_URL'] ?? '').trim() : '';
+		if (!dotenv.isInitialized) {
+			throw Exception(
+			'Environment not initialized. Call dotenv.load() before creating ApiClient.',
+			);
+		}
 
-		if(_isValidUrl(fromEnv)){
+		final fromEnv = (dotenv.env['API_BASE_URL'] ?? '').trim();
+
+		if (_isValidUrl(fromEnv)) {
 			return fromEnv;
 		}
 
-		if(kIsWeb){
-			return 'http://localhost:3001';
-		}
-
-		if(defaultTargetPlatform == TargetPlatform.android){
-			// For Android emulator: http://10.0.2.2:3001
-			// For physical device: computer IP or .env API_BASE_URL
-
-			return 'http://10.0.2.2:3001';
-		}
-		return 'http://localhost:3001';
+		throw Exception(
+			'API_BASE_URL is missing or invalid in the environment configuration.',
+		);
 	}
 
 	static bool _isValidUrl(String value){
