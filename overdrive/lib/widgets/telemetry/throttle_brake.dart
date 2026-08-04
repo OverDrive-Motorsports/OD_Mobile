@@ -56,7 +56,10 @@ class _ThrottleBrakeState extends State<ThrottleBrake> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
@@ -84,9 +87,19 @@ class _SmallPedals extends StatelessWidget {
       children: [
         TelemetryHeader(label: 'PEDALS', driverId: driverId),
         const Spacer(),
-        _PedalRow(label: 'THR', value: data.throttle, color: AppColors.green, barHeight: 8),
+        _PedalRow(
+          label: 'THR',
+          value: data.throttle,
+          color: AppColors.green,
+          barHeight: 8,
+        ),
         const SizedBox(height: 10),
-        _PedalRow(label: 'BRK', value: data.brake, color: AppColors.red, barHeight: 8),
+        _PedalRow(
+          label: 'BRK',
+          value: data.brake,
+          color: AppColors.red,
+          barHeight: 8,
+        ),
         const Spacer(),
       ],
     );
@@ -107,7 +120,11 @@ class _LargePedals extends StatelessWidget {
       children: [
         TelemetryHeader(label: 'PEDALS', driverId: driverId),
         const Spacer(),
-        _PedalBlock(label: 'THROTTLE', value: data.throttle, color: AppColors.green),
+        _PedalBlock(
+          label: 'THROTTLE',
+          value: data.throttle,
+          color: AppColors.green,
+        ),
         const SizedBox(height: 16),
         _PedalBlock(label: 'BRAKE', value: data.brake, color: AppColors.red),
         const Spacer(),
@@ -120,7 +137,12 @@ class _LargePedals extends StatelessWidget {
 
 /// Compact single-line pedal: label | bar | value
 class _PedalRow extends StatelessWidget {
-  const _PedalRow({required this.label, required this.value, required this.color, required this.barHeight});
+  const _PedalRow({
+    required this.label,
+    required this.value,
+    required this.color,
+    required this.barHeight,
+  });
   final String label;
   final double value;
   final Color color;
@@ -132,7 +154,12 @@ class _PedalRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 30,
-          child: Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+          child: Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 9),
+          ),
         ),
         Expanded(
           child: TelemetryBar(
@@ -151,7 +178,9 @@ class _PedalRow extends StatelessWidget {
             builder: (_, v, _) => Text(
               '${v.toInt()}%',
               textAlign: TextAlign.right,
-              style: AppTextStyles.caption(color: color).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
+              style: AppTextStyles.caption(
+                color: color,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
             ),
           ),
         ),
@@ -162,7 +191,11 @@ class _PedalRow extends StatelessWidget {
 
 /// Full-width pedal block with label + percentage above a tall bar
 class _PedalBlock extends StatelessWidget {
-  const _PedalBlock({required this.label, required this.value, required this.color});
+  const _PedalBlock({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final String label;
   final double value;
   final Color color;
@@ -174,7 +207,12 @@ class _PedalBlock extends StatelessWidget {
       children: [
         Row(
           children: [
-            Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9, letterSpacing: 0.5)),
+            Text(
+              label,
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9, letterSpacing: 0.5),
+            ),
             const Spacer(),
             SizedBox(
               width: 52,
@@ -184,7 +222,9 @@ class _PedalBlock extends StatelessWidget {
                 builder: (_, v, _) => Text(
                   '${v.toInt()}%',
                   textAlign: TextAlign.right,
-                  style: AppTextStyles.bodyBold(color: color).copyWith(fontSize: 15),
+                  style: AppTextStyles.bodyBold(
+                    color: color,
+                  ).copyWith(fontSize: 15),
                 ),
               ),
             ),

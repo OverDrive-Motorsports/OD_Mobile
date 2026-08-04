@@ -227,12 +227,14 @@ class _StandingsSwitchState extends State<_StandingsSwitch>
   void didUpdateWidget(_StandingsSwitch old) {
     super.didUpdateWidget(old);
     if (old.selectedIndex != widget.selectedIndex) {
-      _ctrl.animateWith(SpringSimulation(
-        _spring,
-        _position.value,
-        widget.selectedIndex.toDouble(),
-        _velocity.value,
-      ));
+      _ctrl.animateWith(
+        SpringSimulation(
+          _spring,
+          _position.value,
+          widget.selectedIndex.toDouble(),
+          _velocity.value,
+        ),
+      );
     }
   }
 
@@ -311,14 +313,18 @@ class _SwitchLabel extends StatelessWidget {
     return ListenableBuilder(
       listenable: position,
       builder: (context, _) {
-        final proximity =
-            (1.0 - (position.value - index).abs()).clamp(0.0, 1.0);
-        final color =
-            Color.lerp(AppColors.textSecondary, AppColors.white, proximity)!;
+        final proximity = (1.0 - (position.value - index).abs()).clamp(
+          0.0,
+          1.0,
+        );
+        final color = Color.lerp(
+          AppColors.textSecondary,
+          AppColors.white,
+          proximity,
+        )!;
         return Text(
           label,
-          style:
-              AppTextStyles.bodyBold().copyWith(fontSize: 12, color: color),
+          style: AppTextStyles.bodyBold().copyWith(fontSize: 12, color: color),
         );
       },
     );
@@ -551,10 +557,10 @@ class _EntryAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 13,
       backgroundColor: entry.avatarColor,
-      foregroundImage:
-          entry.imageUrl != null ? NetworkImage(entry.imageUrl!) : null,
-      child:
-          Text(label, style: AppTextStyles.bodyBold().copyWith(fontSize: 8)),
+      foregroundImage: entry.imageUrl != null
+          ? NetworkImage(entry.imageUrl!)
+          : null,
+      child: Text(label, style: AppTextStyles.bodyBold().copyWith(fontSize: 8)),
     );
   }
 

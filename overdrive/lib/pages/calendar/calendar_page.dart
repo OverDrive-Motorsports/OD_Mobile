@@ -249,32 +249,32 @@ class _CalendarPageState extends State<CalendarPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                    Text(
-                      'Calendrier',
-                      style: AppTextStyles.bodyBold().copyWith(fontSize: 28),
-                    ),
-                    const SizedBox(height: 18),
-                    _FilterChipRow(
-                      allId: _allChampionshipsFilterId,
-                      championships: _championships,
-                      selectedId: _selectedChampionshipId,
-                      onSelected: _handleChampionshipSelected,
-                    ),
-                    const SizedBox(height: 20),
-                    MonthlyCalendar(
-                      selectedDate: _selectedDate,
-                      initialMonth: _selectedDate,
-                      today: _today,
-                      isLoading: _isLoading,
-                      firstAvailableMonth: viewData.firstAvailableMonth,
-                      lastAvailableMonth: viewData.lastAvailableMonth,
-                      weekdayLabels: _calendarWeekdayLabels,
-                      monthLabelBuilder: _buildMonthLabel,
-                      eventsByDate: viewData.eventsByDate,
-                      onDateSelected: _handleDateSelected,
-                    ),
-                    const SizedBox(height: 20),
-                    ..._buildScheduleContent(viewData),
+                Text(
+                  'Calendrier',
+                  style: AppTextStyles.bodyBold().copyWith(fontSize: 28),
+                ),
+                const SizedBox(height: 18),
+                _FilterChipRow(
+                  allId: _allChampionshipsFilterId,
+                  championships: _championships,
+                  selectedId: _selectedChampionshipId,
+                  onSelected: _handleChampionshipSelected,
+                ),
+                const SizedBox(height: 20),
+                MonthlyCalendar(
+                  selectedDate: _selectedDate,
+                  initialMonth: _selectedDate,
+                  today: _today,
+                  isLoading: _isLoading,
+                  firstAvailableMonth: viewData.firstAvailableMonth,
+                  lastAvailableMonth: viewData.lastAvailableMonth,
+                  weekdayLabels: _calendarWeekdayLabels,
+                  monthLabelBuilder: _buildMonthLabel,
+                  eventsByDate: viewData.eventsByDate,
+                  onDateSelected: _handleDateSelected,
+                ),
+                const SizedBox(height: 20),
+                ..._buildScheduleContent(viewData),
               ],
             ),
           ),
@@ -425,18 +425,20 @@ class _ArchivesSectionState extends State<_ArchivesSection>
       duration: const Duration(milliseconds: 260),
       value: widget.isExpanded ? 1.0 : 0.0,
     );
-    _chevronTurn = Tween<double>(begin: 0.0, end: 0.5).animate(
-      CurvedAnimation(parent: _chevron, curve: Curves.easeOutCubic),
-    );
+    _chevronTurn = Tween<double>(
+      begin: 0.0,
+      end: 0.5,
+    ).animate(CurvedAnimation(parent: _chevron, curve: Curves.easeOutCubic));
 
     _press = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 90),
       reverseDuration: const Duration(milliseconds: 220),
     );
-    _pressScale = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(parent: _press, curve: Curves.easeOut),
-    );
+    _pressScale = Tween<double>(
+      begin: 1.0,
+      end: 0.96,
+    ).animate(CurvedAnimation(parent: _press, curve: Curves.easeOut));
   }
 
   @override
@@ -649,16 +651,15 @@ class _FilterChipState extends State<_FilterChip>
   late final AnimationController _press;
   late final Animation<double> _scale;
 
-  LiquidGlassThemeData get _chipTheme =>
-      LiquidGlassThemeData.dark().copyWith(
-        tintOpacity: 0.16,
-        blurSigma: 20.0,
-        noiseOpacity: 0.0,
-        specularOpacity: 0.10,
-        vibrancyIntensity: 0.04,
-        edgeLightColor: widget.color.withValues(alpha: 0.35),
-        edgeShadowColor: widget.color.withValues(alpha: 0.20),
-      );
+  LiquidGlassThemeData get _chipTheme => LiquidGlassThemeData.dark().copyWith(
+    tintOpacity: 0.16,
+    blurSigma: 20.0,
+    noiseOpacity: 0.0,
+    specularOpacity: 0.10,
+    vibrancyIntensity: 0.04,
+    edgeLightColor: widget.color.withValues(alpha: 0.35),
+    edgeShadowColor: widget.color.withValues(alpha: 0.20),
+  );
 
   @override
   void initState() {
@@ -668,9 +669,10 @@ class _FilterChipState extends State<_FilterChip>
       duration: const Duration(milliseconds: 90),
       reverseDuration: const Duration(milliseconds: 220),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.92).animate(
-      CurvedAnimation(parent: _press, curve: Curves.easeOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.92,
+    ).animate(CurvedAnimation(parent: _press, curve: Curves.easeOut));
   }
 
   @override
@@ -764,9 +766,7 @@ class _ChipContent extends StatelessWidget {
         Text(
           label,
           style: AppTextStyles.bodyBold(
-            color: isSelected
-                ? AppColors.textPrimary
-                : AppColors.textSecondary,
+            color: isSelected ? AppColors.textPrimary : AppColors.textSecondary,
           ).copyWith(fontSize: 13),
         ),
       ],

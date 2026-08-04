@@ -112,9 +112,7 @@ class _BannerErrorMessage extends StatelessWidget {
             children: [
               // ── Red fill ────────────────────────────────────────────────
               Positioned.fill(
-                child: ColoredBox(
-                  color: AppColors.red.withValues(alpha: 0.28),
-                ),
+                child: ColoredBox(color: AppColors.red.withValues(alpha: 0.28)),
               ),
 
               // ── Content ─────────────────────────────────────────────────

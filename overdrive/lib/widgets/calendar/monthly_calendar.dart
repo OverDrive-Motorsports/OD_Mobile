@@ -95,9 +95,7 @@ class _MonthlyCalendarState extends State<MonthlyCalendar> {
   void initState() {
     super.initState();
     _configureBounds();
-    _visibleMonth = _clampMonth(
-      _monthOnly(widget.initialMonth ?? _today),
-    );
+    _visibleMonth = _clampMonth(_monthOnly(widget.initialMonth ?? _today));
     _pageController = PageController(initialPage: _pageForMonth(_visibleMonth));
   }
 
@@ -328,12 +326,13 @@ class _CalendarHeader extends StatelessWidget {
                   ? Offset(navDirection > 0 ? 0.25 : -0.25, 0)
                   : Offset(navDirection > 0 ? -0.25 : 0.25, 0);
               return SlideTransition(
-                position: Tween<Offset>(
-                  begin: beginOffset,
-                  end: Offset.zero,
-                ).animate(
-                  CurvedAnimation(parent: animation, curve: Curves.easeOutCubic),
-                ),
+                position: Tween<Offset>(begin: beginOffset, end: Offset.zero)
+                    .animate(
+                      CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeOutCubic,
+                      ),
+                    ),
                 child: FadeTransition(opacity: animation, child: child),
               );
             },
@@ -391,9 +390,10 @@ class _NavButtonState extends State<_NavButton>
       duration: const Duration(milliseconds: 90),
       reverseDuration: const Duration(milliseconds: 220),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.88).animate(
-      CurvedAnimation(parent: _press, curve: Curves.easeOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.88,
+    ).animate(CurvedAnimation(parent: _press, curve: Curves.easeOut));
   }
 
   @override
@@ -548,9 +548,10 @@ class _DayCellState extends State<_DayCell>
       duration: const Duration(milliseconds: 80),
       reverseDuration: const Duration(milliseconds: 200),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.82).animate(
-      CurvedAnimation(parent: _press, curve: Curves.easeOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.82,
+    ).animate(CurvedAnimation(parent: _press, curve: Curves.easeOut));
   }
 
   @override

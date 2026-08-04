@@ -194,8 +194,9 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
             onTap: () {},
             child: CupertinoLiquidGlass(
               theme: _kDarkPanelTheme,
-              borderRadius:
-                  const BorderRadius.all(Radius.circular(_kGlassRadius)),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(_kGlassRadius),
+              ),
               width: width,
               height: height,
               child: Stack(
@@ -224,12 +225,13 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
                               children: [
                                 Text(
                                   selectedLabel,
-                                  style: AppTextStyles.body(
-                                    color: AppColors.white,
-                                  ).copyWith(
-                                    fontSize: _kBtnFontSize,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style:
+                                      AppTextStyles.body(
+                                        color: AppColors.white,
+                                      ).copyWith(
+                                        fontSize: _kBtnFontSize,
+                                        fontWeight: FontWeight.w500,
+                                      ),
                                 ),
                                 const SizedBox(width: 4),
                                 const Icon(
@@ -301,10 +303,11 @@ class _MenuOverlayButtonState extends State<MenuOverlayButton>
                   children: [
                     Text(
                       widget.items[widget.selectedIndex].label,
-                      style: AppTextStyles.body(color: AppColors.white).copyWith(
-                        fontSize: _kBtnFontSize,
-                        fontWeight: FontWeight.w500,
-                      ),
+                      style: AppTextStyles.body(color: AppColors.white)
+                          .copyWith(
+                            fontSize: _kBtnFontSize,
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                     const SizedBox(width: 4),
                     const Icon(

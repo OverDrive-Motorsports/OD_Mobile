@@ -78,15 +78,24 @@ class ChampionshipNextEventCard extends StatelessWidget {
                 Row(
                   children: [
                     Expanded(
-                      child: _CountdownCell(value: countdown.days, label: 'Jours'),
+                      child: _CountdownCell(
+                        value: countdown.days,
+                        label: 'Jours',
+                      ),
                     ),
                     const _CountdownDot(),
                     Expanded(
-                      child: _CountdownCell(value: countdown.hours, label: 'Heures'),
+                      child: _CountdownCell(
+                        value: countdown.hours,
+                        label: 'Heures',
+                      ),
                     ),
                     const _CountdownDot(),
                     Expanded(
-                      child: _CountdownCell(value: countdown.minutes, label: 'Min'),
+                      child: _CountdownCell(
+                        value: countdown.minutes,
+                        label: 'Min',
+                      ),
                     ),
                   ],
                 ),

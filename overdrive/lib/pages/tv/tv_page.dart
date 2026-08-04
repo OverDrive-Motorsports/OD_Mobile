@@ -123,7 +123,9 @@ class _TvPageState extends State<TvPage> {
                     GestureDetector(
                       onTap: _openStreamSelector,
                       child: CupertinoTheme(
-                        data: const CupertinoThemeData(brightness: Brightness.dark),
+                        data: const CupertinoThemeData(
+                          brightness: Brightness.dark,
+                        ),
                         child: CupertinoLiquidGlass(
                           theme: _kFluxBtnTheme,
                           borderRadius: BorderRadius.circular(22),
@@ -140,7 +142,9 @@ class _TvPageState extends State<TvPage> {
                                   Icon(
                                     Icons.grid_view_rounded,
                                     size: 16,
-                                    color: AppColors.white.withValues(alpha: 0.78),
+                                    color: AppColors.white.withValues(
+                                      alpha: 0.78,
+                                    ),
                                   ),
                                   const SizedBox(width: 10),
                                   Text(
@@ -154,7 +158,9 @@ class _TvPageState extends State<TvPage> {
                                   Icon(
                                     Icons.keyboard_arrow_up_rounded,
                                     size: 18,
-                                    color: AppColors.gold.withValues(alpha: 0.88),
+                                    color: AppColors.gold.withValues(
+                                      alpha: 0.88,
+                                    ),
                                   ),
                                 ],
                               ),

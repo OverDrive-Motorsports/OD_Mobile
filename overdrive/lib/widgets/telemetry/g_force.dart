@@ -95,7 +95,10 @@ class _GForceState extends State<GForce> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
@@ -138,16 +141,28 @@ class _GNumericRow extends StatelessWidget {
 
     return Row(
       children: [
-        _GValue(label: 'LAT', value: '$latDir ${gLat.abs().toStringAsFixed(1)}G', color: latColor),
+        _GValue(
+          label: 'LAT',
+          value: '$latDir ${gLat.abs().toStringAsFixed(1)}G',
+          color: latColor,
+        ),
         const Spacer(),
-        _GValue(label: 'LON', value: '$lonDir ${gLon.abs().toStringAsFixed(1)}G', color: lonColor),
+        _GValue(
+          label: 'LON',
+          value: '$lonDir ${gLon.abs().toStringAsFixed(1)}G',
+          color: lonColor,
+        ),
       ],
     );
   }
 }
 
 class _GValue extends StatelessWidget {
-  const _GValue({required this.label, required this.value, required this.color});
+  const _GValue({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final String label;
   final String value;
   final Color color;
@@ -157,9 +172,19 @@ class _GValue extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        Text(
+          label,
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 9),
+        ),
         const SizedBox(width: 5),
-        Text(value, style: AppTextStyles.caption(color: color).copyWith(fontSize: 10, fontWeight: FontWeight.w700)),
+        Text(
+          value,
+          style: AppTextStyles.caption(
+            color: color,
+          ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+        ),
       ],
     );
   }
@@ -208,15 +233,27 @@ class _GForcePainter extends CustomPainter {
     final axisPaint = Paint()
       ..color = AppColors.border.withValues(alpha: 0.30)
       ..strokeWidth = 0.6;
-    canvas.drawLine(Offset(center.dx - radius, center.dy), Offset(center.dx + radius, center.dy), axisPaint);
-    canvas.drawLine(Offset(center.dx, center.dy - radius), Offset(center.dx, center.dy + radius), axisPaint);
+    canvas.drawLine(
+      Offset(center.dx - radius, center.dy),
+      Offset(center.dx + radius, center.dy),
+      axisPaint,
+    );
+    canvas.drawLine(
+      Offset(center.dx, center.dy - radius),
+      Offset(center.dx, center.dy + radius),
+      axisPaint,
+    );
 
     // Corner labels
     void label(String text, Offset pos) {
       final tp = TextPainter(
         text: TextSpan(
           text: text,
-          style: const TextStyle(color: AppColors.textMuted, fontSize: 8, fontWeight: FontWeight.w500),
+          style: const TextStyle(
+            color: AppColors.textMuted,
+            fontSize: 8,
+            fontWeight: FontWeight.w500,
+          ),
         ),
         textDirection: TextDirection.ltr,
       )..layout();
@@ -231,9 +268,9 @@ class _GForcePainter extends CustomPainter {
     if (trail.isEmpty) return;
 
     Offset toScreen(Offset g) => Offset(
-          center.dx + (g.dx / _maxLat) * radius,
-          center.dy - (g.dy / _maxLon) * radius,
-        );
+      center.dx + (g.dx / _maxLat) * radius,
+      center.dy - (g.dy / _maxLon) * radius,
+    );
 
     // Trail dots with fade
     for (var i = 0; i < trail.length - 1; i++) {
@@ -247,7 +284,11 @@ class _GForcePainter extends CustomPainter {
 
     // Current position dot
     final current = toScreen(trail.last);
-    canvas.drawCircle(current, 5, Paint()..color = AppColors.white.withValues(alpha: 0.90));
+    canvas.drawCircle(
+      current,
+      5,
+      Paint()..color = AppColors.white.withValues(alpha: 0.90),
+    );
     canvas.drawCircle(
       current,
       5,
