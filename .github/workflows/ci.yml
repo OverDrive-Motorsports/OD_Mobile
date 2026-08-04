@@ -79,6 +79,10 @@ jobs:
         working-directory: overdrive
         run: flutter pub get
 
+      - name: Prepare env file
+        working-directory: overdrive
+        run: cp .env.example .env
+
       - name: Check formatting
         working-directory: overdrive
         run: dart format --output=none --set-exit-if-changed .

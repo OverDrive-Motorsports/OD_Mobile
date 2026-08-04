@@ -16,8 +16,6 @@ import '../../widgets/base/app_button.dart';
 import '../../widgets/base/app_modal.dart';
 import '../../widgets/base/app_toast.dart';
 import '../../services/auth/auth_service.dart';
-import '../../config/app_router.dart';
-import '../../services/auth/auth_service.dart';
 
 /// Fallback data rendered when no live [ProfilePageData] is injected.
 const ProfilePageData profilePagePreviewData = ProfilePageData(

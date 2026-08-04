@@ -214,7 +214,7 @@ class _LargeEngine extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         // Cooling circuit
-        _SectionLabel('REFROIDISSEMENT'),
+        const _SectionLabel('REFROIDISSEMENT'),
         const SizedBox(height: 5),
         _EngineRow(
           label: 'H₂O',
@@ -244,7 +244,7 @@ class _LargeEngine extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         // ERS / electrical
-        _SectionLabel('ERS'),
+        const _SectionLabel('ERS'),
         const SizedBox(height: 5),
         _EngineRow(
           label: 'MGU-K',
@@ -265,7 +265,7 @@ class _LargeEngine extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         // Turbo
-        _SectionLabel('TURBO'),
+        const _SectionLabel('TURBO'),
         const SizedBox(height: 5),
         _BoostRow(boost: data.turboBoost),
       ],

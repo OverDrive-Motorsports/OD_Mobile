@@ -185,7 +185,7 @@ class _LargeDamage extends StatelessWidget {
       children: [
         TelemetryHeader(label: 'DÉGÂTS', driverId: driverId),
         const SizedBox(height: 8),
-        _SectionLabel('AÉRODYNAMIQUE'),
+        const _SectionLabel('AÉRODYNAMIQUE'),
         const SizedBox(height: 5),
         _DamageBar(label: 'AILE AV', value: data.frontWingDamage),
         const SizedBox(height: 5),
@@ -193,7 +193,7 @@ class _LargeDamage extends StatelessWidget {
         const SizedBox(height: 5),
         _DamageBar(label: 'PLANCHER', value: data.floorDamage),
         const SizedBox(height: 8),
-        _SectionLabel('MÉCANIQUE'),
+        const _SectionLabel('MÉCANIQUE'),
         const SizedBox(height: 5),
         _DamageBar(label: 'BOÎTE', value: data.gearboxDamage),
         const SizedBox(height: 5),

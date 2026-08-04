@@ -80,7 +80,7 @@ class _SmallStandings extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TelemetryHeader(label: 'STANDINGS'),
+        const TelemetryHeader(label: 'STANDINGS'),
         const SizedBox(height: 6),
         Expanded(
           child: Column(
@@ -120,7 +120,7 @@ class _LargeStandings extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TelemetryHeader(label: 'STANDINGS'),
+        const TelemetryHeader(label: 'STANDINGS'),
         const SizedBox(height: 8),
         Expanded(
           child: Column(

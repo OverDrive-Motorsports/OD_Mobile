@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -36,15 +36,15 @@ class ApiClient {
             options.headers['Authorization'] = 'Bearer $token';
           }
 
-          debugPrint("========== REQUEST ==========");
-          debugPrint("${options.method} ${options.path}");
-          debugPrint("Headers: ${options.headers}");
+          debugPrint('========== REQUEST ==========');
+          debugPrint('${options.method} ${options.path}');
+          debugPrint('Headers: ${options.headers}');
 
           return handler.next(options);
         },
 
         onError: (error, handler) async {
-          if (error.requestOptions.path == "/refresh") {
+          if (error.requestOptions.path == '/refresh') {
             return handler.next(error);
           }
 
@@ -75,7 +75,7 @@ class ApiClient {
               return handler.next(error);
             }
 
-            error.requestOptions.headers["Authorization"] = "Bearer $token";
+            error.requestOptions.headers['Authorization'] = 'Bearer $token';
 
             final response = await _dio.fetch(error.requestOptions);
 

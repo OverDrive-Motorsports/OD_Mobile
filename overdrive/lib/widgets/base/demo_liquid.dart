@@ -9,7 +9,6 @@
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 /// An empty liquid glass surface with configurable intensity and tint.
 class DemoLiquid extends StatelessWidget {

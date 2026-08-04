@@ -146,9 +146,9 @@ class _TraceHeader extends StatelessWidget {
           ).copyWith(fontSize: 10, letterSpacing: 0.6),
         ),
         const SizedBox(width: 10),
-        _LegendDot(color: AppColors.green, label: 'ACC'),
+        const _LegendDot(color: AppColors.green, label: 'ACC'),
         const SizedBox(width: 8),
-        _LegendDot(color: AppColors.red, label: 'FR'),
+        const _LegendDot(color: AppColors.red, label: 'FR'),
         const Spacer(),
         Text(
           driverId,

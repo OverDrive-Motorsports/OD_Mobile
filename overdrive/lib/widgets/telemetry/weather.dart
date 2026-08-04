@@ -67,7 +67,7 @@ class _SmallWeather extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TelemetryHeader(label: 'WEATHER'),
+        const TelemetryHeader(label: 'WEATHER'),
         const SizedBox(height: 6),
         // Two temperature values side by side
         Expanded(
@@ -96,7 +96,7 @@ class _SmallWeather extends StatelessWidget {
         // Wind + humidity compact row
         Row(
           children: [
-            Icon(Icons.air_rounded, size: 9, color: AppColors.textMuted),
+            const Icon(Icons.air_rounded, size: 9, color: AppColors.textMuted),
             const SizedBox(width: 3),
             Text(
               '${cond.windSpeed.toStringAsFixed(0)} km/h',
@@ -105,7 +105,7 @@ class _SmallWeather extends StatelessWidget {
               ).copyWith(fontSize: 9),
             ),
             const Spacer(),
-            Icon(
+            const Icon(
               Icons.water_drop_outlined,
               size: 9,
               color: AppColors.textMuted,
@@ -296,7 +296,11 @@ class _HumidityRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.water_drop_outlined, size: 11, color: AppColors.textMuted),
+        const Icon(
+          Icons.water_drop_outlined,
+          size: 11,
+          color: AppColors.textMuted,
+        ),
         const SizedBox(width: 5),
         Text(
           'HUM.',
