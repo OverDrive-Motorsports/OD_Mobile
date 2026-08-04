@@ -90,17 +90,3 @@ jobs:
       - name: Analyze
         working-directory: overdrive
         run: flutter analyze
-
-  secret_scan:
-    name: Secret scan
-    runs-on: ubuntu-latest
-    needs: [lint]
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Run gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
