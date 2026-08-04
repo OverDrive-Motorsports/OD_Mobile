@@ -8,8 +8,8 @@
 */
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Stores authentication credentials received from backend.
@@ -454,25 +454,21 @@ class AuthService extends ChangeNotifier {
 			return value;
 		}
 
-		final env = dotenv.isInitialized
-			? dotenv.env["API_BASE_URL"]
-			: null;
+		if (!dotenv.isInitialized) {
+			throw Exception(
+			"Environment not initialized. Call dotenv.load() before creating AuthService.",
+			);
+		}
+
+		final env = dotenv.env["API_BASE_URL"];
 
 		if (env != null && _isValidUrl(env)) {
 			return env;
 		}
 
-		// Android emulator requires special localhost mapping.
-		// Needed because emulator localhost points to the virtual device itself.
-		if (kIsWeb) {
-			return "http://localhost:3001";
-		}
-
-		if (defaultTargetPlatform == TargetPlatform.android) {
-			return "http://10.0.2.2:3001";
-		}
-
-		return "http://localhost:3001";
+		throw Exception(
+			"API_BASE_URL is missing or invalid in the environment configuration.",
+		);
 	}
 
 	/// Validates whether provided string is a usable URL.
