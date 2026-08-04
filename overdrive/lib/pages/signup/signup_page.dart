@@ -1,4 +1,4 @@
-/**
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_theme.dart';
 import '../../services/auth/auth_service.dart';
 import 'package:go_router/go_router.dart';
-import '../../config/app_router.dart';
 
 class SignupPage extends StatefulWidget {
   static const routeName = '/signup';
@@ -49,15 +48,15 @@ class _SignupPageState extends State<SignupPage> {
   /// Handles account creation flow: validates input, sends registration request and redirects user to login.
   Future<void> _onSubmit() async {
     // Debug checkpoint to confirm that the submit action was triggered.
-    debugPrint("SUBMIT PRESSED");
+    debugPrint('SUBMIT PRESSED');
 
     // Prevents sending invalid registration data to backend.
     if (!_formKey.currentState!.validate()) {
-      debugPrint("VALIDATION FAILED");
+      debugPrint('VALIDATION FAILED');
       return;
     }
 
-    debugPrint("VALIDATION OK");
+    debugPrint('VALIDATION OK');
 
     setState(() {
       // Locks the form during request and clears previous errors.
@@ -67,7 +66,7 @@ class _SignupPageState extends State<SignupPage> {
 
     try {
       // Sends user registration data to authentication service.
-      debugPrint("CALLING SIGNUP");
+      debugPrint('CALLING SIGNUP');
 
       await AuthService.instance.signup(
         _emailController.text.trim(),
@@ -75,24 +74,24 @@ class _SignupPageState extends State<SignupPage> {
         _usernameController.text.trim(),
       );
 
-      debugPrint("SIGNUP DONE");
+      debugPrint('SIGNUP DONE');
 
       // Prevents navigation if widget was removed during async request.
       if (!mounted) {
-        debugPrint("NOT MOUNTED");
+        debugPrint('NOT MOUNTED');
         return;
       }
 
       // Redirects user to login after successful account creation.
-      debugPrint("GOING LOGIN");
-      debugPrint("AUTH STATUS = ${AuthService.instance.isAuthenticated}");
+      debugPrint('GOING LOGIN');
+      debugPrint('AUTH STATUS = ${AuthService.instance.isAuthenticated}');
 
       context.go('/login');
 
-      debugPrint("AFTER GO");
+      debugPrint('AFTER GO');
     } on AuthServiceException catch (e) {
       // Displays backend authentication errors to the user.
-      debugPrint("AUTH ERROR: ${e.message}");
+      debugPrint('AUTH ERROR: ${e.message}');
 
       setState(() {
         _submissionError = e.message;

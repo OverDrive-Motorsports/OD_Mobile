@@ -36,7 +36,11 @@ class LiveRacePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.live_tv_rounded, size: 64, color: AppColors.textMuted),
+            const Icon(
+              Icons.live_tv_rounded,
+              size: 64,
+              color: AppColors.textMuted,
+            ),
             const SizedBox(height: 16),
             Text('Live Race', style: AppTextStyles.display()),
             const SizedBox(height: 8),

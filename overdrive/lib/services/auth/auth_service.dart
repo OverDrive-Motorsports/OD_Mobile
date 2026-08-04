@@ -1,4 +1,4 @@
-/**
+/*
 ##
 ## OverDrive 2026
 ## All Technical rights reserved
@@ -69,10 +69,10 @@ class AuthService extends ChangeNotifier {
 
   /// Secure storage keys.
   /// Needed to persist authentication data between application launches.
-  static const _tokenKey = "od_access_token";
-  static const _sessionIdKey = "od_session_id";
-  static const _refreshTokenKey = "od_refresh_token";
-  static const _expiresAtKey = "od_expires_at";
+  static const _tokenKey = 'od_access_token';
+  static const _sessionIdKey = 'od_session_id';
+  static const _refreshTokenKey = 'od_refresh_token';
+  static const _expiresAtKey = 'od_expires_at';
 
   final Dio _dio;
   final FlutterSecureStorage _storage;
@@ -91,9 +91,9 @@ class AuthService extends ChangeNotifier {
   /// Authenticates user credentials and creates a session.
   /// Needed to obtain JWT and refresh token for protected API requests.
   Future<AuthTokens> login(String email, String password) async {
-    final tokens = await _authenticate("/login", {
-      "email": email.trim(),
-      "password": password.trim(),
+    final tokens = await _authenticate('/login', {
+      'email': email.trim(),
+      'password': password.trim(),
     });
     _isAuthenticated = true;
     notifyListeners();
@@ -106,11 +106,11 @@ class AuthService extends ChangeNotifier {
   Future<void> signup(String email, String password, String username) async {
     try {
       final response = await _dio.post(
-        "/register",
+        '/register',
         data: {
-          "email": email.trim(),
-          "password": password.trim(),
-          "username": username.trim(),
+          'email': email.trim(),
+          'password': password.trim(),
+          'username': username.trim(),
         },
       );
 
@@ -118,7 +118,7 @@ class AuthService extends ChangeNotifier {
         throw AuthServiceException(_extractError(response.data));
       }
 
-      debugPrint("Registration successful");
+      debugPrint('Registration successful');
     } on DioException catch (e) {
       throw AuthServiceException(_resolveError(e));
     }
@@ -133,7 +133,7 @@ class AuthService extends ChangeNotifier {
     try {
       final response = await _dio.post(path, data: body);
 
-      debugPrint("AUTH STATUS: ${response.statusCode}");
+      debugPrint('AUTH STATUS: ${response.statusCode}');
 
       // Validate backend response before processing authentication data.
       // Needed to prevent invalid responses from creating broken sessions.
@@ -143,25 +143,25 @@ class AuthService extends ChangeNotifier {
 
       final data = response.data as Map<String, dynamic>;
 
-      final token = data["token"];
-      final refreshToken = data["refreshToken"];
-      final sessionId = data["sessionId"];
+      final token = data['token'];
+      final refreshToken = data['refreshToken'];
+      final sessionId = data['sessionId'];
 
       // Ensure all required session credentials are provided by backend.
       // Needed because missing tokens make future authenticated requests impossible.
       if (token == null) {
-        throw const AuthServiceException("JWT token missing");
+        throw const AuthServiceException('JWT token missing');
       }
 
       if (refreshToken == null) {
-        throw const AuthServiceException("Refresh token missing");
+        throw const AuthServiceException('Refresh token missing');
       }
 
       if (sessionId == null) {
-        throw const AuthServiceException("Session ID missing");
+        throw const AuthServiceException('Session ID missing');
       }
 
-      final expires = data["expiresAt"];
+      final expires = data['expiresAt'];
 
       // Converts backend response into application authentication model.
       // Needed to keep token management independent from API response format.
@@ -223,7 +223,7 @@ class AuthService extends ChangeNotifier {
     // Validate refresh token availability before contacting backend.
     // Needed because token refresh is impossible without existing session credentials.
     if (refresh == null) {
-      throw const AuthServiceException("No refresh token");
+      throw const AuthServiceException('No refresh token');
     }
 
     final session = await sessionId;
@@ -231,15 +231,15 @@ class AuthService extends ChangeNotifier {
     // Validate session identifier before refresh request.
     // Needed to correctly identify the active user session.
     if (session == null) {
-      throw const AuthServiceException("No session id");
+      throw const AuthServiceException('No session id');
     }
 
     final response = await _dio.post(
-      "/refresh",
-      data: {"sessionId": session, "refreshToken": refresh},
+      '/refresh',
+      data: {'sessionId': session, 'refreshToken': refresh},
     );
 
-    debugPrint("REFRESH STATUS: ${response.statusCode}");
+    debugPrint('REFRESH STATUS: ${response.statusCode}');
 
     // Validate backend refresh response.
     // Needed to prevent storing invalid authentication data.
@@ -249,13 +249,13 @@ class AuthService extends ChangeNotifier {
 
     final data = response.data as Map<String, dynamic>;
 
-    final token = data["token"];
-    final newRefreshToken = data["refreshToken"];
+    final token = data['token'];
+    final newRefreshToken = data['refreshToken'];
 
     // Ensure backend returned new valid credentials.
     // Needed to avoid replacing working session with incomplete data.
     if (token == null || newRefreshToken == null) {
-      throw const AuthServiceException("Invalid refresh response");
+      throw const AuthServiceException('Invalid refresh response');
     }
 
     // Creates updated authentication model with refreshed credentials.
@@ -264,8 +264,8 @@ class AuthService extends ChangeNotifier {
       accessToken: token,
       sessionId: session,
       refreshToken: newRefreshToken,
-      expiresAt: data["expiresAt"] != null
-          ? DateTime.tryParse(data["expiresAt"])
+      expiresAt: data['expiresAt'] != null
+          ? DateTime.tryParse(data['expiresAt'])
           : null,
     );
 
@@ -356,20 +356,20 @@ class AuthService extends ChangeNotifier {
   /// Needed to display meaningful authentication errors to the user.
   String _extractError(dynamic data) {
     if (data is Map<String, dynamic>) {
-      return data["error"] ?? data["message"] ?? "Authentication failed";
+      return data['error'] ?? data['message'] ?? 'Authentication failed';
     }
 
-    return "Authentication failed";
+    return 'Authentication failed';
   }
 
   /// Converts network exceptions into application-level errors.
   /// Needed to hide HTTP client details from authentication screens.
   String _resolveError(DioException e) {
     if (e.type == DioExceptionType.connectionTimeout) {
-      return "Backend timeout";
+      return 'Backend timeout';
     }
 
-    return e.message ?? "Network error";
+    return e.message ?? 'Network error';
   }
 
   /// Resolves backend URL from configuration and platform defaults.
@@ -379,7 +379,7 @@ class AuthService extends ChangeNotifier {
       return value;
     }
 
-    final env = dotenv.isInitialized ? dotenv.env["API_BASE_URL"] : null;
+    final env = dotenv.isInitialized ? dotenv.env['API_BASE_URL'] : null;
 
     if (env != null && _isValidUrl(env)) {
       return env;
@@ -388,14 +388,14 @@ class AuthService extends ChangeNotifier {
     // Android emulator requires special localhost mapping.
     // Needed because emulator localhost points to the virtual device itself.
     if (kIsWeb) {
-      return "http://localhost:3001";
+      return 'http://localhost:3001';
     }
 
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return "http://10.0.2.2:3001";
+      return 'http://10.0.2.2:3001';
     }
 
-    return "http://localhost:3001";
+    return 'http://localhost:3001';
   }
 
   /// Validates whether provided string is a usable URL.

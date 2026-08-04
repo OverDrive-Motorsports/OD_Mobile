@@ -155,7 +155,7 @@ class _SmallTimer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TelemetryHeader(label: 'LAP TIMER'),
+        const TelemetryHeader(label: 'LAP TIMER'),
         const Spacer(),
         FittedBox(
           fit: BoxFit.scaleDown,
@@ -224,7 +224,7 @@ class _LargeTimer extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TelemetryHeader(label: 'LAP TIMER'),
+        const TelemetryHeader(label: 'LAP TIMER'),
         const Spacer(),
         FittedBox(
           fit: BoxFit.scaleDown,

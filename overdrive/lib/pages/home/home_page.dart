@@ -43,9 +43,9 @@ class HomePage extends StatelessWidget {
                   const SizedBox(height: 32),
 
                   // 1 — Très léger, blanc
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Très léger — blanc',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.04,
                       blurSigma: 12.0,
                       specularOpacity: 0.04,
@@ -55,9 +55,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 2 — Léger, blanc
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Léger — blanc',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.08,
                       blurSigma: 16.0,
                       specularOpacity: 0.06,
@@ -67,9 +67,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 3 — Léger, gris
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Léger — gris',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.08,
                       blurSigma: 16.0,
                       specularOpacity: 0.06,
@@ -80,9 +80,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 4 — Moyen, blanc
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Moyen — blanc',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.14,
                       blurSigma: 22.0,
                       specularOpacity: 0.10,
@@ -92,9 +92,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 5 — Moyen, gris
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Moyen — gris',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.14,
                       blurSigma: 22.0,
                       specularOpacity: 0.08,
@@ -105,9 +105,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 6 — Moyen+, blanc, grande hauteur
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Moyen+ — blanc, haut',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.20,
                       blurSigma: 26.0,
                       specularOpacity: 0.12,
@@ -119,9 +119,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 7 — Fort, blanc
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Fort — blanc',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.28,
                       blurSigma: 32.0,
                       specularOpacity: 0.14,
@@ -132,9 +132,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 8 — Fort, gris foncé
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Fort — gris foncé',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.28,
                       blurSigma: 32.0,
                       specularOpacity: 0.10,
@@ -145,9 +145,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 9 — Très fort, blanc, pill
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Très fort — blanc, pill',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.38,
                       blurSigma: 38.0,
                       specularOpacity: 0.16,
@@ -159,9 +159,9 @@ class HomePage extends StatelessWidget {
                   ),
 
                   // 10 — Maximum, gris blanc
-                  _DemoRow(
+                  const _DemoRow(
                     label: 'Maximum — gris blanc',
-                    child: const DemoLiquid(
+                    child: DemoLiquid(
                       tintOpacity: 0.50,
                       blurSigma: 44.0,
                       noiseOpacity: 0.02,
