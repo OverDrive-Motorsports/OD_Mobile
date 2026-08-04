@@ -247,9 +247,7 @@ class _SignupPageState extends State<SignupPage> {
 										TextButton(
 											onPressed: _isLoading
 													? null
-													: () {
-															Navigator.of(context).pop();
-														},
+													: () => context.go('/login'),
 											child: const Text('Login'),
 										),
 									],
