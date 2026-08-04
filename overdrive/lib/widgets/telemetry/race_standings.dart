@@ -20,11 +20,11 @@ import 'telemetry_widget_style.dart';
 
 // Returns a hardcoded team colour for the three main constructors; all others fall back to gold.
 Color _teamColor(String team) => switch (team) {
-      'Red Bull Racing' => const Color(0xFF3671C6),
-      'Ferrari' => const Color(0xFFE8002D),
-      'McLaren' => const Color(0xFFFF8000),
-      _ => AppColors.gold,
-    };
+  'Red Bull Racing' => const Color(0xFF3671C6),
+  'Ferrari' => const Color(0xFFE8002D),
+  'McLaren' => const Color(0xFFFF8000),
+  _ => AppColors.gold,
+};
 
 // ── Public widget ──────────────────────────────────────────────────────────
 
@@ -49,12 +49,18 @@ class RaceStandings extends StatelessWidget {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
                   ? _SmallStandings(sim: sim)
-                  : _LargeStandings(sim: sim, availableHeight: constraints.maxHeight),
+                  : _LargeStandings(
+                      sim: sim,
+                      availableHeight: constraints.maxHeight,
+                    ),
             );
           },
         ),
@@ -105,7 +111,10 @@ class _LargeStandings extends StatelessWidget {
   Widget build(BuildContext context) {
     // How many rows fit? Each full row is ~56px + 6px gap; header ~20px
     final usable = availableHeight - 32;
-    final rowsVisible = (usable / 62).floor().clamp(1, TelemetryMockData.drivers.length);
+    final rowsVisible = (usable / 62).floor().clamp(
+      1,
+      TelemetryMockData.drivers.length,
+    );
     final drivers = TelemetryMockData.drivers.take(rowsVisible).toList();
 
     return Column(
@@ -146,21 +155,34 @@ class _DriverRowCompact extends StatelessWidget {
 
     return Row(
       children: [
-        Container(width: 3, height: 18, decoration: BoxDecoration(color: tc, borderRadius: BorderRadius.circular(2))),
+        Container(
+          width: 3,
+          height: 18,
+          decoration: BoxDecoration(
+            color: tc,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
         const SizedBox(width: 7),
         Text(
           'P${driver['position']}',
-          style: AppTextStyles.label(color: tc).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+          style: AppTextStyles.label(
+            color: tc,
+          ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
         ),
         const SizedBox(width: 6),
         Text(
           driver['id'] as String,
-          style: AppTextStyles.label(color: AppColors.textPrimary).copyWith(fontSize: 10),
+          style: AppTextStyles.label(
+            color: AppColors.textPrimary,
+          ).copyWith(fontSize: 10),
         ),
         const Spacer(),
         Text(
           snapshot.gapToLeader,
-          style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 9),
         ),
       ],
     );
@@ -194,7 +216,10 @@ class _DriverRowFull extends StatelessWidget {
         children: [
           const SizedBox(width: 10),
           // Position
-          Text('P${driver['position']}', style: AppTextStyles.bodyBold(color: tc).copyWith(fontSize: 15)),
+          Text(
+            'P${driver['position']}',
+            style: AppTextStyles.bodyBold(color: tc).copyWith(fontSize: 15),
+          ),
           const SizedBox(width: 10),
           // Name + team
           Expanded(
@@ -202,10 +227,17 @@ class _DriverRowFull extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(driver['id'] as String, style: AppTextStyles.bodyBold(color: AppColors.textPrimary).copyWith(fontSize: 11)),
+                Text(
+                  driver['id'] as String,
+                  style: AppTextStyles.bodyBold(
+                    color: AppColors.textPrimary,
+                  ).copyWith(fontSize: 11),
+                ),
                 Text(
                   driver['team'] as String,
-                  style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8),
+                  style: AppTextStyles.caption(
+                    color: AppColors.textMuted,
+                  ).copyWith(fontSize: 8),
                   overflow: TextOverflow.ellipsis,
                 ),
               ],
@@ -220,7 +252,9 @@ class _DriverRowFull extends StatelessWidget {
             child: Text(
               snapshot.gapToLeader,
               textAlign: TextAlign.right,
-              style: AppTextStyles.bodyBold(color: AppColors.textPrimary).copyWith(fontSize: 11),
+              style: AppTextStyles.bodyBold(
+                color: AppColors.textPrimary,
+              ).copyWith(fontSize: 11),
             ),
           ),
           const SizedBox(width: 10),

@@ -3,18 +3,16 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## auth_pages_test.dart - Widget tests for LoginPage and RegisterPage authentication flows.
+ ## auth_pages_test.dart - Widget tests for LoginPage and SignupPage authentication flows.
  ##
  */
 
 // ignore_for_file: depend_on_referenced_packages
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:overdrive/core/navigation/app_routes.dart';
-import 'package:overdrive/pages/auth/register_page.dart';
-import 'package:overdrive/pages/home/home_page.dart';
+import 'package:overdrive/pages/signup/signup_page.dart';
 
 import '../helpers/test_app.dart';
 
@@ -25,64 +23,73 @@ void main() {
     ) async {
       await pumpRoutedTestApp(tester, initialRoute: AppRoutes.login);
 
-      await tester.enterText(find.byType(CupertinoTextField).at(0), 'bad');
-      await tester.enterText(find.byType(CupertinoTextField).at(1), '');
-      await tester.tap(find.text('Sign in'));
+      await tester.enterText(find.byType(TextFormField).at(0), 'bad');
+      await tester.enterText(find.byType(TextFormField).at(1), '');
+      await tester.tap(find.text('Login'));
       await tester.pump();
 
       expect(find.text('Enter a valid email address.'), findsOneWidget);
-      expect(find.text('Enter your password.'), findsOneWidget);
+      expect(find.text('Password is required.'), findsOneWidget);
     });
 
-    testWidgets('navigates to home with the seeded demo credentials', (
+    testWidgets('rejects a password shorter than 8 characters', (
       WidgetTester tester,
     ) async {
       await pumpRoutedTestApp(tester, initialRoute: AppRoutes.login);
 
-      await tester.tap(find.text('Sign in'));
-      await tester.pump(const Duration(milliseconds: 600));
-      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextFormField).at(0), 'driver@od.app');
+      await tester.enterText(find.byType(TextFormField).at(1), 'short');
+      await tester.tap(find.text('Login'));
+      await tester.pump();
 
-      expect(find.byType(HomePage), findsOneWidget);
       expect(
-        find.text('Signed in successfully. Welcome to OverDrive.'),
+        find.text('Password must be at least 8 characters.'),
         findsOneWidget,
       );
     });
 
-    testWidgets('opens registration from the footer link', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('renders the sign up footer link', (WidgetTester tester) async {
       await pumpRoutedTestApp(tester, initialRoute: AppRoutes.login);
 
-      await tester.tap(find.text('Sign up'));
-      await tester.pumpAndSettle();
-
-      expect(find.byType(RegisterPage), findsOneWidget);
-      expect(find.text('Welcome, sign up.'), findsOneWidget);
+      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Need an account?'), findsOneWidget);
+      expect(find.text('Sign Up'), findsOneWidget);
     });
   });
 
-  group('RegisterPage', () {
+  group('SignupPage', () {
     testWidgets('validates all required fields before submitting', (
       WidgetTester tester,
     ) async {
-      await pumpTestApp(tester, const RegisterPage());
+      await pumpRoutedTestApp(tester, initialRoute: AppRoutes.register);
 
-      await tester.tap(find.text('Create account'));
+      await tester.tap(find.text('Sign Up'));
       await tester.pump();
 
-      expect(find.text('Enter your name or username.'), findsOneWidget);
-      expect(find.text('Enter your email address.'), findsOneWidget);
-      expect(find.text('Choose a password.'), findsOneWidget);
+      expect(find.text('Email is required.'), findsOneWidget);
+      expect(find.text('Username is required.'), findsOneWidget);
+      expect(find.text('Password is required.'), findsOneWidget);
       expect(find.text('Confirm your password.'), findsOneWidget);
     });
 
-    testWidgets('returns created credentials to the caller on success', (
+    testWidgets('flags a password confirmation mismatch', (
       WidgetTester tester,
     ) async {
-      Object? returnedResult;
+      await pumpRoutedTestApp(tester, initialRoute: AppRoutes.register);
 
+      await tester.enterText(find.byType(TextFormField).at(0), 'driver@od.app');
+      await tester.enterText(find.byType(TextFormField).at(1), 'DriverOne');
+      await tester.enterText(find.byType(TextFormField).at(2), '12345678');
+      await tester.enterText(find.byType(TextFormField).at(3), '87654321');
+      await tester.tap(find.text('Sign Up'));
+      await tester.pump();
+
+      expect(find.text('Passwords do not match.'), findsOneWidget);
+    });
+
+    testWidgets('the login link navigates back to the previous route', (
+      WidgetTester tester,
+    ) async {
       await pumpTestApp(
         tester,
         Builder(
@@ -90,14 +97,14 @@ void main() {
             return Scaffold(
               body: Center(
                 child: ElevatedButton(
-                  onPressed: () async {
-                    returnedResult = await Navigator.of(context).push<Object?>(
-                      MaterialPageRoute<Object?>(
-                        builder: (_) => const RegisterPage(),
+                  onPressed: () {
+                    Navigator.of(context).push<void>(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const SignupPage(),
                       ),
                     );
                   },
-                  child: const Text('Open register'),
+                  child: const Text('Open signup'),
                 ),
               ),
             );
@@ -105,25 +112,17 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Open register'));
+      await tester.tap(find.text('Open signup'));
       await tester.pumpAndSettle();
 
-      await tester.enterText(
-        find.byType(CupertinoTextField).at(0),
-        'Test Driver',
-      );
-      await tester.enterText(
-        find.byType(CupertinoTextField).at(1),
-        'driver_${DateTime.now().microsecondsSinceEpoch}@od.app',
-      );
-      await tester.enterText(find.byType(CupertinoTextField).at(2), '12345678');
-      await tester.enterText(find.byType(CupertinoTextField).at(3), '12345678');
-      await tester.tap(find.text('Create account'));
-      await tester.pump(const Duration(milliseconds: 700));
+      expect(find.byType(SignupPage), findsOneWidget);
+      expect(find.text('Create your account'), findsOneWidget);
+
+      await tester.tap(find.text('Login'));
       await tester.pumpAndSettle();
 
-      expect(returnedResult, isA<Map<String, String>>());
-      expect((returnedResult! as Map<String, String>)['password'], '12345678');
+      expect(find.byType(SignupPage), findsNothing);
+      expect(find.text('Open signup'), findsOneWidget);
     });
   });
 }

@@ -211,7 +211,9 @@ class _DeltaRow extends StatelessWidget {
                           Text(
                             isLeader ? 'Leader' : entry.gap,
                             style: AppTextStyles.bodyBold(
-                              color: isLeader ? barColor : AppColors.textSecondary,
+                              color: isLeader
+                                  ? barColor
+                                  : AppColors.textSecondary,
                             ).copyWith(fontSize: 13),
                           ),
                           const SizedBox(height: 2),

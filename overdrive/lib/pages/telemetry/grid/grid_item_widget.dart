@@ -264,8 +264,8 @@ class _GridItemWidgetState extends State<GridItemWidget> {
           duration: _isDropping
               ? const Duration(milliseconds: 280)
               : _isDragging
-                  ? Duration.zero
-                  : const Duration(milliseconds: 150),
+              ? Duration.zero
+              : const Duration(milliseconds: 150),
           curve: _isDropping ? Curves.easeOutBack : Curves.easeOut,
           left: liveLeft,
           top: liveTop,
@@ -298,9 +298,7 @@ class _GridItemWidgetState extends State<GridItemWidget> {
                     width: 18,
                     height: 18,
                     child: IgnorePointer(
-                      child: CustomPaint(
-                        painter: _ResizeGripPainter(),
-                      ),
+                      child: CustomPaint(painter: _ResizeGripPainter()),
                     ),
                   ),
                   // Invisible touch zone for resize gesture

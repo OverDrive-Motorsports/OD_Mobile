@@ -56,7 +56,10 @@ class _SpeedometerState extends State<Speedometer> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
@@ -89,19 +92,28 @@ class _SmallSpeed extends StatelessWidget {
               tween: Tween<double>(end: data.speed),
               duration: const Duration(milliseconds: 220),
               curve: Curves.easeOut,
-              builder: (_, v, _) => Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    v.toInt().toString(),
-                    style: AppTextStyles.display(color: AppColors.textPrimary)
-                        .copyWith(fontSize: 42, fontWeight: FontWeight.bold, letterSpacing: -2),
-                  ),
-                  Text(
-                    'km/h',
-                    style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 10),
-                  ),
-                ],
+              builder: (_, v, _) => FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      v.toInt().toString(),
+                      style: AppTextStyles.display(color: AppColors.textPrimary)
+                          .copyWith(
+                            fontSize: 42,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -2,
+                          ),
+                    ),
+                    Text(
+                      'km/h',
+                      style: AppTextStyles.caption(
+                        color: AppColors.textMuted,
+                      ).copyWith(fontSize: 10),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -146,13 +158,19 @@ class _LargeSpeed extends StatelessWidget {
                       v.toInt().toString(),
                       textAlign: TextAlign.right,
                       style: AppTextStyles.display(color: AppColors.textPrimary)
-                          .copyWith(fontSize: 58, fontWeight: FontWeight.bold, letterSpacing: -3),
+                          .copyWith(
+                            fontSize: 58,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -3,
+                          ),
                     ),
                   ),
                   const SizedBox(width: 6),
                   Text(
                     'km/h',
-                    style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 13),
+                    style: AppTextStyles.caption(
+                      color: AppColors.textMuted,
+                    ).copyWith(fontSize: 13),
                   ),
                 ],
               ),
@@ -173,12 +191,16 @@ class _LargeSpeed extends StatelessWidget {
           children: [
             Text(
               'TOP ${data.maxSpeedLap.toInt()}',
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9),
             ),
             const Spacer(),
             Text(
               'AVG ${data.avgSpeedLap.toInt()}',
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9),
             ),
           ],
         ),
@@ -200,7 +222,9 @@ class _DrsChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = active ? AppColors.green : AppColors.textMuted.withValues(alpha: 0.40);
+    final color = active
+        ? AppColors.green
+        : AppColors.textMuted.withValues(alpha: 0.40);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -232,7 +256,9 @@ class _GearChip extends StatelessWidget {
       children: [
         Text(
           'G',
-          style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 10),
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 10),
         ),
         const SizedBox(width: 2),
         TweenAnimationBuilder<double>(
@@ -240,7 +266,9 @@ class _GearChip extends StatelessWidget {
           duration: const Duration(milliseconds: 120),
           builder: (_, v, _) => Text(
             v.round().toString(),
-            style: AppTextStyles.bodyBold(color: AppColors.textPrimary).copyWith(fontSize: 14),
+            style: AppTextStyles.bodyBold(
+              color: AppColors.textPrimary,
+            ).copyWith(fontSize: 14),
           ),
         ),
       ],

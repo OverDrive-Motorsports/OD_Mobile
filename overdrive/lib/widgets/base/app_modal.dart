@@ -185,8 +185,7 @@ class _AppModalSheetState extends State<_AppModalSheet> {
 
     final shouldDismiss =
         _dragOffset > 110 ||
-        (details.primaryVelocity != null &&
-            details.primaryVelocity! > 800);
+        (details.primaryVelocity != null && details.primaryVelocity! > 800);
     if (shouldDismiss) {
       Navigator.of(context).maybePop();
       return;
@@ -202,31 +201,29 @@ class _AppModalSheetState extends State<_AppModalSheet> {
     return Padding(
       padding: EdgeInsets.only(bottom: viewInsets),
       child: Transform.translate(
-          offset: Offset(0, _dragOffset),
-          child: GestureDetector(
-            onVerticalDragUpdate:
-                widget.isDismissible ? _handleDragUpdate : null,
-            onVerticalDragEnd:
-                widget.isDismissible ? _handleDragEnd : null,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 680,
-                maxHeight: MediaQuery.sizeOf(context).height * 0.82,
-              ),
-              child: CupertinoTheme(
-                data: const CupertinoThemeData(brightness: Brightness.dark),
-                child: CupertinoLiquidGlass(
-                  theme: _kSheetTheme,
+        offset: Offset(0, _dragOffset),
+        child: GestureDetector(
+          onVerticalDragUpdate: widget.isDismissible ? _handleDragUpdate : null,
+          onVerticalDragEnd: widget.isDismissible ? _handleDragEnd : null,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 680,
+              maxHeight: MediaQuery.sizeOf(context).height * 0.82,
+            ),
+            child: CupertinoTheme(
+              data: const CupertinoThemeData(brightness: Brightness.dark),
+              child: CupertinoLiquidGlass(
+                theme: _kSheetTheme,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(_kTopRadius),
+                ),
+                child: ClipRRect(
                   borderRadius: const BorderRadius.vertical(
                     top: Radius.circular(_kTopRadius),
                   ),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(_kTopRadius),
-                    ),
-                    child: ColoredBox(
-                      color: _kFillColor,
-                      child: Padding(
+                  child: ColoredBox(
+                    color: _kFillColor,
+                    child: Padding(
                       padding: EdgeInsets.fromLTRB(20, 10, 20, 24 + safeBottom),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -238,8 +235,9 @@ class _AppModalSheetState extends State<_AppModalSheet> {
                                 width: 38,
                                 height: 4,
                                 decoration: BoxDecoration(
-                                  color: AppColors.white
-                                      .withValues(alpha: 0.28),
+                                  color: AppColors.white.withValues(
+                                    alpha: 0.28,
+                                  ),
                                   borderRadius: BorderRadius.circular(999),
                                 ),
                               ),
@@ -257,7 +255,10 @@ class _AppModalSheetState extends State<_AppModalSheet> {
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(top: 14, bottom: 4),
+                              padding: const EdgeInsets.only(
+                                top: 14,
+                                bottom: 4,
+                              ),
                               child: Container(
                                 height: 0.5,
                                 color: AppColors.white.withValues(alpha: 0.10),
@@ -269,13 +270,10 @@ class _AppModalSheetState extends State<_AppModalSheet> {
                           // ── Content ────────────────────────────────────
                           Flexible(
                             fit: FlexFit.loose,
-                            child: SingleChildScrollView(
-                              child: widget.child,
-                            ),
+                            child: SingleChildScrollView(child: widget.child),
                           ),
                         ],
                       ),
-                    ),
                     ),
                   ),
                 ),
@@ -283,6 +281,7 @@ class _AppModalSheetState extends State<_AppModalSheet> {
             ),
           ),
         ),
+      ),
     );
   }
 }

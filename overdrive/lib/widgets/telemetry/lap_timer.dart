@@ -29,7 +29,11 @@ class _LapTimerState extends State<LapTimer> {
   final Stopwatch _stopwatch = Stopwatch();
   Timer? _timer;
   Duration _elapsed = Duration.zero;
-  Duration? _bestLap = const Duration(minutes: 1, seconds: 42, milliseconds: 184);
+  Duration? _bestLap = const Duration(
+    minutes: 1,
+    seconds: 42,
+    milliseconds: 184,
+  );
 
   @override
   void initState() {
@@ -96,11 +100,20 @@ class _LapTimerState extends State<LapTimer> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
-                  ? _SmallTimer(elapsed: _elapsed, best: best, delta: delta, deltaColor: deltaColor, fmt: _fmt)
+                  ? _SmallTimer(
+                      elapsed: _elapsed,
+                      best: best,
+                      delta: delta,
+                      deltaColor: deltaColor,
+                      fmt: _fmt,
+                    )
                   : _LargeTimer(
                       elapsed: _elapsed,
                       best: best,
@@ -149,7 +162,9 @@ class _SmallTimer extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             fmt(elapsed),
-            style: AppTextStyles.display(color: AppColors.textPrimary).copyWith(fontWeight: FontWeight.bold),
+            style: AppTextStyles.display(
+              color: AppColors.textPrimary,
+            ).copyWith(fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 4),
@@ -157,12 +172,20 @@ class _SmallTimer extends StatelessWidget {
           children: [
             Text(
               best == null ? 'BEST --:--.---' : 'BEST ${fmt(best!)}',
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9),
             ),
             const Spacer(),
             Text(
-              best == null ? '' : (delta.isNegative ? fmt(delta).replaceFirst('-', '-') : '+${fmt(delta).substring(fmt(delta).indexOf(':') + 1)}'),
-              style: AppTextStyles.caption(color: deltaColor).copyWith(fontSize: 9, fontWeight: FontWeight.w700),
+              best == null
+                  ? ''
+                  : (delta.isNegative
+                        ? fmt(delta).replaceFirst('-', '-')
+                        : '+${fmt(delta).substring(fmt(delta).indexOf(':') + 1)}'),
+              style: AppTextStyles.caption(
+                color: deltaColor,
+              ).copyWith(fontSize: 9, fontWeight: FontWeight.w700),
             ),
           ],
         ),
@@ -208,8 +231,9 @@ class _LargeTimer extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: Text(
             fmt(elapsed),
-            style: AppTextStyles.display(color: AppColors.textPrimary)
-                .copyWith(fontSize: 30, fontWeight: FontWeight.bold),
+            style: AppTextStyles.display(
+              color: AppColors.textPrimary,
+            ).copyWith(fontSize: 30, fontWeight: FontWeight.bold),
           ),
         ),
         const SizedBox(height: 6),
@@ -218,10 +242,17 @@ class _LargeTimer extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('BEST', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                Text(
+                  'BEST',
+                  style: AppTextStyles.caption(
+                    color: AppColors.textMuted,
+                  ).copyWith(fontSize: 8),
+                ),
                 Text(
                   best == null ? '--:--.---' : fmt(best!),
-                  style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.caption(
+                    color: AppColors.textSecondary,
+                  ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
                 ),
               ],
             ),
@@ -230,10 +261,17 @@ class _LargeTimer extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Δ', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                  Text(
+                    'Δ',
+                    style: AppTextStyles.caption(
+                      color: AppColors.textMuted,
+                    ).copyWith(fontSize: 8),
+                  ),
                   Text(
                     fmtDelta(delta),
-                    style: AppTextStyles.bodyBold(color: deltaColor).copyWith(fontSize: 12),
+                    style: AppTextStyles.bodyBold(
+                      color: deltaColor,
+                    ).copyWith(fontSize: 12),
                   ),
                 ],
               ),
@@ -241,7 +279,10 @@ class _LargeTimer extends StatelessWidget {
         ),
         const Spacer(),
         TelemetryBar(
-          fraction: best == null ? 0 : (elapsed.inMilliseconds / best!.inMilliseconds).clamp(0, 1.5) / 1.5,
+          fraction: best == null
+              ? 0
+              : (elapsed.inMilliseconds / best!.inMilliseconds).clamp(0, 1.5) /
+                    1.5,
           color: deltaColor,
           trackColor: deltaColor.withValues(alpha: 0.10),
         ),

@@ -212,7 +212,9 @@ void main() {
   });
 
   group('Small primitives', () {
-    testWidgets('AppSwitch forwards value changes', (WidgetTester tester) async {
+    testWidgets('AppSwitch forwards value changes', (
+      WidgetTester tester,
+    ) async {
       var value = false;
 
       await pumpTestApp(
@@ -232,12 +234,16 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byType(CupertinoSwitch));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AppSwitch),
+          matching: find.byType(GestureDetector),
+        ),
+      );
       await tester.pump();
 
       expect(value, isTrue);
       expect(find.text('Live alerts'), findsOneWidget);
     });
-
   });
 }

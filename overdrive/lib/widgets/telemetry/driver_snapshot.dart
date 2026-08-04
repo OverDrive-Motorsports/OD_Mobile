@@ -56,7 +56,10 @@ class _DriverSnapshotState extends State<DriverSnapshot> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
@@ -73,7 +76,11 @@ class _DriverSnapshotState extends State<DriverSnapshot> {
 // ── Small ─────────────────────────────────────────────────────────────────────
 
 class _SmallDriver extends StatelessWidget {
-  const _SmallDriver({required this.data, required this.meta, required this.driverId});
+  const _SmallDriver({
+    required this.data,
+    required this.meta,
+    required this.driverId,
+  });
   final TelemetrySnapshot data;
   final Map<String, dynamic> meta;
   final String driverId;
@@ -90,13 +97,17 @@ class _SmallDriver extends StatelessWidget {
           children: [
             Text(
               'P${meta['position']}',
-              style: AppTextStyles.display(color: AppColors.gold).copyWith(fontSize: 28, fontWeight: FontWeight.bold),
+              style: AppTextStyles.display(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 28, fontWeight: FontWeight.bold),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
                 meta['name'] as String,
-                style: AppTextStyles.body(color: AppColors.textPrimary).copyWith(fontSize: 12),
+                style: AppTextStyles.body(
+                  color: AppColors.textPrimary,
+                ).copyWith(fontSize: 12),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -105,18 +116,30 @@ class _SmallDriver extends StatelessWidget {
         const SizedBox(height: 4),
         Row(
           children: [
-            Text(data.gapToLeader, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+            Text(
+              data.gapToLeader,
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9),
+            ),
             const Spacer(),
             TweenAnimationBuilder<double>(
               tween: Tween<double>(end: data.speed),
               duration: const Duration(milliseconds: 220),
               builder: (_, v, _) => Text(
                 '${v.toInt()} km/h',
-                style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 10),
+                style: AppTextStyles.caption(
+                  color: AppColors.textSecondary,
+                ).copyWith(fontSize: 10),
               ),
             ),
             const SizedBox(width: 6),
-            Text('G${data.gear}', style: AppTextStyles.bodyBold(color: AppColors.gold).copyWith(fontSize: 12)),
+            Text(
+              'G${data.gear}',
+              style: AppTextStyles.bodyBold(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 12),
+            ),
           ],
         ),
       ],
@@ -127,7 +150,11 @@ class _SmallDriver extends StatelessWidget {
 // ── Large ─────────────────────────────────────────────────────────────────────
 
 class _LargeDriver extends StatelessWidget {
-  const _LargeDriver({required this.data, required this.meta, required this.driverId});
+  const _LargeDriver({
+    required this.data,
+    required this.meta,
+    required this.driverId,
+  });
   final TelemetrySnapshot data;
   final Map<String, dynamic> meta;
   final String driverId;
@@ -149,10 +176,17 @@ class _LargeDriver extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.gold.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
-                border: Border.all(color: AppColors.gold.withValues(alpha: 0.50)),
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.50),
+                ),
               ),
               alignment: Alignment.center,
-              child: Text(driverId, style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 12, fontWeight: FontWeight.w700)),
+              child: Text(
+                driverId,
+                style: AppTextStyles.label(
+                  color: AppColors.gold,
+                ).copyWith(fontSize: 12, fontWeight: FontWeight.w700),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
@@ -161,20 +195,31 @@ class _LargeDriver extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Text('P${meta['position']}', style: AppTextStyles.bodyBold(color: AppColors.gold).copyWith(fontSize: 16)),
+                      Text(
+                        'P${meta['position']}',
+                        style: AppTextStyles.bodyBold(
+                          color: AppColors.gold,
+                        ).copyWith(fontSize: 16),
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           meta['name'] as String,
-                          style: AppTextStyles.body(color: AppColors.textPrimary).copyWith(fontSize: 12),
+                          style: AppTextStyles.body(
+                            color: AppColors.textPrimary,
+                          ).copyWith(fontSize: 12),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
-                  Text(meta['team'] as String,
-                      style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    meta['team'] as String,
+                    style: AppTextStyles.caption(
+                      color: AppColors.textMuted,
+                    ).copyWith(fontSize: 9),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
@@ -191,14 +236,31 @@ class _LargeDriver extends StatelessWidget {
               duration: const Duration(milliseconds: 220),
               builder: (_, v, _) => Text(
                 '${v.toInt()}',
-                style: AppTextStyles.display(color: AppColors.textPrimary).copyWith(fontSize: 34, fontWeight: FontWeight.bold),
+                style: AppTextStyles.display(
+                  color: AppColors.textPrimary,
+                ).copyWith(fontSize: 34, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(width: 4),
-            Text('km/h', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 11)),
+            Text(
+              'km/h',
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 11),
+            ),
             const Spacer(),
-            Text('G', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 11)),
-            Text('${data.gear}', style: AppTextStyles.bodyBold(color: AppColors.gold).copyWith(fontSize: 18)),
+            Text(
+              'G',
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 11),
+            ),
+            Text(
+              '${data.gear}',
+              style: AppTextStyles.bodyBold(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 18),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -207,7 +269,12 @@ class _LargeDriver extends StatelessWidget {
         const SizedBox(height: 5),
         _InputRow(label: 'BRK', value: data.brake, color: AppColors.red),
         const SizedBox(height: 6),
-        Text(data.gapToLeader, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        Text(
+          data.gapToLeader,
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 9),
+        ),
       ],
     );
   }
@@ -217,7 +284,11 @@ class _LargeDriver extends StatelessWidget {
 
 // Renders a labelled progress bar (throttle or brake) with a live percentage readout.
 class _InputRow extends StatelessWidget {
-  const _InputRow({required this.label, required this.value, required this.color});
+  const _InputRow({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final String label;
   final double value;
   final Color color;
@@ -228,9 +299,20 @@ class _InputRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 26,
-          child: Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+          child: Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 9),
+          ),
         ),
-        Expanded(child: TelemetryBar(fraction: value, color: color, trackColor: color.withValues(alpha: 0.10))),
+        Expanded(
+          child: TelemetryBar(
+            fraction: value,
+            color: color,
+            trackColor: color.withValues(alpha: 0.10),
+          ),
+        ),
         const SizedBox(width: 6),
         SizedBox(
           width: 30,
@@ -240,7 +322,9 @@ class _InputRow extends StatelessWidget {
             builder: (_, v, _) => Text(
               '${(v * 100).toInt()}%',
               textAlign: TextAlign.right,
-              style: AppTextStyles.caption(color: color).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+              style: AppTextStyles.caption(
+                color: color,
+              ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
             ),
           ),
         ),

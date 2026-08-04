@@ -20,11 +20,11 @@ import 'telemetry_widget_style.dart';
 
 // Maps engine mode name to an accent colour (Party = red, Standard = gold, Conservation = green).
 Color _modeColor(String mode) => switch (mode) {
-      'Party' => AppColors.red,
-      'Standard' => AppColors.gold,
-      'Conservation' => AppColors.green,
-      _ => AppColors.textMuted,
-    };
+  'Party' => AppColors.red,
+  'Standard' => AppColors.gold,
+  'Conservation' => AppColors.green,
+  _ => AppColors.textMuted,
+};
 
 // Normalises a temperature within [min, max] and returns red above 82%, orange above 60%, neutral otherwise.
 // Each sensor has a different operating range, so callers must supply the appropriate min/max bounds.
@@ -63,21 +63,30 @@ class _EngineTempsState extends State<EngineTemps> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Engine',
-            currentDriverId: _driverId,
-            onDriverSelected: (id) => setState(() => _driverId = id),
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Engine',
+          currentDriverId: _driverId,
+          onDriverSelected: (id) => setState(() => _driverId = id),
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.all(12),
-            child: mode == TelemetryMode.small
-                ? _SmallEngine(data: data, driverId: _driverId, mc: mc)
-                : _LargeEngine(data: data, driverId: _driverId, mc: mc),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallEngine(data: data, driverId: _driverId, mc: mc)
+                  : _LargeEngine(data: data, driverId: _driverId, mc: mc),
+            );
+          },
+        ),
       ),
     );
   }
@@ -86,7 +95,11 @@ class _EngineTempsState extends State<EngineTemps> {
 // ── Small ─────────────────────────────────────────────────────────────────────
 
 class _SmallEngine extends StatelessWidget {
-  const _SmallEngine({required this.data, required this.driverId, required this.mc});
+  const _SmallEngine({
+    required this.data,
+    required this.driverId,
+    required this.mc,
+  });
   final TelemetrySnapshot data;
   final String driverId;
   final Color mc;
@@ -100,23 +113,46 @@ class _SmallEngine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header: ENGINE · [dot] MODE  |  DRIVER
-        Row(children: [
-          Text('ENGINE',
-              style: AppTextStyles.label(color: AppColors.textMuted)
-                  .copyWith(fontSize: 10, letterSpacing: 0.6)),
-          const SizedBox(width: 5),
-          AnimatedContainer(
+        Row(
+          children: [
+            Text(
+              'ENGINE',
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 10, letterSpacing: 0.6),
+            ),
+            const SizedBox(width: 5),
+            AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: 5, height: 5,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: mc)),
-          const Spacer(),
-          Text(driverId,
-              style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 10)),
-        ]),
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: mc),
+            ),
+            const Spacer(),
+            Text(
+              driverId,
+              style: AppTextStyles.label(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 10),
+            ),
+          ],
+        ),
         const Spacer(),
-        _EngineRow(label: 'H₂O', value: data.waterTemp, min: 82, max: 108, color: wc),
+        _EngineRow(
+          label: 'H₂O',
+          value: data.waterTemp,
+          min: 82,
+          max: 108,
+          color: wc,
+        ),
         const SizedBox(height: 6),
-        _EngineRow(label: 'OIL', value: data.oilTemp, min: 98, max: 132, color: oc),
+        _EngineRow(
+          label: 'OIL',
+          value: data.oilTemp,
+          min: 98,
+          max: 132,
+          color: oc,
+        ),
       ],
     );
   }
@@ -125,7 +161,11 @@ class _SmallEngine extends StatelessWidget {
 // ── Large ─────────────────────────────────────────────────────────────────────
 
 class _LargeEngine extends StatelessWidget {
-  const _LargeEngine({required this.data, required this.driverId, required this.mc});
+  const _LargeEngine({
+    required this.data,
+    required this.driverId,
+    required this.mc,
+  });
   final TelemetrySnapshot data;
   final String driverId;
   final Color mc;
@@ -142,41 +182,87 @@ class _LargeEngine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header with mode inline
-        Row(children: [
-          Text('ENGINE',
-              style: AppTextStyles.label(color: AppColors.textMuted)
-                  .copyWith(fontSize: 10, letterSpacing: 0.6)),
-          const SizedBox(width: 5),
-          AnimatedContainer(
+        Row(
+          children: [
+            Text(
+              'ENGINE',
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 10, letterSpacing: 0.6),
+            ),
+            const SizedBox(width: 5),
+            AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: 5, height: 5,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: mc)),
-          const SizedBox(width: 4),
-          AnimatedDefaultTextStyle(
-            duration: const Duration(milliseconds: 300),
-            style: AppTextStyles.label(color: mc).copyWith(fontSize: 9),
-            child: Text(data.engineMode.toUpperCase()),
-          ),
-          const Spacer(),
-          Text(driverId,
-              style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 10)),
-        ]),
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(shape: BoxShape.circle, color: mc),
+            ),
+            const SizedBox(width: 4),
+            AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 300),
+              style: AppTextStyles.label(color: mc).copyWith(fontSize: 9),
+              child: Text(data.engineMode.toUpperCase()),
+            ),
+            const Spacer(),
+            Text(
+              driverId,
+              style: AppTextStyles.label(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 10),
+            ),
+          ],
+        ),
         const SizedBox(height: 10),
         // Cooling circuit
         _SectionLabel('REFROIDISSEMENT'),
         const SizedBox(height: 5),
-        _EngineRow(label: 'H₂O', value: data.waterTemp, min: 82, max: 108, color: wc, barHeight: 4),
+        _EngineRow(
+          label: 'H₂O',
+          value: data.waterTemp,
+          min: 82,
+          max: 108,
+          color: wc,
+          barHeight: 4,
+        ),
         const SizedBox(height: 5),
-        _EngineRow(label: 'OIL', value: data.oilTemp, min: 98, max: 132, color: oc, barHeight: 4),
+        _EngineRow(
+          label: 'OIL',
+          value: data.oilTemp,
+          min: 98,
+          max: 132,
+          color: oc,
+          barHeight: 4,
+        ),
         const SizedBox(height: 5),
-        _EngineRow(label: 'HYD', value: data.hydraulicTemp, min: 38, max: 62, color: hc, barHeight: 4),
+        _EngineRow(
+          label: 'HYD',
+          value: data.hydraulicTemp,
+          min: 38,
+          max: 62,
+          color: hc,
+          barHeight: 4,
+        ),
         const SizedBox(height: 8),
         // ERS / electrical
         _SectionLabel('ERS'),
         const SizedBox(height: 5),
-        _EngineRow(label: 'MGU-K', value: data.mgukTemp, min: 55, max: 115, color: kc, barHeight: 4),
+        _EngineRow(
+          label: 'MGU-K',
+          value: data.mgukTemp,
+          min: 55,
+          max: 115,
+          color: kc,
+          barHeight: 4,
+        ),
         const SizedBox(height: 5),
-        _EngineRow(label: 'ES', value: data.esTemp, min: 20, max: 55, color: ec, barHeight: 4),
+        _EngineRow(
+          label: 'ES',
+          value: data.esTemp,
+          min: 20,
+          max: 55,
+          color: ec,
+          barHeight: 4,
+        ),
         const SizedBox(height: 8),
         // Turbo
         _SectionLabel('TURBO'),
@@ -196,9 +282,12 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text,
-        style: AppTextStyles.caption(color: AppColors.textMuted)
-            .copyWith(fontSize: 8, letterSpacing: 0.8));
+    return Text(
+      text,
+      style: AppTextStyles.caption(
+        color: AppColors.textMuted,
+      ).copyWith(fontSize: 8, letterSpacing: 0.8),
+    );
   }
 }
 
@@ -226,20 +315,33 @@ class _EngineRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 34,
-          child: Text(label,
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+          child: Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 9),
+          ),
         ),
-        Expanded(child: TelemetryBar(fraction: fraction, color: color, height: barHeight)),
+        Expanded(
+          child: TelemetryBar(
+            fraction: fraction,
+            color: color,
+            height: barHeight,
+          ),
+        ),
         const SizedBox(width: 6),
         SizedBox(
           width: 30,
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(end: value),
             duration: const Duration(milliseconds: 300),
-            builder: (_, v, _) => Text('${v.toInt()}°',
-                textAlign: TextAlign.right,
-                style: AppTextStyles.caption(color: color)
-                    .copyWith(fontSize: 10, fontWeight: FontWeight.w600)),
+            builder: (_, v, _) => Text(
+              '${v.toInt()}°',
+              textAlign: TextAlign.right,
+              style: AppTextStyles.caption(
+                color: color,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
+            ),
           ),
         ),
       ],
@@ -257,27 +359,36 @@ class _BoostRow extends StatelessWidget {
     final color = boost > 0.90
         ? AppColors.red
         : boost > 0.75
-            ? const Color(0xFFFF8C00)
-            : AppColors.white.withValues(alpha: 0.60);
+        ? const Color(0xFFFF8C00)
+        : AppColors.white.withValues(alpha: 0.60);
 
     return Row(
       children: [
         SizedBox(
           width: 34,
-          child: Text('BOOST',
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+          child: Text(
+            'BOOST',
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 9),
+          ),
         ),
-        Expanded(child: TelemetryBar(fraction: boost, color: color, height: 3.5)),
+        Expanded(
+          child: TelemetryBar(fraction: boost, color: color, height: 3.5),
+        ),
         const SizedBox(width: 6),
         SizedBox(
           width: 30,
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(end: boost),
             duration: const Duration(milliseconds: 300),
-            builder: (_, v, _) => Text('${(v * 100).toInt()}%',
-                textAlign: TextAlign.right,
-                style: AppTextStyles.caption(color: color)
-                    .copyWith(fontSize: 10, fontWeight: FontWeight.w600)),
+            builder: (_, v, _) => Text(
+              '${(v * 100).toInt()}%',
+              textAlign: TextAlign.right,
+              style: AppTextStyles.caption(
+                color: color,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
+            ),
           ),
         ),
       ],
