@@ -54,6 +54,10 @@ jobs:
         working-directory: overdrive
         run: flutter pub get
 
+      - name: Prepare env file
+        working-directory: overdrive
+        run: cp .env.example .env
+
       - name: Run tests
         working-directory: overdrive
         run: flutter test lib/test
