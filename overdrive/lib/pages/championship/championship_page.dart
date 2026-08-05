@@ -161,9 +161,7 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
           fullWidth: true,
           onPressed: () {
             Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => ReplayPage(title: data.replays.label),
-              ),
+              MaterialPageRoute<void>(builder: (_) => const ReplayPage()),
             );
           },
         ),
