@@ -3,12 +3,11 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## api_client.dart - Shared Dio client with auth token injection and refresh support(to do).
+ ## api_client.dart - Shared Dio client with auth token injection and refresh support
  ##
  */
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'auth/auth_service.dart';

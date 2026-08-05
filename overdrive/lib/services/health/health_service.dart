@@ -8,8 +8,6 @@
  */
 
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../api_client.dart';
 
