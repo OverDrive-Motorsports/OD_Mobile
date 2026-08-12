@@ -118,7 +118,7 @@ void main() {
       expect(find.text('DIRECT'), findsOneWidget);
       expect(find.text('TV Live'), findsOneWidget);
       expect(find.text('REPLAYS'), findsOneWidget);
-      expect(find.text('Toutes les courses de la saison'), findsOneWidget);
+      expect(find.text('Bibliotheque de replays'), findsOneWidget);
     });
   });
 }
