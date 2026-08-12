@@ -9,7 +9,6 @@
 
 import 'package:cupertino_liquid_glass/cupertino_liquid_glass.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 import '../../core/theme/app_theme.dart';
 
@@ -82,13 +81,15 @@ class _AppButtonState extends State<AppButton>
       duration: const Duration(milliseconds: 90),
       reverseDuration: const Duration(milliseconds: 220),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.94).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.94,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
     // Brightness goes from 0 (normal) → -0.06 (slightly dimmed) on press.
-    _brightness = Tween<double>(begin: 0.0, end: -0.06).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _brightness = Tween<double>(
+      begin: 0.0,
+      end: -0.06,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -124,7 +125,9 @@ class _AppButtonState extends State<AppButton>
               return Transform.scale(
                 scale: _scale.value,
                 child: ColorFiltered(
-                  colorFilter: ColorFilter.matrix(_brightnessMatrix(_brightness.value)),
+                  colorFilter: ColorFilter.matrix(
+                    _brightnessMatrix(_brightness.value),
+                  ),
                   child: child,
                 ),
               );
@@ -135,7 +138,9 @@ class _AppButtonState extends State<AppButton>
                 duration: const Duration(milliseconds: 90),
                 child: CupertinoLiquidGlass(
                   key: ValueKey(_ctrl.value > 0.5),
-                  theme: _ctrl.value > 0.5 ? _kButtonThemePressed : _kButtonTheme,
+                  theme: _ctrl.value > 0.5
+                      ? _kButtonThemePressed
+                      : _kButtonTheme,
                   borderRadius: BorderRadius.circular(999),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(999),
@@ -195,9 +200,9 @@ class _AppButtonState extends State<AppButton>
           widget.label!,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: AppTextStyles.bodyBold(color: AppColors.white).copyWith(
-            fontSize: 14,
-          ),
+          style: AppTextStyles.bodyBold(
+            color: AppColors.white,
+          ).copyWith(fontSize: 14),
         ),
       ],
     );
@@ -209,10 +214,5 @@ class _AppButtonState extends State<AppButton>
 /// Returns a 5×4 color matrix that shifts brightness by [delta] (−1…+1).
 List<double> _brightnessMatrix(double delta) {
   final v = 1.0 + delta;
-  return [
-    v, 0, 0, 0, 0,
-    0, v, 0, 0, 0,
-    0, 0, v, 0, 0,
-    0, 0, 0, 1, 0,
-  ];
+  return [v, 0, 0, 0, 0, 0, v, 0, 0, 0, 0, 0, v, 0, 0, 0, 0, 0, 1, 0];
 }

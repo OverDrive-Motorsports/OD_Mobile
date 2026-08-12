@@ -81,37 +81,48 @@ class _PedalTraceState extends State<PedalTrace> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Pedal Trace',
-            currentDriverId: _driverId,
-            onDriverSelected: _changeDriver,
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Pedal Trace',
+          currentDriverId: _driverId,
+          onDriverSelected: _changeDriver,
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _TraceHeader(driverId: _driverId, last: last),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: CustomPaint(
-                    painter: _TracePainter(buffer: List<_Sample>.from(_buffer)),
-                    child: const SizedBox.expand(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _TraceHeader(driverId: _driverId, last: last),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: CustomPaint(
+                      painter: _TracePainter(
+                        buffer: List<_Sample>.from(_buffer),
+                      ),
+                      child: const SizedBox.expand(),
+                    ),
                   ),
-                ),
-                if (mode == TelemetryMode.large) ...[
-                  const SizedBox(height: 6),
-                  _NumericRow(last: last),
+                  if (mode == TelemetryMode.large) ...[
+                    const SizedBox(height: 6),
+                    _NumericRow(last: last),
+                  ],
+                  const SizedBox(height: 2),
+                  _TimeAxis(),
                 ],
-                const SizedBox(height: 2),
-                _TimeAxis(),
-              ],
-            ),
-          );
-        }),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -128,16 +139,23 @@ class _TraceHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('PÉDALE',
-            style: AppTextStyles.label(color: AppColors.textMuted)
-                .copyWith(fontSize: 10, letterSpacing: 0.6)),
+        Text(
+          'PÉDALE',
+          style: AppTextStyles.label(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 10, letterSpacing: 0.6),
+        ),
         const SizedBox(width: 10),
-        _LegendDot(color: AppColors.green, label: 'ACC'),
+        const _LegendDot(color: AppColors.green, label: 'ACC'),
         const SizedBox(width: 8),
-        _LegendDot(color: AppColors.red, label: 'FR'),
+        const _LegendDot(color: AppColors.red, label: 'FR'),
         const Spacer(),
-        Text(driverId,
-            style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 10)),
+        Text(
+          driverId,
+          style: AppTextStyles.label(
+            color: AppColors.gold,
+          ).copyWith(fontSize: 10),
+        ),
       ],
     );
   }
@@ -153,9 +171,18 @@ class _LegendDot extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        Container(
+          width: 6,
+          height: 6,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+        ),
         const SizedBox(width: 3),
-        Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+        Text(
+          label,
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 8),
+        ),
       ],
     );
   }
@@ -176,14 +203,24 @@ class _NumericRow extends StatelessWidget {
       children: [
         _NumericVal(label: 'ACCÉL', value: thr, color: AppColors.green),
         const Spacer(),
-        _NumericVal(label: 'FREIN', value: brk, color: AppColors.red, alignRight: true),
+        _NumericVal(
+          label: 'FREIN',
+          value: brk,
+          color: AppColors.red,
+          alignRight: true,
+        ),
       ],
     );
   }
 }
 
 class _NumericVal extends StatelessWidget {
-  const _NumericVal({required this.label, required this.value, required this.color, this.alignRight = false});
+  const _NumericVal({
+    required this.label,
+    required this.value,
+    required this.color,
+    this.alignRight = false,
+  });
   final String label;
   final double value;
   final Color color;
@@ -195,14 +232,26 @@ class _NumericVal extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!alignRight) ...[
-          Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+          Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8),
+          ),
           const SizedBox(width: 5),
         ],
-        Text('${(value * 100).toInt()}%',
-            style: AppTextStyles.bodyBold(color: color).copyWith(fontSize: 12)),
+        Text(
+          '${(value * 100).toInt()}%',
+          style: AppTextStyles.bodyBold(color: color).copyWith(fontSize: 12),
+        ),
         if (alignRight) ...[
           const SizedBox(width: 5),
-          Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+          Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8),
+          ),
         ],
       ],
     );
@@ -216,12 +265,19 @@ class _TimeAxis extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('−16s',
-            style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 7)),
+        Text(
+          '−16s',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7),
+        ),
         const Spacer(),
-        Text('NOW',
-            style: AppTextStyles.caption(color: AppColors.textMuted)
-                .copyWith(fontSize: 7, letterSpacing: 0.5)),
+        Text(
+          'NOW',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7, letterSpacing: 0.5),
+        ),
       ],
     );
   }
@@ -275,8 +331,14 @@ class _TracePainter extends CustomPainter {
     brkPath.close();
 
     // Draw fills
-    canvas.drawPath(thrPath, Paint()..color = AppColors.green.withValues(alpha: 0.18));
-    canvas.drawPath(brkPath, Paint()..color = AppColors.red.withValues(alpha: 0.18));
+    canvas.drawPath(
+      thrPath,
+      Paint()..color = AppColors.green.withValues(alpha: 0.18),
+    );
+    canvas.drawPath(
+      brkPath,
+      Paint()..color = AppColors.red.withValues(alpha: 0.18),
+    );
 
     // Build line paths (no fill)
     final thrLine = Path();

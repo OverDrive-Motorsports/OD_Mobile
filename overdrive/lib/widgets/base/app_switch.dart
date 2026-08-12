@@ -59,10 +59,7 @@ class AppSwitch extends StatelessWidget {
     final toggle = _SwitchTrack(value: value, onChanged: onChanged);
 
     if (label == null) {
-      return SizedBox(
-        height: 44,
-        child: Align(child: toggle),
-      );
+      return SizedBox(height: 44, child: Align(child: toggle));
     }
 
     return SizedBox(
@@ -249,7 +246,5 @@ class _ThumbPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant _ThumbPainter old) =>
-      old.position != position ||
-      old.velocity != velocity ||
-      old.isOn != isOn;
+      old.position != position || old.velocity != velocity || old.isOn != isOn;
 }

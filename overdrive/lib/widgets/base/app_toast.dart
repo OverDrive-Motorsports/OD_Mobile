@@ -120,9 +120,7 @@ class _AppToastEntryState extends State<_AppToastEntry>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, -0.28),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-    );
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward();
     _dismissTimer = Timer(widget.duration, _dismiss);

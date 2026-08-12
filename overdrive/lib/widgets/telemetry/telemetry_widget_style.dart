@@ -23,7 +23,11 @@ BoxDecoration telemetryDecoration({Color? accentColor}) {
     borderRadius: BorderRadius.circular(10),
     border: Border.all(color: color.withValues(alpha: 0.35), width: 1.5),
     boxShadow: [
-      BoxShadow(color: color.withValues(alpha: 0.12), blurRadius: 14, spreadRadius: 2),
+      BoxShadow(
+        color: color.withValues(alpha: 0.12),
+        blurRadius: 14,
+        spreadRadius: 2,
+      ),
     ],
   );
 }
@@ -88,15 +92,24 @@ class TelemetryHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Text(label,
-          style: AppTextStyles.label(color: AppColors.textMuted)
-              .copyWith(fontSize: 10, letterSpacing: 0.6)),
-      const Spacer(),
-      if (driverId != null)
-        Text(driverId!,
-            style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 10)),
-    ]);
+    return Row(
+      children: [
+        Text(
+          label,
+          style: AppTextStyles.label(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 10, letterSpacing: 0.6),
+        ),
+        const Spacer(),
+        if (driverId != null)
+          Text(
+            driverId!,
+            style: AppTextStyles.label(
+              color: AppColors.gold,
+            ).copyWith(fontSize: 10),
+          ),
+      ],
+    );
   }
 }
 
@@ -127,17 +140,19 @@ class TelemetryBar extends StatelessWidget {
         borderRadius: BorderRadius.circular(r),
         child: SizedBox(
           height: height,
-          child: Stack(children: [
-            Container(color: trackColor ?? AppColors.surface),
-            FractionallySizedBox(
-              widthFactor: f,
-              alignment: Alignment.centerLeft,
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                color: color,
+          child: Stack(
+            children: [
+              Container(color: trackColor ?? AppColors.surface),
+              FractionallySizedBox(
+                widthFactor: f,
+                alignment: Alignment.centerLeft,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  color: color,
+                ),
               ),
-            ),
-          ]),
+            ],
+          ),
         ),
       ),
     );

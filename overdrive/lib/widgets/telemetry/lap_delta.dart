@@ -58,19 +58,37 @@ class _LapDeltaState extends State<LapDelta> {
     final data = context.watch<TelemetrySimulator>().getSnapshot(_driverId);
     final delta = data.currentLapTime - data.bestLapTime;
     final deltaColor = delta < 0 ? AppColors.green : AppColors.red;
-    final lapProgress = (data.currentLapTime / data.bestLapTime).clamp(0.0, 1.0);
+    final lapProgress = (data.currentLapTime / data.bestLapTime).clamp(
+      0.0,
+      1.0,
+    );
 
     return GestureDetector(
       onTap: () => _showMenu(context),
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
-                  ? _SmallLap(data: data, driverId: _driverId, delta: delta, deltaColor: deltaColor, lapProgress: lapProgress)
-                  : _LargeLap(data: data, driverId: _driverId, delta: delta, deltaColor: deltaColor, lapProgress: lapProgress),
+                  ? _SmallLap(
+                      data: data,
+                      driverId: _driverId,
+                      delta: delta,
+                      deltaColor: deltaColor,
+                      lapProgress: lapProgress,
+                    )
+                  : _LargeLap(
+                      data: data,
+                      driverId: _driverId,
+                      delta: delta,
+                      deltaColor: deltaColor,
+                      lapProgress: lapProgress,
+                    ),
             );
           },
         ),
@@ -82,7 +100,13 @@ class _LapDeltaState extends State<LapDelta> {
 // ── Small ─────────────────────────────────────────────────────────────────────
 
 class _SmallLap extends StatelessWidget {
-  const _SmallLap({required this.data, required this.driverId, required this.delta, required this.deltaColor, required this.lapProgress});
+  const _SmallLap({
+    required this.data,
+    required this.driverId,
+    required this.delta,
+    required this.deltaColor,
+    required this.lapProgress,
+  });
   final TelemetrySnapshot data;
   final String driverId;
   final double delta;
@@ -103,7 +127,11 @@ class _SmallLap extends StatelessWidget {
               builder: (_, t, _) => Text(
                 _fmtTime(t),
                 style: AppTextStyles.display(color: AppColors.textPrimary)
-                    .copyWith(fontSize: 18, fontWeight: FontWeight.bold, letterSpacing: -0.5),
+                    .copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.5,
+                    ),
               ),
             ),
           ),
@@ -112,7 +140,9 @@ class _SmallLap extends StatelessWidget {
           children: [
             Text(
               _fmtTime(data.bestLapTime),
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9),
             ),
             const Spacer(),
             TweenAnimationBuilder<double>(
@@ -122,7 +152,9 @@ class _SmallLap extends StatelessWidget {
                 final s = d >= 0 ? '+' : '';
                 return Text(
                   '$s${d.toStringAsFixed(3)}s',
-                  style: AppTextStyles.caption(color: deltaColor).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+                  style: AppTextStyles.caption(
+                    color: deltaColor,
+                  ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
                 );
               },
             ),
@@ -138,7 +170,13 @@ class _SmallLap extends StatelessWidget {
 // ── Large ─────────────────────────────────────────────────────────────────────
 
 class _LargeLap extends StatelessWidget {
-  const _LargeLap({required this.data, required this.driverId, required this.delta, required this.deltaColor, required this.lapProgress});
+  const _LargeLap({
+    required this.data,
+    required this.driverId,
+    required this.delta,
+    required this.deltaColor,
+    required this.lapProgress,
+  });
   final TelemetrySnapshot data;
   final String driverId;
   final double delta;
@@ -163,7 +201,11 @@ class _LargeLap extends StatelessWidget {
                 builder: (_, t, _) => Text(
                   _fmtTime(t),
                   style: AppTextStyles.display(color: AppColors.textPrimary)
-                      .copyWith(fontSize: 26, fontWeight: FontWeight.bold, letterSpacing: -1),
+                      .copyWith(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: -1,
+                      ),
                 ),
               ),
               const SizedBox(height: 10),
@@ -173,10 +215,17 @@ class _LargeLap extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('BEST', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                      Text(
+                        'BEST',
+                        style: AppTextStyles.caption(
+                          color: AppColors.textMuted,
+                        ).copyWith(fontSize: 8),
+                      ),
                       Text(
                         _fmtTime(data.bestLapTime),
-                        style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
+                        style: AppTextStyles.caption(
+                          color: AppColors.textSecondary,
+                        ).copyWith(fontSize: 11, fontWeight: FontWeight.w600),
                       ),
                     ],
                   ),
@@ -184,7 +233,12 @@ class _LargeLap extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('DELTA', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                      Text(
+                        'DELTA',
+                        style: AppTextStyles.caption(
+                          color: AppColors.textMuted,
+                        ).copyWith(fontSize: 8),
+                      ),
                       TweenAnimationBuilder<double>(
                         tween: Tween<double>(end: delta),
                         duration: const Duration(milliseconds: 250),
@@ -192,7 +246,11 @@ class _LargeLap extends StatelessWidget {
                           final s = d >= 0 ? '+' : '';
                           return Text(
                             '$s${d.toStringAsFixed(3)}s',
-                            style: AppTextStyles.caption(color: deltaColor).copyWith(fontSize: 11, fontWeight: FontWeight.w700),
+                            style: AppTextStyles.caption(color: deltaColor)
+                                .copyWith(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w700,
+                                ),
                           );
                         },
                       ),
@@ -201,7 +259,9 @@ class _LargeLap extends StatelessWidget {
                   const Spacer(),
                   Text(
                     'L${data.lapNumber}/${TelemetrySnapshot.totalLaps}',
-                    style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9),
+                    style: AppTextStyles.caption(
+                      color: AppColors.textMuted,
+                    ).copyWith(fontSize: 9),
                   ),
                 ],
               ),

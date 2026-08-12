@@ -50,34 +50,46 @@ class _LapHistoryState extends State<LapHistory> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Lap History',
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Lap History',
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          final histories = {
-            for (final id in ['VER', 'LEC', 'NOR']) id: sim.getLapHistory(id),
-          };
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            final histories = {
+              for (final id in ['VER', 'LEC', 'NOR']) id: sim.getLapHistory(id),
+            };
 
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Header(histories: histories),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: mode == TelemetryMode.small
-                      ? _StaticChart(histories: histories, lastN: 10)
-                      : _ScrollableChart(histories: histories, scroll: _scroll),
-                ),
-                const SizedBox(height: 4),
-                _AxisLabel(),
-              ],
-            ),
-          );
-        }),
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Header(histories: histories),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: mode == TelemetryMode.small
+                        ? _StaticChart(histories: histories, lastN: 10)
+                        : _ScrollableChart(
+                            histories: histories,
+                            scroll: _scroll,
+                          ),
+                  ),
+                  const SizedBox(height: 4),
+                  _AxisLabel(),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -93,17 +105,23 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('HIST. TOURS',
-            style: AppTextStyles.label(color: AppColors.textMuted)
-                .copyWith(fontSize: 10, letterSpacing: 0.6)),
+        Text(
+          'HIST. TOURS',
+          style: AppTextStyles.label(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 10, letterSpacing: 0.6),
+        ),
         const Spacer(),
         for (final entry in _kDriverColors.entries) ...[
           const SizedBox(width: 8),
           Container(width: 8, height: 2, color: entry.value),
           const SizedBox(width: 3),
-          Text(entry.key,
-              style: AppTextStyles.caption(color: AppColors.textSecondary)
-                  .copyWith(fontSize: 8, fontWeight: FontWeight.w600)),
+          Text(
+            entry.key,
+            style: AppTextStyles.caption(
+              color: AppColors.textSecondary,
+            ).copyWith(fontSize: 8, fontWeight: FontWeight.w600),
+          ),
         ],
       ],
     );
@@ -117,15 +135,26 @@ class _AxisLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('L1',
-            style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 7)),
+        Text(
+          'L1',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7),
+        ),
         const Spacer(),
-        Text('← DÉFILER →',
-            style: AppTextStyles.caption(color: AppColors.textMuted)
-                .copyWith(fontSize: 7, letterSpacing: 0.5)),
+        Text(
+          '← DÉFILER →',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7, letterSpacing: 0.5),
+        ),
         const Spacer(),
-        Text('L57',
-            style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 7)),
+        Text(
+          'L57',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7),
+        ),
       ],
     );
   }
@@ -142,7 +171,9 @@ class _StaticChart extends StatelessWidget {
   Widget build(BuildContext context) {
     final trimmed = {
       for (final e in histories.entries)
-        e.key: e.value.length > lastN ? e.value.sublist(e.value.length - lastN) : e.value,
+        e.key: e.value.length > lastN
+            ? e.value.sublist(e.value.length - lastN)
+            : e.value,
     };
     return CustomPaint(
       painter: _ChartPainter(histories: trimmed, showAllLaps: false),
@@ -186,7 +217,10 @@ class _ScrollableChartState extends State<_ScrollableChart> {
       child: SizedBox(
         width: chartWidth,
         child: CustomPaint(
-          painter: _ChartPainter(histories: widget.histories, showAllLaps: true),
+          painter: _ChartPainter(
+            histories: widget.histories,
+            showAllLaps: true,
+          ),
           child: const SizedBox.expand(),
         ),
       ),
@@ -208,8 +242,10 @@ class _ChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final maxLap = showAllLaps
         ? TelemetrySnapshot.totalLaps
-        : histories.values
-            .fold<int>(1, (m, laps) => math.max(m, laps.isEmpty ? 1 : laps.last.lap));
+        : histories.values.fold<int>(
+            1,
+            (m, laps) => math.max(m, laps.isEmpty ? 1 : laps.last.lap),
+          );
 
     double xOf(int lap) => size.width * (lap - 1) / math.max(maxLap - 1, 1);
     double yOf(double gap) => size.height * (gap / _maxGap).clamp(0.0, 1.0);

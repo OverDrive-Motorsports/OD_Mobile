@@ -19,7 +19,7 @@ class LapData {
   const LapData({required this.lap, required this.time, required this.gap});
   final int lap;
   final double time; // lap time in seconds
-  final double gap;  // gap to leader at end of that lap (0 = leader)
+  final double gap; // gap to leader at end of that lap (0 = leader)
 }
 
 /// One completed lap for the position-history chart.
@@ -39,8 +39,9 @@ class HourlyForecast {
     required this.windKph,
   });
 
-  final String hour;         // e.g. '14:00'
-  final String condition;    // 'sunny' | 'partly_cloudy' | 'cloudy' | 'rain' | 'storm'
+  final String hour; // e.g. '14:00'
+  final String
+  condition; // 'sunny' | 'partly_cloudy' | 'cloudy' | 'rain' | 'storm'
   final double tempC;
   final double precipChance; // 0.0–1.0
   final double windKph;
@@ -126,9 +127,9 @@ class TelemetrySnapshot {
   final String ersMode;
   final double gLat;
   final double gLon;
-  final Map<String, double> tyreTemp;      // fl, fr, rl, rr — °C
-  final Map<String, double> tyrePressure;  // fl, fr, rl, rr — PSI
-  final Map<String, double> tyreWear;      // fl, fr, rl, rr — 0…1
+  final Map<String, double> tyreTemp; // fl, fr, rl, rr — °C
+  final Map<String, double> tyrePressure; // fl, fr, rl, rr — PSI
+  final Map<String, double> tyreWear; // fl, fr, rl, rr — 0…1
   final List<double?> sectorTimes;
   final List<double> bestSectorTimes;
   final double currentLapTime;
@@ -142,18 +143,18 @@ class TelemetrySnapshot {
   final double fuelTargetPerLap;
   final int tyreAge;
   final String tyreCompound;
-  final double waterTemp;    // °C  82–108
-  final double oilTemp;      // °C  98–132
+  final double waterTemp; // °C  82–108
+  final double oilTemp; // °C  98–132
   final double hydraulicTemp; // °C 38–62
-  final double mgukTemp;     // MGU-K °C  55–115
-  final double esTemp;       // Energy Store °C  20–55
-  final double turboBoost;   // 0…1 (fraction of max boost)
-  final String engineMode;   // 'Party' | 'Standard' | 'Conservation'
+  final double mgukTemp; // MGU-K °C  55–115
+  final double esTemp; // Energy Store °C  20–55
+  final double turboBoost; // 0…1 (fraction of max boost)
+  final String engineMode; // 'Party' | 'Standard' | 'Conservation'
   final bool pitWindowOpen;
   final int lapNumber;
   // Penalties
-  final int penaltySeconds;       // 0 / 5 / 10
-  final int trackLimitWarnings;   // 0–3 (3 = automatic penalty next)
+  final int penaltySeconds; // 0 / 5 / 10
+  final int trackLimitWarnings; // 0–3 (3 = automatic penalty next)
   final bool blueFlagWarning;
   // Damage 0…1
   final double frontWingDamage;
@@ -167,8 +168,12 @@ class TelemetrySnapshot {
   int get lapsRemaining => fuelPerLap > 0 ? (fuelLoad / fuelPerLap).floor() : 0;
   bool get hasPenalty => penaltySeconds > 0;
   bool get hasAnyDamage =>
-      frontWingDamage > 0.05 || rearWingDamage > 0.05 || floorDamage > 0.05 ||
-      gearboxDamage > 0.05 || suspensionDamage > 0.05 || engineDamage > 0.05;
+      frontWingDamage > 0.05 ||
+      rearWingDamage > 0.05 ||
+      floorDamage > 0.05 ||
+      gearboxDamage > 0.05 ||
+      suspensionDamage > 0.05 ||
+      engineDamage > 0.05;
 }
 
 // ── Static driver catalogue — single source of truth for driver identifiers ──
@@ -178,7 +183,12 @@ class TelemetryMockData {
   TelemetryMockData._();
 
   static const List<Map<String, dynamic>> drivers = [
-    {'id': 'VER', 'name': 'Verstappen', 'team': 'Red Bull Racing', 'position': 1},
+    {
+      'id': 'VER',
+      'name': 'Verstappen',
+      'team': 'Red Bull Racing',
+      'position': 1,
+    },
     {'id': 'LEC', 'name': 'Leclerc', 'team': 'Ferrari', 'position': 2},
     {'id': 'NOR', 'name': 'Norris', 'team': 'McLaren', 'position': 3},
   ];
@@ -363,7 +373,10 @@ class _DriverState {
     // Engine temps
     waterTemp = (waterTemp + rng.nextDouble() * 0.4 - 0.2).clamp(82.0, 108.0);
     oilTemp = (oilTemp + rng.nextDouble() * 0.5 - 0.25).clamp(98.0, 132.0);
-    hydraulicTemp = (hydraulicTemp + rng.nextDouble() * 0.3 - 0.15).clamp(38.0, 62.0);
+    hydraulicTemp = (hydraulicTemp + rng.nextDouble() * 0.3 - 0.15).clamp(
+      38.0,
+      62.0,
+    );
     mgukTemp = (mgukTemp + rng.nextDouble() * 0.6 - 0.3).clamp(55.0, 115.0);
     esTemp = (esTemp + rng.nextDouble() * 0.3 - 0.15).clamp(20.0, 55.0);
     turboBoost = (turboBoost + rng.nextDouble() * 0.02 - 0.01).clamp(0.0, 1.0);
@@ -402,16 +415,28 @@ class _DriverState {
       maxSpeedLap = speed;
       tyreAge++;
       lapNumber = (lapNumber + 1).clamp(1, TelemetrySnapshot.totalLaps);
-      fuelLoad = (fuelLoad - fuelPerLap + rng.nextDouble() * 0.1 - 0.05).clamp(0.0, 110.0);
-      fuelPerLap = (fuelPerLap + rng.nextDouble() * 0.04 - 0.02)
-          .clamp(fuelTargetPerLap - 0.15, fuelTargetPerLap + 0.20);
+      fuelLoad = (fuelLoad - fuelPerLap + rng.nextDouble() * 0.1 - 0.05).clamp(
+        0.0,
+        110.0,
+      );
+      fuelPerLap = (fuelPerLap + rng.nextDouble() * 0.04 - 0.02).clamp(
+        fuelTargetPerLap - 0.15,
+        fuelTargetPerLap + 0.20,
+      );
       pitWindowOpen = tyreAge >= 15 && tyreAge <= 35;
       final tr = rng.nextDouble();
-      trend = tr < 0.33 ? 'gaining' : tr < 0.66 ? 'losing' : 'stable';
+      trend = tr < 0.33
+          ? 'gaining'
+          : tr < 0.66
+          ? 'losing'
+          : 'stable';
 
       // Rare damage spikes on lap end
       if (rng.nextDouble() < 0.05) {
-        frontWingDamage = (frontWingDamage + rng.nextDouble() * 0.04).clamp(0.0, 1.0);
+        frontWingDamage = (frontWingDamage + rng.nextDouble() * 0.04).clamp(
+          0.0,
+          1.0,
+        );
       }
       floorDamage = (floorDamage + 0.001).clamp(0.0, 1.0);
       gearboxDamage = (gearboxDamage + 0.0005).clamp(0.0, 1.0);
@@ -419,51 +444,56 @@ class _DriverState {
   }
 
   TelemetrySnapshot toSnapshot() => TelemetrySnapshot(
-        speed: speed,
-        gear: gear,
-        throttle: throttle,
-        brake: brake,
-        rpm: rpm,
-        drs: drs,
-        ersLevel: ersLevel,
-        ersMode: ersMode,
-        gLat: gLat,
-        gLon: gLon,
-        tyreTemp: {'fl': flTemp, 'fr': frTemp, 'rl': rlTemp, 'rr': rrTemp},
-        tyrePressure: {'fl': flPressure, 'fr': frPressure, 'rl': rlPressure, 'rr': rrPressure},
-        tyreWear: {'fl': flWear, 'fr': frWear, 'rl': rlWear, 'rr': rrWear},
-        sectorTimes: [s1Time, s2Time, s3Time],
-        bestSectorTimes: [bestS1, bestS2, bestS3],
-        currentLapTime: currentLapTime,
-        bestLapTime: bestLapTime,
-        gapToLeader: gapToLeader,
-        trend: trend,
-        maxSpeedLap: maxSpeedLap,
-        avgSpeedLap: avgSpeedLap,
-        fuelLoad: fuelLoad,
-        fuelPerLap: fuelPerLap,
-        fuelTargetPerLap: fuelTargetPerLap,
-        tyreAge: tyreAge,
-        tyreCompound: tyreCompound,
-        waterTemp: waterTemp,
-        oilTemp: oilTemp,
-        hydraulicTemp: hydraulicTemp,
-        mgukTemp: mgukTemp,
-        esTemp: esTemp,
-        turboBoost: turboBoost,
-        engineMode: engineMode,
-        pitWindowOpen: pitWindowOpen,
-        lapNumber: lapNumber,
-        penaltySeconds: penaltySeconds,
-        trackLimitWarnings: trackLimitWarnings,
-        blueFlagWarning: blueFlagWarning,
-        frontWingDamage: frontWingDamage,
-        rearWingDamage: rearWingDamage,
-        floorDamage: floorDamage,
-        gearboxDamage: gearboxDamage,
-        suspensionDamage: suspensionDamage,
-        engineDamage: engineDamage,
-      );
+    speed: speed,
+    gear: gear,
+    throttle: throttle,
+    brake: brake,
+    rpm: rpm,
+    drs: drs,
+    ersLevel: ersLevel,
+    ersMode: ersMode,
+    gLat: gLat,
+    gLon: gLon,
+    tyreTemp: {'fl': flTemp, 'fr': frTemp, 'rl': rlTemp, 'rr': rrTemp},
+    tyrePressure: {
+      'fl': flPressure,
+      'fr': frPressure,
+      'rl': rlPressure,
+      'rr': rrPressure,
+    },
+    tyreWear: {'fl': flWear, 'fr': frWear, 'rl': rlWear, 'rr': rrWear},
+    sectorTimes: [s1Time, s2Time, s3Time],
+    bestSectorTimes: [bestS1, bestS2, bestS3],
+    currentLapTime: currentLapTime,
+    bestLapTime: bestLapTime,
+    gapToLeader: gapToLeader,
+    trend: trend,
+    maxSpeedLap: maxSpeedLap,
+    avgSpeedLap: avgSpeedLap,
+    fuelLoad: fuelLoad,
+    fuelPerLap: fuelPerLap,
+    fuelTargetPerLap: fuelTargetPerLap,
+    tyreAge: tyreAge,
+    tyreCompound: tyreCompound,
+    waterTemp: waterTemp,
+    oilTemp: oilTemp,
+    hydraulicTemp: hydraulicTemp,
+    mgukTemp: mgukTemp,
+    esTemp: esTemp,
+    turboBoost: turboBoost,
+    engineMode: engineMode,
+    pitWindowOpen: pitWindowOpen,
+    lapNumber: lapNumber,
+    penaltySeconds: penaltySeconds,
+    trackLimitWarnings: trackLimitWarnings,
+    blueFlagWarning: blueFlagWarning,
+    frontWingDamage: frontWingDamage,
+    rearWingDamage: rearWingDamage,
+    floorDamage: floorDamage,
+    gearboxDamage: gearboxDamage,
+    suspensionDamage: suspensionDamage,
+    engineDamage: engineDamage,
+  );
 }
 
 // ── TelemetrySimulator — live data engine driving all telemetry widgets ───
@@ -495,70 +525,190 @@ class TelemetrySimulator extends ChangeNotifier {
   void _initDrivers() {
     _drivers = {
       'VER': _DriverState(
-        speed: 285, gear: 7, throttle: 0.92, brake: 0.0, rpm: 12800,
-        drs: true, ersLevel: 0.72, ersMode: 'Deploy',
-        gLat: 1.2, gLon: -0.3,
-        flTemp: 92, frTemp: 94, rlTemp: 88, rrTemp: 90,
-        flPressure: 23.5, frPressure: 23.2, rlPressure: 22.8, rrPressure: 22.5,
-        flWear: 0.12, frWear: 0.14, rlWear: 0.10, rrWear: 0.11,
-        s1Time: 28.142, s2Time: 32.018, s3Time: null,
-        bestS1: 27.891, bestS2: 31.745, bestS3: 24.312,
-        currentLapTime: 60.16, bestLapTime: 84.102,
-        gapToLeader: 'LEADER', trend: 'stable',
-        maxSpeedLap: 320, avgSpeedLap: 198,
-        s1Target: 28.0, s2Target: 60.0, lapTarget: 84.0,
-        fuelLoad: 78.4, fuelPerLap: 2.18, fuelTargetPerLap: 2.15,
-        tyreAge: 12, tyreCompound: 'Medium',
-        waterTemp: 94.2, oilTemp: 112.5, hydraulicTemp: 48.2,
-        mgukTemp: 78.5, esTemp: 38.2, turboBoost: 0.82,
-        engineMode: 'Party', pitWindowOpen: false, lapNumber: 23,
-        penaltySeconds: 0, trackLimitWarnings: 1, blueFlagWarning: false,
-        frontWingDamage: 0.08, rearWingDamage: 0.02, floorDamage: 0.05,
-        gearboxDamage: 0.03, suspensionDamage: 0.04, engineDamage: 0.01,
+        speed: 285,
+        gear: 7,
+        throttle: 0.92,
+        brake: 0.0,
+        rpm: 12800,
+        drs: true,
+        ersLevel: 0.72,
+        ersMode: 'Deploy',
+        gLat: 1.2,
+        gLon: -0.3,
+        flTemp: 92,
+        frTemp: 94,
+        rlTemp: 88,
+        rrTemp: 90,
+        flPressure: 23.5,
+        frPressure: 23.2,
+        rlPressure: 22.8,
+        rrPressure: 22.5,
+        flWear: 0.12,
+        frWear: 0.14,
+        rlWear: 0.10,
+        rrWear: 0.11,
+        s1Time: 28.142,
+        s2Time: 32.018,
+        s3Time: null,
+        bestS1: 27.891,
+        bestS2: 31.745,
+        bestS3: 24.312,
+        currentLapTime: 60.16,
+        bestLapTime: 84.102,
+        gapToLeader: 'LEADER',
+        trend: 'stable',
+        maxSpeedLap: 320,
+        avgSpeedLap: 198,
+        s1Target: 28.0,
+        s2Target: 60.0,
+        lapTarget: 84.0,
+        fuelLoad: 78.4,
+        fuelPerLap: 2.18,
+        fuelTargetPerLap: 2.15,
+        tyreAge: 12,
+        tyreCompound: 'Medium',
+        waterTemp: 94.2,
+        oilTemp: 112.5,
+        hydraulicTemp: 48.2,
+        mgukTemp: 78.5,
+        esTemp: 38.2,
+        turboBoost: 0.82,
+        engineMode: 'Party',
+        pitWindowOpen: false,
+        lapNumber: 23,
+        penaltySeconds: 0,
+        trackLimitWarnings: 1,
+        blueFlagWarning: false,
+        frontWingDamage: 0.08,
+        rearWingDamage: 0.02,
+        floorDamage: 0.05,
+        gearboxDamage: 0.03,
+        suspensionDamage: 0.04,
+        engineDamage: 0.01,
       ),
       'LEC': _DriverState(
-        speed: 261, gear: 6, throttle: 0.78, brake: 0.05, rpm: 11200,
-        drs: false, ersLevel: 0.54, ersMode: 'Harvest',
-        gLat: -0.8, gLon: 1.4,
-        flTemp: 108, frTemp: 112, rlTemp: 104, rrTemp: 107,
-        flPressure: 24.1, frPressure: 23.8, rlPressure: 23.2, rrPressure: 22.9,
-        flWear: 0.28, frWear: 0.31, rlWear: 0.22, rrWear: 0.25,
-        s1Time: 28.891, s2Time: null, s3Time: null,
-        bestS1: 28.211, bestS2: 32.104, bestS3: 24.788,
-        currentLapTime: 28.891, bestLapTime: 85.234,
-        gapToLeader: '+2.1s', trend: 'losing',
-        maxSpeedLap: 316, avgSpeedLap: 192,
-        s1Target: 29.0, s2Target: 62.0, lapTarget: 86.0,
-        fuelLoad: 71.2, fuelPerLap: 2.22, fuelTargetPerLap: 2.18,
-        tyreAge: 18, tyreCompound: 'Soft',
-        waterTemp: 97.8, oilTemp: 118.1, hydraulicTemp: 51.3,
-        mgukTemp: 85.2, esTemp: 42.1, turboBoost: 0.71,
-        engineMode: 'Standard', pitWindowOpen: true, lapNumber: 21,
-        penaltySeconds: 5, trackLimitWarnings: 2, blueFlagWarning: false,
-        frontWingDamage: 0.35, rearWingDamage: 0.05, floorDamage: 0.18,
-        gearboxDamage: 0.08, suspensionDamage: 0.12, engineDamage: 0.02,
+        speed: 261,
+        gear: 6,
+        throttle: 0.78,
+        brake: 0.05,
+        rpm: 11200,
+        drs: false,
+        ersLevel: 0.54,
+        ersMode: 'Harvest',
+        gLat: -0.8,
+        gLon: 1.4,
+        flTemp: 108,
+        frTemp: 112,
+        rlTemp: 104,
+        rrTemp: 107,
+        flPressure: 24.1,
+        frPressure: 23.8,
+        rlPressure: 23.2,
+        rrPressure: 22.9,
+        flWear: 0.28,
+        frWear: 0.31,
+        rlWear: 0.22,
+        rrWear: 0.25,
+        s1Time: 28.891,
+        s2Time: null,
+        s3Time: null,
+        bestS1: 28.211,
+        bestS2: 32.104,
+        bestS3: 24.788,
+        currentLapTime: 28.891,
+        bestLapTime: 85.234,
+        gapToLeader: '+2.1s',
+        trend: 'losing',
+        maxSpeedLap: 316,
+        avgSpeedLap: 192,
+        s1Target: 29.0,
+        s2Target: 62.0,
+        lapTarget: 86.0,
+        fuelLoad: 71.2,
+        fuelPerLap: 2.22,
+        fuelTargetPerLap: 2.18,
+        tyreAge: 18,
+        tyreCompound: 'Soft',
+        waterTemp: 97.8,
+        oilTemp: 118.1,
+        hydraulicTemp: 51.3,
+        mgukTemp: 85.2,
+        esTemp: 42.1,
+        turboBoost: 0.71,
+        engineMode: 'Standard',
+        pitWindowOpen: true,
+        lapNumber: 21,
+        penaltySeconds: 5,
+        trackLimitWarnings: 2,
+        blueFlagWarning: false,
+        frontWingDamage: 0.35,
+        rearWingDamage: 0.05,
+        floorDamage: 0.18,
+        gearboxDamage: 0.08,
+        suspensionDamage: 0.12,
+        engineDamage: 0.02,
       ),
       'NOR': _DriverState(
-        speed: 312, gear: 8, throttle: 1.0, brake: 0.0, rpm: 14100,
-        drs: true, ersLevel: 0.88, ersMode: 'Deploy',
-        gLat: 0.1, gLon: -1.8,
-        flTemp: 76, frTemp: 79, rlTemp: 74, rrTemp: 77,
-        flPressure: 22.8, frPressure: 22.5, rlPressure: 22.1, rrPressure: 21.8,
-        flWear: 0.06, frWear: 0.07, rlWear: 0.05, rrWear: 0.06,
-        s1Time: 28.432, s2Time: 31.988, s3Time: 24.521,
-        bestS1: 28.012, bestS2: 31.654, bestS3: 24.201,
-        currentLapTime: 84.941, bestLapTime: 83.867,
-        gapToLeader: '+3.8s', trend: 'gaining',
-        maxSpeedLap: 330, avgSpeedLap: 201,
-        s1Target: 28.5, s2Target: 60.5, lapTarget: 85.0,
-        fuelLoad: 82.6, fuelPerLap: 2.14, fuelTargetPerLap: 2.15,
-        tyreAge: 8, tyreCompound: 'Hard',
-        waterTemp: 91.4, oilTemp: 109.8, hydraulicTemp: 45.8,
-        mgukTemp: 72.3, esTemp: 35.8, turboBoost: 0.88,
-        engineMode: 'Conservation', pitWindowOpen: false, lapNumber: 25,
-        penaltySeconds: 0, trackLimitWarnings: 0, blueFlagWarning: true,
-        frontWingDamage: 0.02, rearWingDamage: 0.01, floorDamage: 0.03,
-        gearboxDamage: 0.01, suspensionDamage: 0.02, engineDamage: 0.00,
+        speed: 312,
+        gear: 8,
+        throttle: 1.0,
+        brake: 0.0,
+        rpm: 14100,
+        drs: true,
+        ersLevel: 0.88,
+        ersMode: 'Deploy',
+        gLat: 0.1,
+        gLon: -1.8,
+        flTemp: 76,
+        frTemp: 79,
+        rlTemp: 74,
+        rrTemp: 77,
+        flPressure: 22.8,
+        frPressure: 22.5,
+        rlPressure: 22.1,
+        rrPressure: 21.8,
+        flWear: 0.06,
+        frWear: 0.07,
+        rlWear: 0.05,
+        rrWear: 0.06,
+        s1Time: 28.432,
+        s2Time: 31.988,
+        s3Time: 24.521,
+        bestS1: 28.012,
+        bestS2: 31.654,
+        bestS3: 24.201,
+        currentLapTime: 84.941,
+        bestLapTime: 83.867,
+        gapToLeader: '+3.8s',
+        trend: 'gaining',
+        maxSpeedLap: 330,
+        avgSpeedLap: 201,
+        s1Target: 28.5,
+        s2Target: 60.5,
+        lapTarget: 85.0,
+        fuelLoad: 82.6,
+        fuelPerLap: 2.14,
+        fuelTargetPerLap: 2.15,
+        tyreAge: 8,
+        tyreCompound: 'Hard',
+        waterTemp: 91.4,
+        oilTemp: 109.8,
+        hydraulicTemp: 45.8,
+        mgukTemp: 72.3,
+        esTemp: 35.8,
+        turboBoost: 0.88,
+        engineMode: 'Conservation',
+        pitWindowOpen: false,
+        lapNumber: 25,
+        penaltySeconds: 0,
+        trackLimitWarnings: 0,
+        blueFlagWarning: true,
+        frontWingDamage: 0.02,
+        rearWingDamage: 0.01,
+        floorDamage: 0.03,
+        gearboxDamage: 0.01,
+        suspensionDamage: 0.02,
+        engineDamage: 0.00,
       ),
     };
   }
@@ -595,15 +745,25 @@ class TelemetrySimulator extends ChangeNotifier {
       int verPos, lecPos, norPos;
       // L1-11: VER P1 LEC P2 NOR P3; L12-15: VER pits → LEC leads; L16-17: VER undercuts to P1; L18-25: NOR P2; L26-57: LEC P2.
       if (lap <= 11) {
-        verPos = 1; lecPos = 2; norPos = 3;
+        verPos = 1;
+        lecPos = 2;
+        norPos = 3;
       } else if (lap <= 15) {
-        verPos = 2; lecPos = 1; norPos = 3;
+        verPos = 2;
+        lecPos = 1;
+        norPos = 3;
       } else if (lap <= 17) {
-        verPos = 1; lecPos = 2; norPos = 3;
+        verPos = 1;
+        lecPos = 2;
+        norPos = 3;
       } else if (lap <= 25) {
-        verPos = 1; lecPos = 3; norPos = 2;
+        verPos = 1;
+        lecPos = 3;
+        norPos = 2;
       } else {
-        verPos = 1; lecPos = 2; norPos = 3;
+        verPos = 1;
+        lecPos = 2;
+        norPos = 3;
       }
       ver.add(PositionData(lap: lap, position: verPos));
       lec.add(PositionData(lap: lap, position: lecPos));
@@ -620,14 +780,62 @@ class TelemetrySimulator extends ChangeNotifier {
       List.unmodifiable(_positionHistory[driverId] ?? const []);
 
   static const List<HourlyForecast> _kForecast = [
-    HourlyForecast(hour: '14:00', condition: 'sunny',         tempC: 32, precipChance: 0.05, windKph: 12),
-    HourlyForecast(hour: '15:00', condition: 'partly_cloudy', tempC: 31, precipChance: 0.15, windKph: 14),
-    HourlyForecast(hour: '16:00', condition: 'partly_cloudy', tempC: 30, precipChance: 0.28, windKph: 18),
-    HourlyForecast(hour: '17:00', condition: 'cloudy',        tempC: 29, precipChance: 0.45, windKph: 23),
-    HourlyForecast(hour: '18:00', condition: 'rain',          tempC: 27, precipChance: 0.68, windKph: 29),
-    HourlyForecast(hour: '19:00', condition: 'rain',          tempC: 26, precipChance: 0.82, windKph: 34),
-    HourlyForecast(hour: '20:00', condition: 'storm',         tempC: 25, precipChance: 0.93, windKph: 42),
-    HourlyForecast(hour: '21:00', condition: 'cloudy',        tempC: 27, precipChance: 0.38, windKph: 26),
+    HourlyForecast(
+      hour: '14:00',
+      condition: 'sunny',
+      tempC: 32,
+      precipChance: 0.05,
+      windKph: 12,
+    ),
+    HourlyForecast(
+      hour: '15:00',
+      condition: 'partly_cloudy',
+      tempC: 31,
+      precipChance: 0.15,
+      windKph: 14,
+    ),
+    HourlyForecast(
+      hour: '16:00',
+      condition: 'partly_cloudy',
+      tempC: 30,
+      precipChance: 0.28,
+      windKph: 18,
+    ),
+    HourlyForecast(
+      hour: '17:00',
+      condition: 'cloudy',
+      tempC: 29,
+      precipChance: 0.45,
+      windKph: 23,
+    ),
+    HourlyForecast(
+      hour: '18:00',
+      condition: 'rain',
+      tempC: 27,
+      precipChance: 0.68,
+      windKph: 29,
+    ),
+    HourlyForecast(
+      hour: '19:00',
+      condition: 'rain',
+      tempC: 26,
+      precipChance: 0.82,
+      windKph: 34,
+    ),
+    HourlyForecast(
+      hour: '20:00',
+      condition: 'storm',
+      tempC: 25,
+      precipChance: 0.93,
+      windKph: 42,
+    ),
+    HourlyForecast(
+      hour: '21:00',
+      condition: 'cloudy',
+      tempC: 27,
+      precipChance: 0.38,
+      windKph: 26,
+    ),
   ];
 
   List<HourlyForecast> getWeatherForecast() => List.unmodifiable(_kForecast);
@@ -642,11 +850,15 @@ class TelemetrySimulator extends ChangeNotifier {
       s.update(_rng);
     }
     _trackConditions = TrackConditions(
-      trackTemp: (_trackConditions.trackTemp + _rng.nextDouble() * 0.2 - 0.1).clamp(35.0, 65.0),
-      airTemp: (_trackConditions.airTemp + _rng.nextDouble() * 0.1 - 0.05).clamp(18.0, 40.0),
-      humidity: (_trackConditions.humidity + _rng.nextDouble() * 0.2 - 0.1).clamp(20.0, 90.0),
+      trackTemp: (_trackConditions.trackTemp + _rng.nextDouble() * 0.2 - 0.1)
+          .clamp(35.0, 65.0),
+      airTemp: (_trackConditions.airTemp + _rng.nextDouble() * 0.1 - 0.05)
+          .clamp(18.0, 40.0),
+      humidity: (_trackConditions.humidity + _rng.nextDouble() * 0.2 - 0.1)
+          .clamp(20.0, 90.0),
       conditions: _trackConditions.conditions,
-      windSpeed: (_trackConditions.windSpeed + _rng.nextDouble() * 0.4 - 0.2).clamp(0.0, 40.0),
+      windSpeed: (_trackConditions.windSpeed + _rng.nextDouble() * 0.4 - 0.2)
+          .clamp(0.0, 40.0),
     );
     notifyListeners();
   }

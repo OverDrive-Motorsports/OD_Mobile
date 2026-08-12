@@ -33,7 +33,7 @@ void main() {
 
       await pumpTestApp(tester, const TelemetryPage());
 
-      expect(find.text('TELEMETRIE'), findsOneWidget);
+      expect(find.text('Telemetry'), findsOneWidget);
     });
 
     testWidgets('search page owns a reusable search bar controller', (
@@ -98,8 +98,8 @@ void main() {
       await tester.pump(const Duration(milliseconds: 400));
       await tester.pumpAndSettle();
 
-      expect(find.text('Championships'), findsOneWidget);
-      expect(find.text('All'), findsOneWidget);
+      expect(find.text('Calendrier'), findsOneWidget);
+      expect(find.text('Tout'), findsOneWidget);
       expect(find.text('Formula 1'), findsWidgets);
       expect(find.text('Courses'), findsOneWidget);
     });
@@ -117,8 +117,8 @@ void main() {
 
       expect(find.text('DIRECT'), findsOneWidget);
       expect(find.text('TV Live'), findsOneWidget);
+      expect(find.text('REPLAYS'), findsOneWidget);
       expect(find.text('Bibliotheque de replays'), findsOneWidget);
     });
   });
-
 }
