@@ -3,7 +3,7 @@
  ## OverDrive 2026
  ## All Technical rights reserved
  ##
- ## search_and_tv_widgets_test.dart - Widget tests for the search bar and TV stream widgets.
+ ## search_bar_test.dart - Widget tests for AppSearchBar.
  ##
  */
 
@@ -11,16 +11,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:overdrive/services/tv/tv_mock_data.dart';
-import 'package:overdrive/services/tv/tv_stream.dart';
-import 'package:overdrive/widgets/base/app_modal.dart';
 import 'package:overdrive/widgets/base/search_bar.dart';
-import 'package:overdrive/widgets/tv/tv_stream_selector_sheet.dart';
 
-import '../helpers/test_app.dart';
+import '../../helpers/test_app.dart';
 
 void main() {
-  group('SearchBar', () {
+  group('AppSearchBar', () {
     testWidgets('forwards search input and clears external state', (
       WidgetTester tester,
     ) async {
@@ -82,51 +78,6 @@ void main() {
       );
 
       expect(find.byIcon(Icons.close_rounded), findsNothing);
-    });
-  });
-
-  group('TvStreamSelectorSheet', () {
-    testWidgets('renders options and returns the selected stream', (
-      WidgetTester tester,
-    ) async {
-      TvStream? selectedStream;
-
-      await pumpTestApp(
-        tester,
-        Scaffold(
-          body: Builder(
-            builder: (context) {
-              return Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    AppModal.show<void>(
-                      context,
-                      child: TvStreamSelectorSheet(
-                        options: tvStreamsMonacoMock,
-                        selectedId: tvStreamsMonacoMock.first.id,
-                        onSelected: (stream) => selectedStream = stream,
-                      ),
-                    );
-                  },
-                  child: const Text('Open streams'),
-                ),
-              );
-            },
-          ),
-        ),
-      );
-
-      await tester.tap(find.text('Open streams'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Choisir un flux'), findsOneWidget);
-      expect(find.text('International'), findsOneWidget);
-
-      await tester.tap(find.text('Verstappen'));
-      await tester.pumpAndSettle();
-
-      expect(selectedStream?.id, 'verstappen');
-      expect(find.text('Choisir un flux'), findsNothing);
     });
   });
 }

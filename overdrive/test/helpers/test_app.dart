@@ -14,6 +14,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:overdrive/core/navigation/app_routes.dart';
 import 'package:overdrive/core/theme/app_theme.dart';
+import 'package:overdrive/widgets/telemetry/telemetry_mock_data.dart';
+import 'package:provider/provider.dart';
 
 /// Pumps a themed Material app around the widget under test.
 Future<void> pumpTestApp(
@@ -65,6 +67,36 @@ Future<void> pumpRoutedTestApp(
       themeMode: ThemeMode.dark,
       initialRoute: initialRoute,
       onGenerateRoute: buildAppRoute,
+    ),
+  );
+}
+
+/// Pumps a telemetry widget wrapped in its own [TelemetrySimulator] provider,
+/// sized to force [TelemetryMode.large] (>=155x155) or [TelemetryMode.small]
+/// otherwise. Uses `create:` (not `.value`) so the simulator's 200ms ticker
+/// is disposed automatically when the widget tree is torn down after each
+/// test, instead of leaking a pending Timer.
+Future<void> pumpTelemetryTestApp(
+  WidgetTester tester,
+  Widget child, {
+  double width = 320,
+  double height = 320,
+}) async {
+  GoogleFonts.config.allowRuntimeFetching = false;
+
+  await tester.pumpWidget(
+    ChangeNotifierProvider<TelemetrySimulator>(
+      create: (_) => TelemetrySimulator(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.darkTheme,
+        themeMode: ThemeMode.dark,
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(width: width, height: height, child: child),
+          ),
+        ),
+      ),
     ),
   );
 }
