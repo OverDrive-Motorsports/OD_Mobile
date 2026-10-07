@@ -27,22 +27,23 @@ void main() {
       expect(find.text('DRS'), findsOneWidget);
     });
 
-    testWidgets('renders without a RenderFlex overflow at a large generous size', (
-      WidgetTester tester,
-    ) async {
-      // The layout has a known pre-existing overflow only at the small fixed
-      // grid tile sizes (~85-105px) used elsewhere in the app's 3-column
-      // grid. At a generously large size it should render cleanly.
-      await pumpTelemetryTestApp(
-        tester,
-        const Speedometer(),
-        width: 300,
-        height: 300,
-      );
+    testWidgets(
+      'renders without a RenderFlex overflow at a large generous size',
+      (WidgetTester tester) async {
+        // The layout has a known pre-existing overflow only at the small fixed
+        // grid tile sizes (~85-105px) used elsewhere in the app's 3-column
+        // grid. At a generously large size it should render cleanly.
+        await pumpTelemetryTestApp(
+          tester,
+          const Speedometer(),
+          width: 300,
+          height: 300,
+        );
 
-      expect(find.text('SPEED'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.text('SPEED'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('renders at small size, tolerating a known layout overflow', (
       WidgetTester tester,

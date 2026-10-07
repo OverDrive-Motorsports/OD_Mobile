@@ -16,24 +16,25 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('EngineTemps', () {
-    testWidgets('renders the large layout with section labels and sensor rows', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const EngineTemps());
+    testWidgets(
+      'renders the large layout with section labels and sensor rows',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const EngineTemps());
 
-      expect(find.text('ENGINE'), findsOneWidget);
-      // Default driver is NOR per the widget's initialDriverId.
-      expect(find.text('NOR'), findsOneWidget);
-      expect(find.text('REFROIDISSEMENT'), findsOneWidget);
-      expect(find.text('ERS'), findsOneWidget);
-      expect(find.text('TURBO'), findsOneWidget);
-      expect(find.text('H₂O'), findsOneWidget);
-      expect(find.text('OIL'), findsOneWidget);
-      expect(find.text('HYD'), findsOneWidget);
-      expect(find.text('MGU-K'), findsOneWidget);
-      expect(find.text('ES'), findsOneWidget);
-      expect(find.text('BOOST'), findsOneWidget);
-    });
+        expect(find.text('ENGINE'), findsOneWidget);
+        // Default driver is NOR per the widget's initialDriverId.
+        expect(find.text('NOR'), findsOneWidget);
+        expect(find.text('REFROIDISSEMENT'), findsOneWidget);
+        expect(find.text('ERS'), findsOneWidget);
+        expect(find.text('TURBO'), findsOneWidget);
+        expect(find.text('H₂O'), findsOneWidget);
+        expect(find.text('OIL'), findsOneWidget);
+        expect(find.text('HYD'), findsOneWidget);
+        expect(find.text('MGU-K'), findsOneWidget);
+        expect(find.text('ES'), findsOneWidget);
+        expect(find.text('BOOST'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the small layout with only water/oil temp rows', (
       WidgetTester tester,

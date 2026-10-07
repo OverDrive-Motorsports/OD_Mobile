@@ -17,18 +17,19 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('GForce', () {
-    testWidgets('renders the large layout with header, canvas and numeric G readout', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const GForce());
+    testWidgets(
+      'renders the large layout with header, canvas and numeric G readout',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const GForce());
 
-      expect(find.text('G-FORCE'), findsOneWidget);
-      // Default driver is VER per the widget's initialDriverId.
-      expect(find.text('VER'), findsOneWidget);
-      expect(find.byType(CustomPaint), findsWidgets);
-      expect(find.text('LAT'), findsOneWidget);
-      expect(find.text('LON'), findsOneWidget);
-    });
+        expect(find.text('G-FORCE'), findsOneWidget);
+        // Default driver is VER per the widget's initialDriverId.
+        expect(find.text('VER'), findsOneWidget);
+        expect(find.byType(CustomPaint), findsWidgets);
+        expect(find.text('LAT'), findsOneWidget);
+        expect(find.text('LON'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the small layout without the numeric readout', (
       WidgetTester tester,

@@ -16,22 +16,23 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('Damage', () {
-    testWidgets('renders the large layout with section labels and default driver', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const Damage());
+    testWidgets(
+      'renders the large layout with section labels and default driver',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const Damage());
 
-      expect(find.text('DÉGÂTS'), findsOneWidget);
-      expect(find.text('LEC'), findsOneWidget);
-      expect(find.text('AÉRODYNAMIQUE'), findsOneWidget);
-      expect(find.text('MÉCANIQUE'), findsOneWidget);
-      expect(find.text('AILE AV'), findsOneWidget);
-      expect(find.text('AILE AR'), findsOneWidget);
-      expect(find.text('PLANCHER'), findsOneWidget);
-      expect(find.text('BOÎTE'), findsOneWidget);
-      expect(find.text('SUSPENS.'), findsOneWidget);
-      expect(find.text('MOTEUR'), findsOneWidget);
-    });
+        expect(find.text('DÉGÂTS'), findsOneWidget);
+        expect(find.text('LEC'), findsOneWidget);
+        expect(find.text('AÉRODYNAMIQUE'), findsOneWidget);
+        expect(find.text('MÉCANIQUE'), findsOneWidget);
+        expect(find.text('AILE AV'), findsOneWidget);
+        expect(find.text('AILE AR'), findsOneWidget);
+        expect(find.text('PLANCHER'), findsOneWidget);
+        expect(find.text('BOÎTE'), findsOneWidget);
+        expect(find.text('SUSPENS.'), findsOneWidget);
+        expect(find.text('MOTEUR'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the small layout with a compact dot grid', (
       WidgetTester tester,

@@ -163,9 +163,9 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
           icon: Icons.play_arrow_rounded,
           fullWidth: true,
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const ReplayPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const ReplayPage()));
           },
         ),
       ),

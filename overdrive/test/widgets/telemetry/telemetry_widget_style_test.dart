@@ -36,9 +36,7 @@ void main() {
     ) async {
       await pumpTestApp(
         tester,
-        const Scaffold(
-          body: TelemetryCard(child: Text('Card content')),
-        ),
+        const Scaffold(body: TelemetryCard(child: Text('Card content'))),
       );
 
       expect(find.text('Card content'), findsOneWidget);
@@ -52,9 +50,7 @@ void main() {
     ) async {
       await pumpTestApp(
         tester,
-        const Scaffold(
-          body: TelemetryHeader(label: 'SPEED'),
-        ),
+        const Scaffold(body: TelemetryHeader(label: 'SPEED')),
       );
 
       expect(find.text('SPEED'), findsOneWidget);

@@ -150,110 +150,111 @@ class _SignupPageState extends State<SignupPage> {
     return null;
   }
 
-	@override
-	Widget build(BuildContext context) {
-		return Scaffold(
-			backgroundColor: AppColors.black,
-			body: SafeArea(
-				child: Center(
-					child: SingleChildScrollView(
-						padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-						child: Column(
-							mainAxisSize: MainAxisSize.min,
-							children: [
-								Text('Create your account', style: AppTextStyles.display()),
-								const SizedBox(height: 8),
-								Text(
-									'Signup with email and password to continue.',
-									style: AppTextStyles.body(color: AppColors.textSecondary),
-									textAlign: TextAlign.center,
-								),
-								const SizedBox(height: 32),
-								Form(
-									key: _formKey,
-									child: Column(
-										children: [
-											_buildInputField(
-												controller: _emailController,
-												label: 'Email',
-												hint: 'name@example.com',
-												validator: _validateEmail,
-												keyboardType: TextInputType.emailAddress,
-											),
-											const SizedBox(height: 16),
-											_buildInputField(
-												controller: _usernameController,
-												label: 'Username',
-												hint: 'AssassinMaster78541',
-												validator: _validateUsername,
-												keyboardType: TextInputType.name,
-											),
-											const SizedBox(height: 16),
-											_buildInputField(
-												controller: _passwordController,
-												label: 'Password',
-												hint: 'Create a password',
-												validator: _validatePassword,
-												obscureText: true,
-											),
-											const SizedBox(height: 16),
-											_buildInputField(
-												controller: _confirmPasswordController,
-												label: 'Confirm Password',
-												hint: 'Repeat your password',
-												validator: _validateConfirmation,
-												obscureText: true,
-											),
-										],
-									),
-								),
-								if (_submissionError != null) ...[
-									const SizedBox(height: 16),
-									Text(
-										_submissionError!,
-										style: AppTextStyles.body(color: AppColors.error),
-										textAlign: TextAlign.center,
-									),
-								],
-								const SizedBox(height: 24),
-								ElevatedButton(
-									onPressed: _isLoading ? null : _onSubmit,
-									child: SizedBox(
-										width: double.infinity,
-										child: Center(
-											child: _isLoading
-													? const SizedBox(
-															height: 20,
-															width: 20,
-															child: CircularProgressIndicator(
-																color: AppColors.black,
-																strokeWidth: 2,
-															),
-														)
-													: const Text('Sign Up'),
-										),
-									),
-								),
-								const SizedBox(height: 16),
-								Row(
-									mainAxisAlignment: MainAxisAlignment.center,
-									children: [
-										Text('Already have an account?', style: AppTextStyles.caption()),
-										TextButton(
-											onPressed: _isLoading
-													? null
-													: () => context.go('/login'),
-											child: const Text('Login'),
-										),
-									],
-								),
-							],
-						),
-					),
-				),
-			),
-		);
-	}
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.black,
+      body: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Create your account', style: AppTextStyles.display()),
+                const SizedBox(height: 8),
+                Text(
+                  'Signup with email and password to continue.',
+                  style: AppTextStyles.body(color: AppColors.textSecondary),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      _buildInputField(
+                        controller: _emailController,
+                        label: 'Email',
+                        hint: 'name@example.com',
+                        validator: _validateEmail,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInputField(
+                        controller: _usernameController,
+                        label: 'Username',
+                        hint: 'AssassinMaster78541',
+                        validator: _validateUsername,
+                        keyboardType: TextInputType.name,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInputField(
+                        controller: _passwordController,
+                        label: 'Password',
+                        hint: 'Create a password',
+                        validator: _validatePassword,
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 16),
+                      _buildInputField(
+                        controller: _confirmPasswordController,
+                        label: 'Confirm Password',
+                        hint: 'Repeat your password',
+                        validator: _validateConfirmation,
+                        obscureText: true,
+                      ),
+                    ],
+                  ),
+                ),
+                if (_submissionError != null) ...[
+                  const SizedBox(height: 16),
+                  Text(
+                    _submissionError!,
+                    style: AppTextStyles.body(color: AppColors.error),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: _isLoading ? null : _onSubmit,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Center(
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: AppColors.black,
+                                strokeWidth: 2,
+                              ),
+                            )
+                          : const Text('Sign Up'),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Already have an account?',
+                      style: AppTextStyles.caption(),
+                    ),
+                    TextButton(
+                      onPressed: _isLoading ? null : () => context.go('/login'),
+                      child: const Text('Login'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildInputField({
     required TextEditingController controller,
