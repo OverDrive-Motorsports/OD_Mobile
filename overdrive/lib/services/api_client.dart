@@ -8,6 +8,7 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'auth/auth_service.dart';
@@ -93,28 +94,12 @@ class ApiClient {
   final String _baseUrl;
   Completer<void>? _refreshCompleter;
 
-	Dio get dio => _dio;
-
-	static String _resolveBaseUrl(String? explicitBaseUrl) {
-		final fromArg = (explicitBaseUrl ?? '').trim();
-
-		if (_isValidUrl(fromArg)) {
-			return fromArg;
-		}
   Dio get dio => _dio;
   static String _resolveBaseUrl(String? explicitBaseUrl) {
     final fromArg = (explicitBaseUrl ?? '').trim();
     if (_isValidUrl(fromArg)) {
       return fromArg;
     }
-
-		if (!dotenv.isInitialized) {
-			throw Exception(
-			'Environment not initialized. Call dotenv.load() before creating ApiClient.',
-			);
-		}
-
-		final fromEnv = (dotenv.env['API_BASE_URL'] ?? '').trim();
     final fromEnv = dotenv.isInitialized
         ? (dotenv.env['API_BASE_URL'] ?? '').trim()
         : '';

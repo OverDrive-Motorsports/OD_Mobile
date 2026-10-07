@@ -60,7 +60,7 @@ jobs:
 
       - name: Run tests
         working-directory: overdrive
-        run: flutter test lib/test
+        run: flutter test
 
   lint:
     name: Lint & format
