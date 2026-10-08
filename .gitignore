@@ -105,3 +105,4 @@ InitTestScene*.unity*
 # Root environment files
 .env
 .env.*
+!.env.example

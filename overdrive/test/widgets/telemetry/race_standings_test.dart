@@ -20,16 +20,17 @@ void main() {
     // getSnapshot per driver) even though it takes no constructor params, so
     // it needs the telemetry provider harness rather than plain pumpTestApp.
 
-    testWidgets('renders header and all three simulated drivers at large size', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const RaceStandings());
+    testWidgets(
+      'renders header and all three simulated drivers at large size',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const RaceStandings());
 
-      expect(find.text('STANDINGS'), findsOneWidget);
-      expect(find.text('VER'), findsOneWidget);
-      expect(find.text('LEC'), findsOneWidget);
-      expect(find.text('NOR'), findsOneWidget);
-    });
+        expect(find.text('STANDINGS'), findsOneWidget);
+        expect(find.text('VER'), findsOneWidget);
+        expect(find.text('LEC'), findsOneWidget);
+        expect(find.text('NOR'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders without exceptions at small size', (
       WidgetTester tester,

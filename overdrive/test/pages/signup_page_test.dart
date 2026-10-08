@@ -24,7 +24,10 @@ import '../helpers/test_app.dart';
 /// Pumps a minimal GoRouter with only the login/signup routes so the
 /// in-page `context.go(...)` footer link can be exercised without pulling
 /// in AuthService or any auth redirect/network logic.
-Future<void> _pumpAuthRouterApp(WidgetTester tester, {required String initialLocation}) async {
+Future<void> _pumpAuthRouterApp(
+  WidgetTester tester, {
+  required String initialLocation,
+}) async {
   final router = GoRouter(
     initialLocation: initialLocation,
     routes: [

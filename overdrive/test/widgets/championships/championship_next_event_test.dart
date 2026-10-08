@@ -25,9 +25,7 @@ void main() {
       final nextEvent = ChampionshipNextEvent(
         name: 'Monaco Grand Prix',
         location: 'Monte Carlo, Monaco',
-        startsAt: now.add(
-          const Duration(days: 2, hours: 3, minutes: 15),
-        ),
+        startsAt: now.add(const Duration(days: 2, hours: 3, minutes: 15)),
       );
 
       await pumpTestApp(

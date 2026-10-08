@@ -29,19 +29,28 @@ class Weather extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Weather',
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Weather',
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.all(12),
-            child: mode == TelemetryMode.small
-                ? _SmallWeather(cond: cond)
-                : _LargeWeather(cond: cond),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallWeather(cond: cond)
+                  : _LargeWeather(cond: cond),
+            );
+          },
+        ),
       ),
     );
   }
@@ -58,16 +67,28 @@ class _SmallWeather extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TelemetryHeader(label: 'WEATHER'),
+        const TelemetryHeader(label: 'WEATHER'),
         const SizedBox(height: 6),
         // Two temperature values side by side
         Expanded(
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _TempColumn(label: 'TRK', value: cond.trackTemp, color: AppColors.red),
-              Container(width: 1, margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2), color: AppColors.border),
-              _TempColumn(label: 'AIR', value: cond.airTemp, color: AppColors.blue),
+              _TempColumn(
+                label: 'TRK',
+                value: cond.trackTemp,
+                color: AppColors.red,
+              ),
+              Container(
+                width: 1,
+                margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                color: AppColors.border,
+              ),
+              _TempColumn(
+                label: 'AIR',
+                value: cond.airTemp,
+                color: AppColors.blue,
+              ),
             ],
           ),
         ),
@@ -75,15 +96,27 @@ class _SmallWeather extends StatelessWidget {
         // Wind + humidity compact row
         Row(
           children: [
-            Icon(Icons.air_rounded, size: 9, color: AppColors.textMuted),
+            const Icon(Icons.air_rounded, size: 9, color: AppColors.textMuted),
             const SizedBox(width: 3),
-            Text('${cond.windSpeed.toStringAsFixed(0)} km/h',
-                style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 9)),
+            Text(
+              '${cond.windSpeed.toStringAsFixed(0)} km/h',
+              style: AppTextStyles.caption(
+                color: AppColors.textSecondary,
+              ).copyWith(fontSize: 9),
+            ),
             const Spacer(),
-            Icon(Icons.water_drop_outlined, size: 9, color: AppColors.textMuted),
+            const Icon(
+              Icons.water_drop_outlined,
+              size: 9,
+              color: AppColors.textMuted,
+            ),
             const SizedBox(width: 3),
-            Text('${cond.humidity.toInt()}%',
-                style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 9)),
+            Text(
+              '${cond.humidity.toInt()}%',
+              style: AppTextStyles.caption(
+                color: AppColors.textSecondary,
+              ).copyWith(fontSize: 9),
+            ),
           ],
         ),
       ],
@@ -105,13 +138,19 @@ class _LargeWeather extends StatelessWidget {
         // Header + condition tag inline
         Row(
           children: [
-            Text('WEATHER',
-                style: AppTextStyles.label(color: AppColors.textMuted)
-                    .copyWith(fontSize: 10, letterSpacing: 0.6)),
+            Text(
+              'WEATHER',
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 10, letterSpacing: 0.6),
+            ),
             const Spacer(),
-            Text(cond.conditions.toUpperCase(),
-                style: AppTextStyles.label(color: AppColors.textMuted)
-                    .copyWith(fontSize: 9, letterSpacing: 0.4)),
+            Text(
+              cond.conditions.toUpperCase(),
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9, letterSpacing: 0.4),
+            ),
           ],
         ),
         const SizedBox(height: 10),
@@ -124,15 +163,20 @@ class _LargeWeather extends StatelessWidget {
               duration: const Duration(milliseconds: 400),
               builder: (_, v, _) => Text(
                 '${v.toStringAsFixed(1)}°',
-                style: AppTextStyles.display(color: AppColors.red)
-                    .copyWith(fontSize: 36, fontWeight: FontWeight.bold),
+                style: AppTextStyles.display(
+                  color: AppColors.red,
+                ).copyWith(fontSize: 36, fontWeight: FontWeight.bold),
               ),
             ),
             const SizedBox(width: 5),
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
-              child: Text('PISTE',
-                  style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+              child: Text(
+                'PISTE',
+                style: AppTextStyles.caption(
+                  color: AppColors.textMuted,
+                ).copyWith(fontSize: 9),
+              ),
             ),
           ],
         ),
@@ -141,9 +185,19 @@ class _LargeWeather extends StatelessWidget {
         Container(height: 1, color: AppColors.border),
         const SizedBox(height: 8),
         // Secondary metrics
-        _MetricRow(icon: Icons.thermostat_rounded, label: 'AIR', value: '${cond.airTemp.toStringAsFixed(1)}°C', color: AppColors.blue),
+        _MetricRow(
+          icon: Icons.thermostat_rounded,
+          label: 'AIR',
+          value: '${cond.airTemp.toStringAsFixed(1)}°C',
+          color: AppColors.blue,
+        ),
         const SizedBox(height: 6),
-        _MetricRow(icon: Icons.air_rounded, label: 'VENT', value: '${cond.windSpeed.toStringAsFixed(0)} km/h', color: AppColors.textSecondary),
+        _MetricRow(
+          icon: Icons.air_rounded,
+          label: 'VENT',
+          value: '${cond.windSpeed.toStringAsFixed(0)} km/h',
+          color: AppColors.textSecondary,
+        ),
         const SizedBox(height: 6),
         _HumidityRow(humidity: cond.humidity),
       ],
@@ -155,7 +209,11 @@ class _LargeWeather extends StatelessWidget {
 
 // Vertically stacked label + animated temperature value; used side-by-side for TRK/AIR in small mode.
 class _TempColumn extends StatelessWidget {
-  const _TempColumn({required this.label, required this.value, required this.color});
+  const _TempColumn({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final String label;
   final double value;
   final Color color;
@@ -166,18 +224,24 @@ class _TempColumn extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(label,
-              style: AppTextStyles.caption(color: AppColors.textMuted)
-                  .copyWith(fontSize: 8, letterSpacing: 0.5)),
+          Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8, letterSpacing: 0.5),
+          ),
           const SizedBox(height: 3),
           TweenAnimationBuilder<double>(
             tween: Tween<double>(end: value),
             duration: const Duration(milliseconds: 400),
             builder: (_, v, _) => FittedBox(
               fit: BoxFit.scaleDown,
-              child: Text('${v.toStringAsFixed(1)}°',
-                  style: AppTextStyles.display(color: color)
-                      .copyWith(fontSize: 24, fontWeight: FontWeight.bold)),
+              child: Text(
+                '${v.toStringAsFixed(1)}°',
+                style: AppTextStyles.display(
+                  color: color,
+                ).copyWith(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
@@ -188,7 +252,12 @@ class _TempColumn extends StatelessWidget {
 
 // Generic icon + label + value row for secondary weather metrics in large mode.
 class _MetricRow extends StatelessWidget {
-  const _MetricRow({required this.icon, required this.label, required this.value, required this.color});
+  const _MetricRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
   final IconData icon;
   final String label;
   final String value;
@@ -200,12 +269,19 @@ class _MetricRow extends StatelessWidget {
       children: [
         Icon(icon, size: 11, color: color),
         const SizedBox(width: 5),
-        Text(label,
-            style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        Text(
+          label,
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 9),
+        ),
         const Spacer(),
-        Text(value,
-            style: AppTextStyles.caption(color: AppColors.textSecondary)
-                .copyWith(fontSize: 10, fontWeight: FontWeight.w600)),
+        Text(
+          value,
+          style: AppTextStyles.caption(
+            color: AppColors.textSecondary,
+          ).copyWith(fontSize: 10, fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }
@@ -220,10 +296,18 @@ class _HumidityRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(Icons.water_drop_outlined, size: 11, color: AppColors.textMuted),
+        const Icon(
+          Icons.water_drop_outlined,
+          size: 11,
+          color: AppColors.textMuted,
+        ),
         const SizedBox(width: 5),
-        Text('HUM.',
-            style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        Text(
+          'HUM.',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 9),
+        ),
         const SizedBox(width: 8),
         Expanded(
           child: TelemetryBar(
@@ -236,10 +320,13 @@ class _HumidityRow extends StatelessWidget {
         const SizedBox(width: 6),
         SizedBox(
           width: 28,
-          child: Text('${humidity.toInt()}%',
-              textAlign: TextAlign.right,
-              style: AppTextStyles.caption(color: AppColors.textSecondary)
-                  .copyWith(fontSize: 9, fontWeight: FontWeight.w600)),
+          child: Text(
+            '${humidity.toInt()}%',
+            textAlign: TextAlign.right,
+            style: AppTextStyles.caption(
+              color: AppColors.textSecondary,
+            ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+          ),
         ),
       ],
     );

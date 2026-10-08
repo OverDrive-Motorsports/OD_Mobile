@@ -28,19 +28,20 @@ void main() {
       expect(find.text('PIT'), findsOneWidget);
     });
 
-    testWidgets('renders the compact "PIT" header without exceptions at small size', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(
-        tester,
-        const PitStrategy(),
-        width: 150,
-        height: 150,
-      );
+    testWidgets(
+      'renders the compact "PIT" header without exceptions at small size',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(
+          tester,
+          const PitStrategy(),
+          width: 150,
+          height: 150,
+        );
 
-      expect(find.text('PIT'), findsWidgets);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.text('PIT'), findsWidgets);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('honors a custom initial driver id', (
       WidgetTester tester,

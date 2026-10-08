@@ -43,21 +43,30 @@ class _PenaltyState extends State<Penalty> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Penalties',
-            currentDriverId: _driverId,
-            onDriverSelected: (id) => setState(() => _driverId = id),
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Penalties',
+          currentDriverId: _driverId,
+          onDriverSelected: (id) => setState(() => _driverId = id),
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.all(12),
-            child: mode == TelemetryMode.small
-                ? _SmallPenalty(data: data, driverId: _driverId)
-                : _LargePenalty(data: data, driverId: _driverId),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallPenalty(data: data, driverId: _driverId)
+                  : _LargePenalty(data: data, driverId: _driverId),
+            );
+          },
+        ),
       ),
     );
   }
@@ -86,16 +95,21 @@ class _SmallPenalty extends StatelessWidget {
           children: [
             AnimatedDefaultTextStyle(
               duration: const Duration(milliseconds: 300),
-              style: AppTextStyles.display(color: penaltyColor)
-                  .copyWith(fontSize: 34, fontWeight: FontWeight.bold),
+              style: AppTextStyles.display(
+                color: penaltyColor,
+              ).copyWith(fontSize: 34, fontWeight: FontWeight.bold),
               child: Text(hasPenalty ? '+${data.penaltySeconds}' : '—'),
             ),
             if (hasPenalty) ...[
               const SizedBox(width: 4),
               Padding(
                 padding: const EdgeInsets.only(bottom: 5),
-                child: Text('s',
-                    style: AppTextStyles.body(color: penaltyColor).copyWith(fontSize: 14)),
+                child: Text(
+                  's',
+                  style: AppTextStyles.body(
+                    color: penaltyColor,
+                  ).copyWith(fontSize: 14),
+                ),
               ),
             ],
           ],
@@ -132,24 +146,35 @@ class _LargePenalty extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('TEMPS',
-                    style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+                Text(
+                  'TEMPS',
+                  style: AppTextStyles.caption(
+                    color: AppColors.textMuted,
+                  ).copyWith(fontSize: 8),
+                ),
                 const SizedBox(height: 2),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     AnimatedDefaultTextStyle(
                       duration: const Duration(milliseconds: 300),
-                      style: AppTextStyles.display(color: penaltyColor)
-                          .copyWith(fontSize: 38, fontWeight: FontWeight.bold),
-                      child: Text(hasPenalty ? '+${data.penaltySeconds}' : 'OK'),
+                      style: AppTextStyles.display(
+                        color: penaltyColor,
+                      ).copyWith(fontSize: 38, fontWeight: FontWeight.bold),
+                      child: Text(
+                        hasPenalty ? '+${data.penaltySeconds}' : 'OK',
+                      ),
                     ),
                     if (hasPenalty) ...[
                       const SizedBox(width: 4),
                       Padding(
                         padding: const EdgeInsets.only(bottom: 6),
-                        child: Text('s',
-                            style: AppTextStyles.body(color: penaltyColor).copyWith(fontSize: 16)),
+                        child: Text(
+                          's',
+                          style: AppTextStyles.body(
+                            color: penaltyColor,
+                          ).copyWith(fontSize: 16),
+                        ),
                       ),
                     ],
                   ],
@@ -171,17 +196,25 @@ class _LargePenalty extends StatelessWidget {
         // Track limits
         Row(
           children: [
-            Text('LIMITES PISTE',
-                style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+            Text(
+              'LIMITES PISTE',
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 9),
+            ),
             const Spacer(),
             _WarningDots(warnings: data.trackLimitWarnings, max: 3),
             const SizedBox(width: 5),
-            Text('${data.trackLimitWarnings}/3',
-                style: AppTextStyles.caption(
-                  color: data.trackLimitWarnings >= 3 ? AppColors.red
-                      : data.trackLimitWarnings >= 2 ? const Color(0xFFFF8C00)
-                      : AppColors.textMuted,
-                ).copyWith(fontSize: 9, fontWeight: FontWeight.w600)),
+            Text(
+              '${data.trackLimitWarnings}/3',
+              style: AppTextStyles.caption(
+                color: data.trackLimitWarnings >= 3
+                    ? AppColors.red
+                    : data.trackLimitWarnings >= 2
+                    ? const Color(0xFFFF8C00)
+                    : AppColors.textMuted,
+              ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+            ),
           ],
         ),
         const SizedBox(height: 6),
@@ -190,8 +223,9 @@ class _LargePenalty extends StatelessWidget {
             data.trackLimitWarnings >= 3
                 ? '⚠ Pénalité automatique imminente'
                 : '⚠ Prochain avertissement = pénalité',
-            style: AppTextStyles.caption(color: const Color(0xFFFF8C00))
-                .copyWith(fontSize: 8),
+            style: AppTextStyles.caption(
+              color: const Color(0xFFFF8C00),
+            ).copyWith(fontSize: 8),
           ),
       ],
     );
@@ -212,8 +246,10 @@ class _WarningDots extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(max, (i) {
         final active = i < warnings;
-        final color = warnings >= 3 ? AppColors.red
-            : warnings >= 2 ? const Color(0xFFFF8C00)
+        final color = warnings >= 3
+            ? AppColors.red
+            : warnings >= 2
+            ? const Color(0xFFFF8C00)
             : AppColors.gold;
         return Container(
           margin: const EdgeInsets.only(right: 4),
@@ -222,7 +258,9 @@ class _WarningDots extends StatelessWidget {
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             color: active ? color : AppColors.surface.withValues(alpha: 0.80),
-            border: Border.all(color: active ? color.withValues(alpha: 0.50) : AppColors.border),
+            border: Border.all(
+              color: active ? color.withValues(alpha: 0.50) : AppColors.border,
+            ),
           ),
         );
       }),
@@ -232,7 +270,11 @@ class _WarningDots extends StatelessWidget {
 
 // Animated flag badge; pulses with full colour when active and fades to muted when inactive.
 class _FlagIndicator extends StatelessWidget {
-  const _FlagIndicator({required this.label, required this.active, required this.color});
+  const _FlagIndicator({
+    required this.label,
+    required this.active,
+    required this.color,
+  });
   final String label;
   final bool active;
   final Color color;
@@ -246,7 +288,9 @@ class _FlagIndicator extends StatelessWidget {
           width: 28,
           height: 28,
           decoration: BoxDecoration(
-            color: active ? color.withValues(alpha: 0.20) : AppColors.surface.withValues(alpha: 0.40),
+            color: active
+                ? color.withValues(alpha: 0.20)
+                : AppColors.surface.withValues(alpha: 0.40),
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
               color: active ? color.withValues(alpha: 0.70) : AppColors.border,
@@ -259,9 +303,12 @@ class _FlagIndicator extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 3),
-        Text(label,
-            style: AppTextStyles.caption(color: active ? color : AppColors.textMuted)
-                .copyWith(fontSize: 7)),
+        Text(
+          label,
+          style: AppTextStyles.caption(
+            color: active ? color : AppColors.textMuted,
+          ).copyWith(fontSize: 7),
+        ),
       ],
     );
   }

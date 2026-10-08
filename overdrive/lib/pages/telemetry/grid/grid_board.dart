@@ -152,10 +152,12 @@ class _GridBoardState extends State<GridBoard> {
       }
 
       final item = _items[index];
-      final clampedColSpan =
-          newColSpan.clamp(item.minColSpan, widget.cols - item.col).toInt();
-      final clampedRowSpan =
-          newRowSpan.clamp(item.minRowSpan, widget.rows - item.row).toInt();
+      final clampedColSpan = newColSpan
+          .clamp(item.minColSpan, widget.cols - item.col)
+          .toInt();
+      final clampedRowSpan = newRowSpan
+          .clamp(item.minRowSpan, widget.rows - item.row)
+          .toInt();
 
       if (!_isPlacementValid(
         itemId: id,

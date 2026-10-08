@@ -106,7 +106,10 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
                           right: 0,
                           child: MenuOverlayButton(
                             items: _championshipMenuItems,
-                            selectedIndex: _selectedMenuIndex.clamp(0, _championshipMenuItems.length - 1),
+                            selectedIndex: _selectedMenuIndex.clamp(
+                              0,
+                              _championshipMenuItems.length - 1,
+                            ),
                             onSelected: _onChampionshipSelected,
                           ),
                         ),
@@ -160,9 +163,9 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
           icon: Icons.play_arrow_rounded,
           fullWidth: true,
           onPressed: () {
-            Navigator.of(context).push(
-              MaterialPageRoute<void>(builder: (_) => const ReplayPage()),
-            );
+            Navigator.of(
+              context,
+            ).push(MaterialPageRoute<void>(builder: (_) => const ReplayPage()));
           },
         ),
       ),
@@ -438,8 +441,6 @@ class _LiveActionButtons extends StatelessWidget {
     );
   }
 }
-
-
 
 /// Adapts season standings tables to the reusable standings widget.
 class _StandingsBlock extends StatelessWidget {
@@ -720,9 +721,7 @@ class _ChampionshipBackground extends StatelessWidget {
       ],
       stops: _kStops2,
     ),
-    _ => const LinearGradient(
-      colors: [Color(0x00000000), Color(0x00000000)],
-    ),
+    _ => const LinearGradient(colors: [Color(0x00000000), Color(0x00000000)]),
   };
 
   @override
