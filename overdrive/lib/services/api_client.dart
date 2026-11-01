@@ -8,6 +8,7 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'auth_service.dart';
@@ -97,26 +98,33 @@ class ApiClient {
 	Dio get dio => _dio;
 
 	static String _resolveBaseUrl(String? explicitBaseUrl) {
-		final fromArg = (explicitBaseUrl ?? '').trim();
-
+		final targetPlatform = defaultTargetPlatform;
+		final fromArg = AuthService.resolveApiBaseUrlForPlatform(
+			explicitBaseUrl,
+			platform: targetPlatform,
+		);
 		if (_isValidUrl(fromArg)) {
 			return fromArg;
 		}
 
 		if (!dotenv.isInitialized) {
-			throw Exception(
-			'Environment not initialized. Call dotenv.load() before creating ApiClient.',
+			return AuthService.resolveApiBaseUrlForPlatform(
+				null,
+				platform: targetPlatform,
 			);
 		}
 
-		final fromEnv = (dotenv.env['API_BASE_URL'] ?? '').trim();
-
+		final fromEnv = AuthService.resolveApiBaseUrlForPlatform(
+			dotenv.env['API_BASE_URL'],
+			platform: targetPlatform,
+		);
 		if (_isValidUrl(fromEnv)) {
 			return fromEnv;
 		}
 
-		throw Exception(
-			'API_BASE_URL is missing or invalid in the environment configuration.',
+		return AuthService.resolveApiBaseUrlForPlatform(
+			null,
+			platform: targetPlatform,
 		);
 	}
 
