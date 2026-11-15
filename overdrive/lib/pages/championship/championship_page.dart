@@ -29,6 +29,7 @@ import '../../widgets/championships/championship_schedule.dart';
 import '../../widgets/championships/championship_standings.dart'
     as standings_ui;
 import '../../widgets/championships/championship_top3.dart';
+import 'championship_data_loader.dart';
 
 const List<MenuOverlayItem> _championshipMenuItems = [
   MenuOverlayItem(label: 'Formule 1', icon: Icons.sports_motorsports_outlined),
@@ -49,23 +50,110 @@ class ChampionshipPage extends StatefulWidget {
 class _ChampionshipPageState extends State<ChampionshipPage> {
   late ChampionshipData _selectedData;
 
+  final ChampionshipDataLoader _dataLoader = ChampionshipDataLoader();
+
+  bool _isLoading = true;
+  String? _loadError;
+
   @override
   void initState() {
-    super.initState();
-    _selectedData = widget.data;
+      super.initState();
+      _selectedData = widget.data;
+      _loadChampionshipData(widget.data.id);
+  }
+
+  Future<void> _loadChampionshipData(String championshipCode) async {
+      setState(() {
+          _isLoading = true;
+          _loadError = null;
+      });
+
+      try {
+          final data = await _dataLoader.load(championshipCode);
+
+          if (!mounted) return;
+
+          setState(() {
+              _selectedData = data;
+              _isLoading = false;
+          });
+      } catch (error) {
+          if (!mounted) return;
+
+          setState(() {
+              _loadError = error.toString();
+              _isLoading = false;
+          });
+      }
   }
 
   int get _selectedMenuIndex =>
       championshipMocks.indexWhere((d) => d.id == _selectedData.id);
 
-  void _onChampionshipSelected(int index) {
-    setState(() => _selectedData = championshipMocks[index]);
+void _onChampionshipSelected(int index) {
+  final selectedChampionship = championshipMocks[index];
+
+  if (selectedChampionship.id == 'formula_1' ||
+      selectedChampionship.id == 'f1') {
+    _loadChampionshipData('formula_1');
+    return;
   }
 
-  @override
-  Widget build(BuildContext context) {
+  setState(() {
+    _selectedData = selectedChampionship;
+    _loadError = null;
+    _isLoading = false;
+  });
+}
+
+
+@override
+Widget build(BuildContext context) {
     final now = DateTime.now();
     final headline = _resolveHeadline(_selectedData);
+
+    if (_isLoading) {
+        return Scaffold(
+            backgroundColor: AppColors.background,
+            body: const Center(
+                child: CircularProgressIndicator(),
+            ),
+        );
+    }
+
+    if (_loadError != null) {
+        return Scaffold(
+            backgroundColor: AppColors.background,
+            body: Center(
+                child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                            const Text(
+                                'Impossible de charger le championnat.',
+                                textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                                _loadError!,
+                                textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 20),
+                            ElevatedButton(
+                                onPressed: () {
+                                    _loadChampionshipData(
+                                        widget.data.id,
+                                    );
+                                },
+                                child: const Text('Réessayer'),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+        );
+    }
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -691,7 +779,7 @@ class _ChampionshipBackground extends StatelessWidget {
   static const _kStops2 = [0.0, 0.55];
 
   static LinearGradient _gradientFor(String id) => switch (id) {
-    'formula_1' => const LinearGradient(
+    'f1' || 'formula_1' => const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
       colors: [

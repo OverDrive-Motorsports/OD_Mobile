@@ -3,35 +3,32 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class ChampionshipGatewayClient {
-  ChampionshipGatewayClient({Dio? dio, String? baseUrl})
-    : _dio = dio ?? _buildDio(baseUrl ?? _resolveBaseUrl());
+import '../../services/auth/auth_refresh_interceptor.dart';
 
-  final Dio _dio;
+class ChampionshipGatewayClient {
+    ChampionshipGatewayClient({Dio? dio, String? baseUrl})
+        : _dio = dio ?? _buildDio(baseUrl ?? _resolveBaseUrl()) {
+        if (dio != null) {
+            _dio.interceptors.add(
+                AuthRefreshInterceptor(_dio),
+            );
+        }
+    }
+
+    final Dio _dio;
+
 
   static Dio _buildDio(String baseUrl) {
     final dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 15),
-        receiveTimeout: const Duration(seconds: 60),
-        validateStatus: (status) => status != null && status < 500,
-      ),
+        BaseOptions(
+            baseUrl: baseUrl,
+            connectTimeout: const Duration(seconds: 15),
+            receiveTimeout: const Duration(seconds: 60),
+        ),
     );
 
     dio.interceptors.add(
-      InterceptorsWrapper(
-        onRequest: (options, handler) async {
-          const storage = FlutterSecureStorage();
-          final token = await storage.read(key: 'od_access_token');
-
-          if (token != null && token.isNotEmpty) {
-            options.headers['Authorization'] = 'Bearer $token';
-          }
-
-          handler.next(options);
-        },
-      ),
+        AuthRefreshInterceptor(dio),
     );
 
     return dio;
@@ -54,7 +51,7 @@ class ChampionshipGatewayClient {
         type: DioExceptionType.badResponse,
       );
     }
-
+debugPrint('Championship API response: ${response.data}');
     return response;
   }
 

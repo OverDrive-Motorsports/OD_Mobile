@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'auth_refresh_interceptor.dart';
 import 'auth_service.dart';
 import 'dart:async';
 
@@ -29,63 +30,7 @@ class ApiClient {
 
 		_dio.interceptors.add(
 			InterceptorsWrapper(
-				onRequest: (options, handler) async {
-					final token = await AuthService.instance.accessToken;
-
-					if (token != null && token.isNotEmpty) {
-						options.headers['Authorization'] = 'Bearer $token';
-					}
-
-					debugPrint("========== REQUEST ==========");
-					debugPrint("${options.method} ${options.path}");
-					debugPrint("Headers: ${options.headers}");
-
-					return handler.next(options);
-				},
-
-				onError: (error, handler) async {
-					if (error.requestOptions.path == "/refresh") {
-						return handler.next(error);
-					}
-
-					if (error.response?.statusCode != 401) {
-						return handler.next(error);
-					}
-
-					try {
-						if (_refreshCompleter == null) {
-							_refreshCompleter = Completer<void>();
-
-							try {
-								await AuthService.instance.refreshTokens();
-								_refreshCompleter!.complete();
-							} catch (e) {
-								_refreshCompleter!.completeError(e);
-								rethrow;
-							} finally {
-								_refreshCompleter = null;
-							}
-						} else {
-							await _refreshCompleter!.future;
-						}
-
-						final token = await AuthService.instance.accessToken;
-
-						if (token == null) {
-							return handler.next(error);
-						}
-
-						error.requestOptions.headers["Authorization"] =
-							"Bearer $token";
-
-						final response = await _dio.fetch(error.requestOptions);
-
-						return handler.resolve(response);
-					} catch (_) {
-						await AuthService.instance.logout();
-						return handler.next(error);
-					}
-				},
+				AuthRefreshInterceptor(_dio),
 			)
 		);
 	}
