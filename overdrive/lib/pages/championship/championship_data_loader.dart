@@ -8,6 +8,7 @@ import '../../services/championship/championship_data.dart';
 import '../../domain/championship/standing.dart';
 import '../../domain/championship/driver.dart';
 import '../../domain/championship/team.dart';
+import '../../services/championship/championship_loaded_data.dart';
 
 class ChampionshipDataLoader {
   ChampionshipDataLoader({
@@ -174,5 +175,75 @@ return _adapter.toChampionshipData(
       // Optional data, such as standings, may not be available yet.
       return fallback;
     }
+  }
+
+
+    Future<ChampionshipLoadedData> loadWithSession(
+      String championshipCode,
+  ) async {
+      final championships =
+          await _dependencies.getChampionshipsUseCase();
+
+      final championship = _findChampionship(
+          championships,
+          championshipCode,
+      );
+
+      final events = await _dependencies
+          .getEventsByChampionshipUseCase(
+              championship.championshipCode,
+          );
+
+      final event = _selectEvent(events);
+
+      if (event == null) {
+          throw StateError(
+              'No event found for championship "$championshipCode".',
+          );
+      }
+
+      final sessions = await _dependencies
+          .getEventSessionsUseCase(event.eventId);
+
+      final session = _selectSession(sessions);
+
+      if (session == null) {
+          throw StateError(
+              'No session found for event "${event.eventId}".',
+          );
+      }
+
+      final standings = await _tryLoad<Standing>(
+          () => _dependencies
+              .getSessionStandingsUseCase(session.sessionId),
+          const <Standing>[],
+      );
+
+      final drivers = await _tryLoad<Driver>(
+          () => _dependencies
+              .getSessionDriversUseCase(session.sessionId),
+          const <Driver>[],
+      );
+
+      final teams = await _tryLoad<Team>(
+          () => _dependencies
+              .getSessionTeamsUseCase(session.sessionId),
+          const <Team>[],
+      );
+
+      final championshipData = _adapter.toChampionshipData(
+          championship: championship,
+          event: event,
+          sessions: sessions,
+          standings: standings,
+          drivers: drivers,
+          teams: teams,
+      );
+
+      return ChampionshipLoadedData(
+          championshipData: championshipData,
+          session: session,
+          drivers: drivers,
+      );
   }
 }

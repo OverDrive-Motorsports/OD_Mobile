@@ -30,6 +30,8 @@ import '../../widgets/championships/championship_standings.dart'
     as standings_ui;
 import '../../widgets/championships/championship_top3.dart';
 import 'championship_data_loader.dart';
+import '../../services/championship/championship_loaded_data.dart';
+import '../../domain/championship/driver.dart';
 
 const List<MenuOverlayItem> _championshipMenuItems = [
   MenuOverlayItem(label: 'Formule 1', icon: Icons.sports_motorsports_outlined),
@@ -51,6 +53,7 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
   late ChampionshipData _selectedData;
 
   final ChampionshipDataLoader _dataLoader = ChampionshipDataLoader();
+  ChampionshipLoadedData? _loadedData;
 
   bool _isLoading = true;
   String? _loadError;
@@ -66,15 +69,19 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
       setState(() {
           _isLoading = true;
           _loadError = null;
+          _loadedData = null;
       });
 
       try {
-          final data = await _dataLoader.load(championshipCode);
+          final loadedData = await _dataLoader.loadWithSession(
+              championshipCode,
+          );
 
           if (!mounted) return;
 
           setState(() {
-              _selectedData = data;
+              _loadedData = loadedData;
+              _selectedData = loadedData.championshipData;
               _isLoading = false;
           });
       } catch (error) {
@@ -275,6 +282,8 @@ Widget build(BuildContext context) {
       return _LiveOverviewCard(
         groups: liveGroups,
         accentColor: data.accentColor,
+        sessionId: _loadedData?.session.sessionId,
+        drivers: _loadedData?.drivers ?? const [],
       );
     }
 
@@ -450,10 +459,14 @@ final _kLiveCardTheme = LiquidGlassThemeData.dark().copyWith(
 
 /// Live-session overview with top-three groups and quick action buttons.
 class _LiveOverviewCard extends StatelessWidget {
-  const _LiveOverviewCard({required this.groups, required this.accentColor});
+  const _LiveOverviewCard({required this.groups, required this.accentColor,
+                          required this.sessionId, required this.drivers,
+                          });
 
   final List<ChampionshipLiveGroup> groups;
   final Color accentColor;
+  final String? sessionId;
+  final List<Driver> drivers;
 
   @override
   Widget build(BuildContext context) {
@@ -485,7 +498,10 @@ class _LiveOverviewCard extends StatelessWidget {
                   if (index < groups.length - 1) const SizedBox(height: 14),
                 ],
                 const SizedBox(height: 16),
-                _LiveActionButtons(accentColor: accentColor),
+                _LiveActionButtons(accentColor: accentColor,
+                                    sessionId: sessionId,
+                                    drivers: drivers,
+                                    ),
               ],
             ),
           ),
@@ -497,9 +513,11 @@ class _LiveOverviewCard extends StatelessWidget {
 
 /// Row of quick actions shown on live championship pages.
 class _LiveActionButtons extends StatelessWidget {
-  const _LiveActionButtons({required this.accentColor});
+  const _LiveActionButtons({required this.accentColor, required this.sessionId, required this.drivers,});
 
   final Color accentColor;
+  final String? sessionId;
+  final List<Driver> drivers;
 
   @override
   Widget build(BuildContext context) {
@@ -518,7 +536,26 @@ class _LiveActionButtons extends StatelessWidget {
           child: AppButton(
             icon: Icons.insights_outlined,
             label: 'Telemetrie',
-            onPressed: () => context.push('/telemetry'),
+            onPressed: () {
+                if (sessionId == null || sessionId!.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                        'Aucune session disponible pour la telemetrie.'
+                      ),
+                    ),
+                  );
+                return;
+              }
+            
+              context.push(
+                '/telemetry',
+                extra: <String, dynamic> {
+                  'sessionId': sessionId,
+                  'drivers': drivers,
+                },
+              );
+            },
             fullWidth: true,
           ),
         ),

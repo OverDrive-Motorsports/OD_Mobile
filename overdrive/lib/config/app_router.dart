@@ -24,6 +24,8 @@ import '../pages/tv/tv_page.dart';
 import '../services/auth/auth_service.dart';
 import '../services/championship/championship_mock_data.dart';
 import '../widgets/navigation/navigation_shell.dart';
+import '../domain/championship/driver.dart';
+
 
 // ── Route paths ───────────────────────────────────────────────────────────
 
@@ -145,11 +147,30 @@ GoRouter createRouter(AuthService authService) {
 					),
 				],
 			),
+
 			GoRoute(
 				path: RoutePaths.telemetry,
 				name: 'telemetry',
-				builder: (_, _) => const TelemetryPage(),
+				builder: (context, state) {
+					final extra = state.extra;
+
+					final parameters = extra is Map<String, dynamic>
+						? extra
+						: <String, dynamic>{};
+
+					final sessionId = parameters['sessionId'] as String?;
+
+					final drivers = parameters['drivers'] is List<Driver>
+						? parameters['drivers'] as List<Driver>
+						: const <Driver>[];
+
+					return TelemetryPage(
+						sessionId: sessionId,
+						drivers: drivers,
+					);
+				},
 			),
+
 			GoRoute(
 				path: RoutePaths.settings,
 				name: 'settings',

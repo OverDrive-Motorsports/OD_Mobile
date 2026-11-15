@@ -41,6 +41,7 @@ import '../../widgets/telemetry/tire_temps.dart';
 import '../../widgets/telemetry/weather.dart';
 import 'grid/grid_board.dart';
 import 'grid/grid_item.dart';
+import '../../domain/championship/driver.dart';
 
 // ─── Widget catalogue ─────────────────────────────────────────────────────────
 
@@ -74,8 +75,14 @@ enum _WidgetType {
 }
 
 // Factory that instantiates the concrete telemetry widget for a given catalogue entry.
-Widget _buildWidget(_WidgetType type) => switch (type) {
-      _WidgetType.speedometer => const Speedometer(),
+Widget _buildWidget(_WidgetType type, {
+                    String? sessionId,
+                    List<Driver> drivers = const [],
+}) => switch (type) {
+      _WidgetType.speedometer => Speedometer(
+        sessionId:sessionId,
+        drivers: drivers,
+      ),
       _WidgetType.gearRpm => const GearRpm(),
       _WidgetType.throttleBrake => const ThrottleBrake(),
       _WidgetType.lapDelta => const LapDelta(),
@@ -101,26 +108,46 @@ Widget _buildWidget(_WidgetType type) => switch (type) {
 // ─── Page root — owns the simulator ──────────────────────────────────────────
 
 // Provides the TelemetrySimulator to the widget subtree and delegates layout to _TelemetryBoard.
-class TelemetryPage extends StatelessWidget {
-  const TelemetryPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => TelemetrySimulator(),
-      child: const _TelemetryBoard(),
-    );
-  }
+class TelemetryPage extends StatelessWidget {
+    const TelemetryPage({
+        super.key,
+        this.sessionId,
+        this.drivers = const [],
+    });
+
+    final String? sessionId;
+    final List<Driver> drivers;
+
+    @override
+    Widget build(BuildContext context) {
+        return ChangeNotifierProvider(
+            create: (_) => TelemetrySimulator(),
+            child: _TelemetryBoard(
+                sessionId: sessionId,
+                drivers: drivers,
+            ),
+        );
+    }
 }
+
 
 // ─── Board — owns grid state ───────────────────────────────────────────────────
 
-class _TelemetryBoard extends StatefulWidget {
-  const _TelemetryBoard();
 
-  @override
-  State<_TelemetryBoard> createState() => _TelemetryBoardState();
+class _TelemetryBoard extends StatefulWidget {
+    const _TelemetryBoard({
+        required this.sessionId,
+        required this.drivers,
+    });
+
+    final String? sessionId;
+    final List<Driver> drivers;
+
+    @override
+    State<_TelemetryBoard> createState() => _TelemetryBoardState();
 }
+
 
 class _TelemetryBoardState extends State<_TelemetryBoard> {
   static const int _minCols = 5;
@@ -129,17 +156,27 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
   static const double _boardPaddingV = 12;
   static const int _defaultColSpan = 2;
   static const int _defaultRowSpan = 2;
+  
+  late final List<GridItem> _items;
 
-  final List<GridItem> _items = [
-    GridItem(
-      id: 'speedometer_0',
-      col: 0,
-      row: 0,
-      colSpan: _defaultColSpan,
-      rowSpan: _defaultRowSpan,
-      child: const Speedometer(),
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+
+    _items = [
+      GridItem(
+        id: 'speedometer_0',
+        col: 0,
+        row: 0,
+        colSpan: _defaultColSpan,
+        rowSpan: _defaultRowSpan,
+        child: Speedometer(
+          sessionId: widget.sessionId,
+          drivers: widget.drivers,
+        ),
+      ),
+    ];
+  }
 
   int _idCounter = 1;
   final ScrollController _verticalScroll = ScrollController();
@@ -206,7 +243,11 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
         row: slot.row,
         colSpan: _defaultColSpan,
         rowSpan: _defaultRowSpan,
-        child: _buildWidget(type),
+        child: _buildWidget(
+          type, 
+          sessionId: widget.sessionId,
+          drivers: widget.drivers,
+        ),
       ));
       _idCounter++;
     });
