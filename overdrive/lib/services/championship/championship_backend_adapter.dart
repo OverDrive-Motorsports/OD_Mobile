@@ -31,10 +31,10 @@ class ChampionshipBackendAdapter {
       accentColor: _parseColor(championship.category),
       state: _mapState(event: event, sessions: sessions),
       liveGroups: _mapLiveGroups(
-      standings: standings,
-      drivers: drivers,
-      teams: teams,
-    ),
+        standings: standings,
+        drivers: drivers,
+        teams: teams,
+      ),
       standings: _mapStandings(
         standings: standings,
         drivers: drivers,
@@ -78,9 +78,9 @@ class ChampionshipBackendAdapter {
 
     final teamById = {for (final team in teams) team.teamId: team};
 
-    final entries = standings
-                      .where((standing) => standing.position > 0)
-                      .map((standing) {
+    final entries = standings.where((standing) => standing.position > 0).map((
+      standing,
+    ) {
       final driver = standing.driverNumber == null
           ? null
           : driverByNumber[standing.driverNumber];
@@ -155,72 +155,60 @@ class ChampionshipBackendAdapter {
   }
 
   List<ChampionshipLiveGroup> _mapLiveGroups({
-  required List<domain_standing.Standing> standings,
-  required List<domain_driver.Driver> drivers,
-  required List<domain_team.Team> teams,
-}) {
-  if (standings.isEmpty) {
-    return const [];
+    required List<domain_standing.Standing> standings,
+    required List<domain_driver.Driver> drivers,
+    required List<domain_team.Team> teams,
+  }) {
+    if (standings.isEmpty) {
+      return const [];
+    }
+
+    final driverByNumber = {
+      for (final driver in drivers) driver.driverNumber: driver,
+    };
+
+    final teamById = {for (final team in teams) team.teamId: team};
+
+    final sortedStandings =
+        standings.where((standing) => standing.position > 0).toList()
+          ..sort((a, b) => a.position.compareTo(b.position));
+
+    final entries = sortedStandings.map((standing) {
+      final driver = standing.driverNumber == null
+          ? null
+          : driverByNumber[standing.driverNumber];
+
+      final team = standing.teamId == null ? null : teamById[standing.teamId];
+
+      return ChampionshipLiveEntry(
+        position: standing.position,
+        name: driver?.fullName ?? '—',
+        teamName: team?.name ?? '—',
+        gap: standing.gapToLeader ?? '—',
+        lap: 0,
+        teamColor: _parseTeamColor(team?.color),
+      );
+    }).toList();
+
+    if (entries.length < 3) {
+      return const [];
+    }
+
+    return [ChampionshipLiveGroup(label: '', entries: entries)];
   }
 
-  final driverByNumber = {
-    for (final driver in drivers) driver.driverNumber: driver,
-  };
+  Color? _parseTeamColor(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return null;
+    }
 
-  final teamById = {
-    for (final team in teams) team.teamId: team,
-  };
+    final normalized = value.replaceFirst('#', '').trim();
+    final hex = int.tryParse(normalized, radix: 16);
 
-final sortedStandings = standings
-    .where((standing) => standing.position > 0)
-    .toList()
-  ..sort((a, b) => a.position.compareTo(b.position));
+    if (hex == null) {
+      return null;
+    }
 
-final entries = sortedStandings.map((standing) {
-        final driver = standing.driverNumber == null
-        ? null
-        : driverByNumber[standing.driverNumber];
-
-    final team = standing.teamId == null
-        ? null
-        : teamById[standing.teamId];
-
-    return ChampionshipLiveEntry(
-      position: standing.position,
-      name: driver?.fullName ?? '—',
-      teamName: team?.name ?? '—',
-      gap: standing.gapToLeader ?? '—',
-      lap: 0,
-      teamColor: _parseTeamColor(team?.color),
-    );
-  }).toList();
-
-  if (entries.length < 3) {
-    return const [];
+    return Color(normalized.length == 6 ? 0xFF000000 | hex : hex);
   }
-
-  return [
-    ChampionshipLiveGroup(
-      label: '',
-      entries: entries,
-    ),
-  ];
-}
-
-Color? _parseTeamColor(String? value) {
-  if (value == null || value.trim().isEmpty) {
-    return null;
-  }
-
-  final normalized = value.replaceFirst('#', '').trim();
-  final hex = int.tryParse(normalized, radix: 16);
-
-  if (hex == null) {
-    return null;
-  }
-
-  return Color(
-    normalized.length == 6 ? 0xFF000000 | hex : hex,
-  );
-}
 }

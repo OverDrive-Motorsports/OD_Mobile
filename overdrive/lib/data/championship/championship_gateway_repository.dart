@@ -24,14 +24,14 @@ class ChampionshipGatewayRepository implements ChampionshipRepository {
       final payload = response.data;
       final list = payload is List ? payload : const <dynamic>[];
 
-      return list
-          .map<Championship>((item) {
-            final map = item is Map ? Map<String, dynamic>.from(item) : const <String, dynamic>{};
-            return ChampionshipMapper.fromChampionshipDto(
-              ChampionshipDto.fromJson(map),
-            );
-          })
-          .toList();
+      return list.map<Championship>((item) {
+        final map = item is Map
+            ? Map<String, dynamic>.from(item)
+            : const <String, dynamic>{};
+        return ChampionshipMapper.fromChampionshipDto(
+          ChampionshipDto.fromJson(map),
+        );
+      }).toList();
     } on DioException catch (error) {
       throw ChampionshipFailure.fromDio(error);
     } catch (_) {
@@ -52,14 +52,12 @@ class ChampionshipGatewayRepository implements ChampionshipRepository {
       final payload = response.data;
       final list = payload is List ? payload : const <dynamic>[];
 
-      return list
-          .map<Event>((item) {
-            final map = item is Map ? Map<String, dynamic>.from(item) : const <String, dynamic>{};
-            return ChampionshipMapper.fromEventDto(
-              EventDto.fromJson(map),
-            );
-          })
-          .toList();
+      return list.map<Event>((item) {
+        final map = item is Map
+            ? Map<String, dynamic>.from(item)
+            : const <String, dynamic>{};
+        return ChampionshipMapper.fromEventDto(EventDto.fromJson(map));
+      }).toList();
     } on DioException catch (error) {
       throw ChampionshipFailure.fromDio(error);
     } catch (_) {
@@ -98,14 +96,12 @@ class ChampionshipGatewayRepository implements ChampionshipRepository {
       final payload = response.data;
       final list = payload is List ? payload : const <dynamic>[];
 
-      return list
-          .map<Session>((item) {
-            final map = item is Map ? Map<String, dynamic>.from(item) : const <String, dynamic>{};
-            return ChampionshipMapper.fromSessionDto(
-              SessionDto.fromJson(map),
-            );
-          })
-          .toList();
+      return list.map<Session>((item) {
+        final map = item is Map
+            ? Map<String, dynamic>.from(item)
+            : const <String, dynamic>{};
+        return ChampionshipMapper.fromSessionDto(SessionDto.fromJson(map));
+      }).toList();
     } on DioException catch (error) {
       throw ChampionshipFailure.fromDio(error);
     } catch (_) {
@@ -147,14 +143,12 @@ class ChampionshipGatewayRepository implements ChampionshipRepository {
       final payload = response.data;
       final list = payload is List ? payload : const <dynamic>[];
 
-      return list
-          .map<Driver>((item) {
-            final map = item is Map ? Map<String, dynamic>.from(item) : const <String, dynamic>{};
-            return ChampionshipMapper.fromDriverDto(
-              DriverDto.fromJson(map),
-            );
-          })
-          .toList();
+      return list.map<Driver>((item) {
+        final map = item is Map
+            ? Map<String, dynamic>.from(item)
+            : const <String, dynamic>{};
+        return ChampionshipMapper.fromDriverDto(DriverDto.fromJson(map));
+      }).toList();
     } on DioException catch (error) {
       throw ChampionshipFailure.fromDio(error);
     } catch (_) {
@@ -169,14 +163,12 @@ class ChampionshipGatewayRepository implements ChampionshipRepository {
       final payload = response.data;
       final list = payload is List ? payload : const <dynamic>[];
 
-      return list
-          .map<Team>((item) {
-            final map = item is Map ? Map<String, dynamic>.from(item) : const <String, dynamic>{};
-            return ChampionshipMapper.fromTeamDto(
-              TeamDto.fromJson(map),
-            );
-          })
-          .toList();
+      return list.map<Team>((item) {
+        final map = item is Map
+            ? Map<String, dynamic>.from(item)
+            : const <String, dynamic>{};
+        return ChampionshipMapper.fromTeamDto(TeamDto.fromJson(map));
+      }).toList();
     } on DioException catch (error) {
       throw ChampionshipFailure.fromDio(error);
     } catch (_) {
@@ -199,14 +191,12 @@ class ChampionshipGatewayRepository implements ChampionshipRepository {
       final payload = response.data;
       final list = payload is List ? payload : const <dynamic>[];
 
-      return list
-          .map<Standing>((item) {
-            final map = item is Map ? Map<String, dynamic>.from(item) : const <String, dynamic>{};
-            return ChampionshipMapper.fromStandingDto(
-              StandingDto.fromJson(map),
-            );
-          })
-          .toList();
+      return list.map<Standing>((item) {
+        final map = item is Map
+            ? Map<String, dynamic>.from(item)
+            : const <String, dynamic>{};
+        return ChampionshipMapper.fromStandingDto(StandingDto.fromJson(map));
+      }).toList();
     } on DioException catch (error) {
       throw ChampionshipFailure.fromDio(error);
     } catch (_) {

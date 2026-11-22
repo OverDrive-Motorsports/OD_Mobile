@@ -81,7 +81,10 @@ class GetDriverProfile {
   final ChampionshipRepository repository;
 
   Future<Driver> call(int driverNumber, {String? championshipCode}) =>
-      repository.getDriverProfile(driverNumber, championshipCode: championshipCode);
+      repository.getDriverProfile(
+        driverNumber,
+        championshipCode: championshipCode,
+      );
 }
 
 class GetSessionDataset {

@@ -29,5 +29,6 @@ class ChampionshipDependencyProvider {
 
   GetDriverProfile get getDriverProfileUseCase => GetDriverProfile(repository);
 
-  GetSessionDataset get getSessionDatasetUseCase => GetSessionDataset(repository);
+  GetSessionDataset get getSessionDatasetUseCase =>
+      GetSessionDataset(repository);
 }

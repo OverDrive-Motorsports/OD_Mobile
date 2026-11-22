@@ -182,7 +182,8 @@ class TeamDto {
       teamId: (json['teamId'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
       code: json['code']?.toString(),
-      color: (json['color'] ?? json['colorHex'] ?? json['teamColor'])?.toString(),
+      color: (json['color'] ?? json['colorHex'] ?? json['teamColor'])
+          ?.toString(),
     );
   }
 }

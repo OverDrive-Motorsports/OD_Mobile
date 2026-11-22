@@ -44,51 +44,43 @@ class HealthCheck {
 }
 
 class HealthService {
-	HealthService({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
+  HealthService({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 
-	final Dio _dio;
-	
-	Future<HealthCheck> getHealth() async {
-		try {
-			final response = await _dio.get('/health');
+  final Dio _dio;
 
-			final payload = response.data;
+  Future<HealthCheck> getHealth() async {
+    try {
+      final response = await _dio.get('/health');
 
-			if (payload is! Map) {
-				throw const HealthServiceException(
-					'Invalid server response',
-				);
-			}
+      final payload = response.data;
 
-			return HealthCheck.fromJson(
-				Map<String, dynamic>.from(payload),
-			);
-		} on DioException catch (exception) {
-			throw HealthServiceException(
-				_resolveError(exception),
-			);
-		} on HealthServiceException {
-			rethrow;
-		} catch (_) {
-			throw const HealthServiceException(
-				'Invalid server response',
-			);
-		}
-	}
+      if (payload is! Map) {
+        throw const HealthServiceException('Invalid server response');
+      }
 
-	String _resolveError(DioException exception) {
-		final data = exception.response?.data;
+      return HealthCheck.fromJson(Map<String, dynamic>.from(payload));
+    } on DioException catch (exception) {
+      throw HealthServiceException(_resolveError(exception));
+    } on HealthServiceException {
+      rethrow;
+    } catch (_) {
+      throw const HealthServiceException('Invalid server response');
+    }
+  }
 
-		if (data is Map<String, dynamic>) {
-			final message = data['error'] ?? data['message'];
+  String _resolveError(DioException exception) {
+    final data = exception.response?.data;
 
-			if (message is String && message.trim().isNotEmpty) {
-				return message.trim();
-			}
-		}
+    if (data is Map<String, dynamic>) {
+      final message = data['error'] ?? data['message'];
 
-		return exception.message ?? 'Unexpected error';
-	}
+      if (message is String && message.trim().isNotEmpty) {
+        return message.trim();
+      }
+    }
+
+    return exception.message ?? 'Unexpected error';
+  }
 }
 
 class HealthServiceException implements Exception {
