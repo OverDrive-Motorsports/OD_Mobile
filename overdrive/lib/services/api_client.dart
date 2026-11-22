@@ -1,4 +1,5 @@
-/**
+
+/*
  ##
  ## OverDrive 2026
  ## All Technical rights reserved
@@ -9,83 +10,52 @@
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-import 'auth_refresh_interceptor.dart';
-import 'auth_service.dart';
-import 'dart:async';
+import 'auth/auth_refresh_interceptor.dart';
+import 'auth/auth_service.dart';
 
 class ApiClient {
-	ApiClient._privateConstructor()
-			: _baseUrl = _resolveBaseUrl(null),
-			  _dio = Dio(
-				BaseOptions(
-					connectTimeout: const Duration(seconds:15),
-					receiveTimeout: const Duration(seconds:60),
-				),
-			  ) {
-		if(_isValidUrl(_baseUrl)){
-			_dio.options.baseUrl = _baseUrl;
-		}
+    ApiClient._privateConstructor()
+        : _baseUrl = _resolveBaseUrl(null),
+          _dio = Dio(
+            BaseOptions(
+                connectTimeout: const Duration(seconds: 15),
+                receiveTimeout: const Duration(seconds: 60),
+            ),
+          ) {
+        if (_isValidUrl(_baseUrl)) {
+            _dio.options.baseUrl = _baseUrl;
+        }
 
-		_dio.interceptors.add(
-			InterceptorsWrapper(
-				AuthRefreshInterceptor(_dio),
-			)
-		);
-	}
+        _dio.interceptors.add(
+            AuthRefreshInterceptor(_dio),
+        );
+    }
 
-	static final ApiClient instance = ApiClient._privateConstructor();
-	final Dio _dio;
-	final String _baseUrl;
-	Completer<void>? _refreshCompleter;
+    static final ApiClient instance = ApiClient._privateConstructor();
 
-	Dio get dio => _dio;
+    final Dio _dio;
+    final String _baseUrl;
 
-	static String _resolveBaseUrl(String? explicitBaseUrl) {
-		final targetPlatform = defaultTargetPlatform;
-		final fromArg = AuthService.resolveApiBaseUrlForPlatform(
-			explicitBaseUrl,
-			platform: targetPlatform,
-		);
-		if (_isValidUrl(fromArg)) {
-			return fromArg;
-		}
+    Dio get dio => _dio;
 
-		if (!dotenv.isInitialized) {
-			return AuthService.resolveApiBaseUrlForPlatform(
-				null,
-				platform: targetPlatform,
-			);
-		}
+    static String _resolveBaseUrl(String? explicitBaseUrl) {
+        return AuthService.resolveApiBaseUrlForPlatform(
+            explicitBaseUrl,
+            platform: defaultTargetPlatform,
+        );
+    }
 
-		final fromEnv = AuthService.resolveApiBaseUrlForPlatform(
-			dotenv.env['API_BASE_URL'],
-			platform: targetPlatform,
-		);
-		if (_isValidUrl(fromEnv)) {
-			return fromEnv;
-		}
+    static bool _isValidUrl(String value) {
+        if (value.isEmpty) {
+            return false;
+        }
 
-		return AuthService.resolveApiBaseUrlForPlatform(
-			null,
-			platform: targetPlatform,
-		);
-	}
+        final uri = Uri.tryParse(value);
 
-	static bool _isValidUrl(String value){
-		if(value.isEmpty){
-			return false;
-		}
-
-		final uri = Uri.tryParse(value);
-
-		return uri != null &&
-			   uri.hasScheme &&
-			   (uri.scheme == 'http' ||
-				uri.scheme == 'https') &&
-			   uri.host.isNotEmpty;
-
-	}
-
+        return uri != null &&
+            uri.hasScheme &&
+            (uri.scheme == 'http' || uri.scheme == 'https') &&
+            uri.host.isNotEmpty;
+    }
 }

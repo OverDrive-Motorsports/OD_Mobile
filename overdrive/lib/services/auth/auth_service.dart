@@ -258,8 +258,6 @@ class AuthService extends ChangeNotifier {
 					_extractError(response.data),
 				);
 			}
-
-			debugPrint("Registration successful");
 		} on DioException catch (e) {
 			throw AuthServiceException(
 				_resolveError(e),
@@ -279,10 +277,6 @@ class AuthService extends ChangeNotifier {
 				data: body,
 			);
 
-			debugPrint(
-				"AUTH STATUS: ${response.statusCode}",
-			);
-
 			// Validate backend response before processing authentication data.
 			// Needed to prevent invalid responses from creating broken sessions.
 			if (response.statusCode == null ||
@@ -300,10 +294,6 @@ class AuthService extends ChangeNotifier {
 					"Authentication payload missing required token fields",
 				);
 			}
-
-			debugPrint(
-				'AuthService: login payload parsed - token=${tokens.accessToken.substring(0, math.min(tokens.accessToken.length, 12))}... session=${tokens.sessionId}',
-			);
 
 			// Persist credentials securely on device.
 			// Needed to restore user session after application restart.
@@ -338,10 +328,6 @@ class AuthService extends ChangeNotifier {
 		await _storage.write(
 			key: _expiresAtKey,
 			value: tokens.expiresAt?.toIso8601String(),
-		);
-
-		debugPrint(
-			'AuthService: token saved to storage - session=${tokens.sessionId} token=${tokens.accessToken.substring(0, math.min(tokens.accessToken.length, 12))}...',
 		);
 	}
 
@@ -397,10 +383,6 @@ class AuthService extends ChangeNotifier {
 				"sessionId": session,
 				"refreshToken": refresh,
 			},
-		);
-
-		debugPrint(
-			"REFRESH STATUS: ${response.statusCode}",
 		);
 
 		// Validate backend refresh response.

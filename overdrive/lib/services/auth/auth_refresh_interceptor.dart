@@ -23,21 +23,9 @@ class AuthRefreshInterceptor extends Interceptor {
         try {
             final token = await AuthService.instance.accessToken;
 
-            debugPrint('ACCESS TOKEN: $token');
-
-            debugPrint(
-                'Championship API: token exists = '
-                '${token != null && token.isNotEmpty}',
-            );
-
             if (token != null && token.isNotEmpty) {
                 options.headers['Authorization'] = 'Bearer $token';
             }
-
-            debugPrint(
-                'Championship API: Authorization header attached = '
-                '${options.headers.containsKey('Authorization')}',
-            );
 
             handler.next(options);
         } catch (error) {

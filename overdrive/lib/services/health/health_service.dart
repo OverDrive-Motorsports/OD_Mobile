@@ -9,7 +9,7 @@
 
 import 'package:dio/dio.dart';
 
-import 'api_client.dart';
+import '../api_client.dart';
 
 class HealthCheck {
 	const HealthCheck({required this.status, this.timestamp});
@@ -42,9 +42,7 @@ class HealthCheck {
 }
 
 class HealthService {
-	HealthService({Dio? dio, String? baseUrl})
-		: _dio = dio ?? ApiClient.instance.dio,
-		_baseUrl = baseUrl ?? '';
+	HealthService({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 
 	final Dio _dio;
 	
