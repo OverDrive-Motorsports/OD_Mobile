@@ -65,6 +65,134 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  static AuthTokens? parseSessionPayload(Map<String, dynamic> data) {
+    final rawToken = data['token'] ?? data['accessToken'];
+    final rawRefreshToken = data['refreshToken'] ?? data['refresh_token'];
+    final rawSessionId =
+        data['sessionId'] ?? data['session_id'] ?? data['session'];
+    final rawExpiresAt = data['expiresAt'] ?? data['expires_at'];
+
+    if (rawToken == null || rawRefreshToken == null || rawSessionId == null) {
+      return null;
+    }
+
+    final tokenValue = rawToken.toString();
+    final refreshValue = rawRefreshToken.toString();
+    final sessionValue = rawSessionId.toString();
+
+    return AuthTokens(
+      accessToken: tokenValue,
+      sessionId: sessionValue,
+      refreshToken: refreshValue,
+      expiresAt: rawExpiresAt == null
+          ? null
+          : DateTime.tryParse(rawExpiresAt.toString()),
+    );
+  }
+
+  static String resolveAuthBaseUrlForPlatform(
+    String? value, {
+    TargetPlatform? platform,
+  }) {
+    final targetPlatform = platform ?? defaultTargetPlatform;
+    final rawValue = (value ?? '').trim();
+    final normalizedValue = _normalizeApiBaseUrl(
+      rawValue,
+      platform: targetPlatform,
+    );
+
+    if (_isValidUrl(normalizedValue)) {
+      return normalizedValue;
+    }
+
+    if (dotenv.isInitialized) {
+      final envValue = (dotenv.env['AUTH_BASE_URL'] ?? '').trim();
+      final resolvedEnv = _normalizeApiBaseUrl(
+        envValue,
+        platform: targetPlatform,
+      );
+      if (_isValidUrl(resolvedEnv)) {
+        return resolvedEnv;
+      }
+
+      final apiValue = (dotenv.env['API_BASE_URL'] ?? '').trim();
+      final resolvedApi = _normalizeApiBaseUrl(
+        apiValue,
+        platform: targetPlatform,
+      );
+      if (_isValidUrl(resolvedApi)) {
+        return resolvedApi;
+      }
+    }
+
+    return _defaultAuthBaseUrl(platform: targetPlatform);
+  }
+
+  static String resolveApiBaseUrlForPlatform(
+    String? value, {
+    TargetPlatform? platform,
+  }) {
+    final targetPlatform = platform ?? defaultTargetPlatform;
+    final rawValue = (value ?? '').trim();
+    final normalizedValue = _normalizeApiBaseUrl(
+      rawValue,
+      platform: targetPlatform,
+    );
+
+    if (_isValidUrl(normalizedValue)) {
+      return normalizedValue;
+    }
+
+    if (dotenv.isInitialized) {
+      final envValue = (dotenv.env['API_BASE_URL'] ?? '').trim();
+      final resolvedEnv = _normalizeApiBaseUrl(
+        envValue,
+        platform: targetPlatform,
+      );
+      if (_isValidUrl(resolvedEnv)) {
+        return resolvedEnv;
+      }
+    }
+
+    return _defaultApiBaseUrl(platform: targetPlatform);
+  }
+
+  static String _normalizeApiBaseUrl(String value, {TargetPlatform? platform}) {
+    if (value.isEmpty) {
+      return value;
+    }
+
+    final uri = Uri.tryParse(value);
+    if (uri == null) {
+      return value;
+    }
+
+    final targetPlatform = platform ?? defaultTargetPlatform;
+    final isAndroidLocalhost =
+        targetPlatform == TargetPlatform.android &&
+        (uri.host == 'localhost' || uri.host == '127.0.0.1');
+
+    if (isAndroidLocalhost) {
+      return uri.replace(host: '10.0.2.2').toString();
+    }
+
+    return uri.toString();
+  }
+
+  static String _defaultAuthBaseUrl({TargetPlatform? platform}) {
+    final targetPlatform = platform ?? defaultTargetPlatform;
+    return targetPlatform == TargetPlatform.android
+        ? 'http://10.0.2.2:3001'
+        : 'http://localhost:3001';
+  }
+
+  static String _defaultApiBaseUrl({TargetPlatform? platform}) {
+    final targetPlatform = platform ?? defaultTargetPlatform;
+    return targetPlatform == TargetPlatform.android
+        ? 'http://10.0.2.2:3000'
+        : 'http://localhost:3000';
+  }
+
   static final AuthService instance = AuthService._privateConstructor();
 
   /// Secure storage keys.
@@ -117,8 +245,6 @@ class AuthService extends ChangeNotifier {
       if (response.statusCode == null || response.statusCode! >= 400) {
         throw AuthServiceException(_extractError(response.data));
       }
-
-      debugPrint('Registration successful');
     } on DioException catch (e) {
       throw AuthServiceException(_resolveError(e));
     }
@@ -133,8 +259,6 @@ class AuthService extends ChangeNotifier {
     try {
       final response = await _dio.post(path, data: body);
 
-      debugPrint('AUTH STATUS: ${response.statusCode}');
-
       // Validate backend response before processing authentication data.
       // Needed to prevent invalid responses from creating broken sessions.
       if (response.statusCode == null || response.statusCode! >= 400) {
@@ -142,35 +266,13 @@ class AuthService extends ChangeNotifier {
       }
 
       final data = response.data as Map<String, dynamic>;
+      final tokens = parseSessionPayload(data);
 
-      final token = data['token'];
-      final refreshToken = data['refreshToken'];
-      final sessionId = data['sessionId'];
-
-      // Ensure all required session credentials are provided by backend.
-      // Needed because missing tokens make future authenticated requests impossible.
-      if (token == null) {
-        throw const AuthServiceException('JWT token missing');
+      if (tokens == null) {
+        throw const AuthServiceException(
+          'Authentication payload missing required token fields',
+        );
       }
-
-      if (refreshToken == null) {
-        throw const AuthServiceException('Refresh token missing');
-      }
-
-      if (sessionId == null) {
-        throw const AuthServiceException('Session ID missing');
-      }
-
-      final expires = data['expiresAt'];
-
-      // Converts backend response into application authentication model.
-      // Needed to keep token management independent from API response format.
-      final tokens = AuthTokens(
-        accessToken: token,
-        sessionId: sessionId,
-        refreshToken: refreshToken,
-        expiresAt: expires != null ? DateTime.tryParse(expires) : null,
-      );
 
       // Persist credentials securely on device.
       // Needed to restore user session after application restart.
@@ -239,8 +341,6 @@ class AuthService extends ChangeNotifier {
       data: {'sessionId': session, 'refreshToken': refresh},
     );
 
-    debugPrint('REFRESH STATUS: ${response.statusCode}');
-
     // Validate backend refresh response.
     // Needed to prevent storing invalid authentication data.
     if (response.statusCode == null || response.statusCode! >= 400) {
@@ -248,25 +348,26 @@ class AuthService extends ChangeNotifier {
     }
 
     final data = response.data as Map<String, dynamic>;
-
-    final token = data['token'];
-    final newRefreshToken = data['refreshToken'];
+    final refreshed = parseSessionPayload({
+      'token': data['token'] ?? data['accessToken'],
+      'refreshToken': data['refreshToken'] ?? data['refresh_token'],
+      'sessionId': data['sessionId'] ?? data['session_id'] ?? session,
+      'expiresAt': data['expiresAt'] ?? data['expires_at'],
+    });
 
     // Ensure backend returned new valid credentials.
     // Needed to avoid replacing working session with incomplete data.
-    if (token == null || newRefreshToken == null) {
+    if (refreshed == null) {
       throw const AuthServiceException('Invalid refresh response');
     }
 
     // Creates updated authentication model with refreshed credentials.
     // Needed to update stored session information.
     final tokens = AuthTokens(
-      accessToken: token,
-      sessionId: session,
-      refreshToken: newRefreshToken,
-      expiresAt: data['expiresAt'] != null
-          ? DateTime.tryParse(data['expiresAt'])
-          : null,
+      accessToken: refreshed.accessToken,
+      sessionId: refreshed.sessionId,
+      refreshToken: refreshed.refreshToken,
+      expiresAt: refreshed.expiresAt,
     );
 
     // Stores refreshed tokens securely for future authenticated requests.
@@ -375,27 +476,7 @@ class AuthService extends ChangeNotifier {
   /// Resolves backend URL from configuration and platform defaults.
   /// Needed to connect application with correct API environment.
   static String _resolveBaseUrl(String? value) {
-    if (value != null && _isValidUrl(value)) {
-      return value;
-    }
-
-    final env = dotenv.isInitialized ? dotenv.env['API_BASE_URL'] : null;
-
-    if (env != null && _isValidUrl(env)) {
-      return env;
-    }
-
-    // Android emulator requires special localhost mapping.
-    // Needed because emulator localhost points to the virtual device itself.
-    if (kIsWeb) {
-      return 'http://localhost:3001';
-    }
-
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:3001';
-    }
-
-    return 'http://localhost:3001';
+    return resolveAuthBaseUrlForPlatform(value);
   }
 
   /// Validates whether provided string is a usable URL.
