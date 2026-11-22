@@ -38,67 +38,66 @@ class AuthRefreshInterceptor extends Interceptor {
     }
   }
 
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    final request = err.requestOptions;
 
-    @override
-    void onError(DioException err, ErrorInterceptorHandler handler) async {
-        final request = err.requestOptions;
+    final isUnauthorized = err.response?.statusCode == 401;
+    final isRefreshRequest = request.uri.path.endsWith('/refresh');
+    final alreadyRetried = request.extra[_retryKey] == true;
 
-        final isUnauthorized = err.response?.statusCode == 401;
-        final isRefreshRequest = request.uri.path.endsWith('/refresh');
-        final alreadyRetried = request.extra[_retryKey] == true;
-
-        if (!isUnauthorized || isRefreshRequest || alreadyRetried) {
-            handler.next(err);
-            return;
-        }
-
-        try {
-            final refreshFuture = _refreshFuture ??= AuthService.instance
-                .refreshTokens();
-
-            try {
-                await refreshFuture;
-            } finally {
-                if (identical(_refreshFuture, refreshFuture)) {
-                    _refreshFuture = null;
-                }
-            }
-        } catch (refreshError) {
-            debugPrint('Token refresh failed: $refreshError');
-
-            try {
-                await AuthService.instance.logout();
-            } catch (logoutError) {
-                debugPrint('Logout after refresh failure failed: $logoutError');
-            }
-
-            handler.next(err);
-            return;
-        }
-
-        final token = await AuthService.instance.accessToken;
-
-        if (token == null || token.isEmpty) {
-            handler.next(err);
-            return;
-        }
-
-        request.headers['Authorization'] = 'Bearer $token';
-        request.extra[_retryKey] = true;
-
-        try {
-            final response = await _dio.fetch<dynamic>(request);
-            handler.resolve(response);
-        } on DioException catch (retryError) {
-            handler.next(retryError);
-        } catch (retryError) {
-            handler.next(
-                DioException(
-                    requestOptions: request,
-                    error: retryError,
-                    type: DioExceptionType.unknown,
-                ),
-            );
-        }
+    if (!isUnauthorized || isRefreshRequest || alreadyRetried) {
+      handler.next(err);
+      return;
     }
+
+    try {
+      final refreshFuture = _refreshFuture ??= AuthService.instance
+          .refreshTokens();
+
+      try {
+        await refreshFuture;
+      } finally {
+        if (identical(_refreshFuture, refreshFuture)) {
+          _refreshFuture = null;
+        }
+      }
+    } catch (refreshError) {
+      debugPrint('Token refresh failed: $refreshError');
+
+      try {
+        await AuthService.instance.logout();
+      } catch (logoutError) {
+        debugPrint('Logout after refresh failure failed: $logoutError');
+      }
+
+      handler.next(err);
+      return;
+    }
+
+    final token = await AuthService.instance.accessToken;
+
+    if (token == null || token.isEmpty) {
+      handler.next(err);
+      return;
+    }
+
+    request.headers['Authorization'] = 'Bearer $token';
+    request.extra[_retryKey] = true;
+
+    try {
+      final response = await _dio.fetch<dynamic>(request);
+      handler.resolve(response);
+    } on DioException catch (retryError) {
+      handler.next(retryError);
+    } catch (retryError) {
+      handler.next(
+        DioException(
+          requestOptions: request,
+          error: retryError,
+          type: DioExceptionType.unknown,
+        ),
+      );
+    }
+  }
 }
