@@ -33,17 +33,20 @@ void main() {
       expect(stream.isLive, isTrue);
     });
 
-    test('videoUrl defaults to null and isPrimary/isLive have sane defaults', () {
-      const stream = TvStream(
-        id: 'onboard-cam',
-        label: 'Onboard',
-        title: 'Driver Onboard',
-        icon: Icons.camera_alt,
-      );
+    test(
+      'videoUrl defaults to null and isPrimary/isLive have sane defaults',
+      () {
+        const stream = TvStream(
+          id: 'onboard-cam',
+          label: 'Onboard',
+          title: 'Driver Onboard',
+          icon: Icons.camera_alt,
+        );
 
-      expect(stream.videoUrl, isNull);
-      expect(stream.isPrimary, isFalse);
-      expect(stream.isLive, isTrue);
-    });
+        expect(stream.videoUrl, isNull);
+        expect(stream.isPrimary, isFalse);
+        expect(stream.isLive, isTrue);
+      },
+    );
   });
 }

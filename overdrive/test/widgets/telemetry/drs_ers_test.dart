@@ -16,20 +16,21 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('DrsErs', () {
-    testWidgets('renders the large layout with header, ERS block and a DRS state badge', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const DrsErs());
+    testWidgets(
+      'renders the large layout with header, ERS block and a DRS state badge',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const DrsErs());
 
-      expect(find.text('DRS / ERS'), findsOneWidget);
-      // Default driver is NOR per the widget's initialDriverId.
-      expect(find.text('NOR'), findsOneWidget);
-      expect(find.text('ERS'), findsOneWidget);
-      // The DRS state is data-driven (open/closed), but exactly one of the two labels must render.
-      final drsOpen = find.text('DRS OPEN').evaluate().isNotEmpty;
-      final drsClosed = find.text('DRS CLOSED').evaluate().isNotEmpty;
-      expect(drsOpen ^ drsClosed, isTrue);
-    });
+        expect(find.text('DRS / ERS'), findsOneWidget);
+        // Default driver is NOR per the widget's initialDriverId.
+        expect(find.text('NOR'), findsOneWidget);
+        expect(find.text('ERS'), findsOneWidget);
+        // The DRS state is data-driven (open/closed), but exactly one of the two labels must render.
+        final drsOpen = find.text('DRS OPEN').evaluate().isNotEmpty;
+        final drsClosed = find.text('DRS CLOSED').evaluate().isNotEmpty;
+        expect(drsOpen ^ drsClosed, isTrue);
+      },
+    );
 
     testWidgets('renders the small layout without throwing', (
       WidgetTester tester,
@@ -43,7 +44,10 @@ void main() {
 
       expect(find.text('DRS / ERS'), findsOneWidget);
       expect(find.text('VER'), findsOneWidget);
-      expect(tester.takeException(), isFlutterError); // known pre-existing small-mode overflow, unrelated to this test
+      expect(
+        tester.takeException(),
+        isFlutterError,
+      ); // known pre-existing small-mode overflow, unrelated to this test
     });
 
     testWidgets('tapping the widget opens the driver-switcher menu', (

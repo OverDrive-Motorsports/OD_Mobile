@@ -27,21 +27,28 @@ class WeatherForecast extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context,
-            widgetLabel: 'Météo Prévisions',
-            onReset: actions?.onReset,
-            onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Météo Prévisions',
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
-            child: mode == TelemetryMode.small
-                ? _SmallForecast(forecast: forecast)
-                : _LargeForecast(forecast: forecast),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 10),
+              child: mode == TelemetryMode.small
+                  ? _SmallForecast(forecast: forecast)
+                  : _LargeForecast(forecast: forecast),
+            );
+          },
+        ),
       ),
     );
   }
@@ -59,9 +66,12 @@ class _SmallForecast extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('PRÉVISIONS',
-            style: AppTextStyles.label(color: AppColors.textMuted)
-                .copyWith(fontSize: 10, letterSpacing: 0.6)),
+        Text(
+          'PRÉVISIONS',
+          style: AppTextStyles.label(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 10, letterSpacing: 0.6),
+        ),
         const SizedBox(height: 6),
         Expanded(
           child: SingleChildScrollView(
@@ -87,17 +97,29 @@ class _SmallHourColumn extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(h.hour,
-              style: AppTextStyles.caption(color: AppColors.textMuted)
-                  .copyWith(fontSize: 8)),
-          Icon(_conditionIcon(h.condition),
-              size: 18, color: _conditionColor(h.condition)),
-          Text('${h.tempC.toInt()}°',
-              style: AppTextStyles.label(color: AppColors.textPrimary)
-                  .copyWith(fontSize: 12, letterSpacing: 0)),
-          Text('${(h.precipChance * 100).toInt()}%',
-              style: AppTextStyles.caption(color: _precipColor(h.precipChance))
-                  .copyWith(fontSize: 8)),
+          Text(
+            h.hour,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8),
+          ),
+          Icon(
+            _conditionIcon(h.condition),
+            size: 18,
+            color: _conditionColor(h.condition),
+          ),
+          Text(
+            '${h.tempC.toInt()}°',
+            style: AppTextStyles.label(
+              color: AppColors.textPrimary,
+            ).copyWith(fontSize: 12, letterSpacing: 0),
+          ),
+          Text(
+            '${(h.precipChance * 100).toInt()}%',
+            style: AppTextStyles.caption(
+              color: _precipColor(h.precipChance),
+            ).copyWith(fontSize: 8),
+          ),
         ],
       ),
     );
@@ -115,7 +137,8 @@ class _LargeForecast extends StatelessWidget {
   Widget build(BuildContext context) {
     // Find when rain/storm first appears → "PLUIE DANS Xh"
     final firstRain = forecast.indexWhere(
-        (h) => h.condition == 'rain' || h.condition == 'storm');
+      (h) => h.condition == 'rain' || h.condition == 'storm',
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -123,20 +146,29 @@ class _LargeForecast extends StatelessWidget {
         // Header
         Row(
           children: [
-            Text('PRÉVISIONS',
-                style: AppTextStyles.label(color: AppColors.textMuted)
-                    .copyWith(fontSize: 10, letterSpacing: 0.6)),
+            Text(
+              'PRÉVISIONS',
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 10, letterSpacing: 0.6),
+            ),
             const Spacer(),
             if (firstRain > 0)
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.water_drop_rounded,
-                      size: 10, color: AppColors.blue),
+                  const Icon(
+                    Icons.water_drop_rounded,
+                    size: 10,
+                    color: AppColors.blue,
+                  ),
                   const SizedBox(width: 3),
-                  Text('DANS ~${firstRain}H',
-                      style: AppTextStyles.label(color: AppColors.blue)
-                          .copyWith(fontSize: 9, letterSpacing: 0.4)),
+                  Text(
+                    'DANS ~${firstRain}H',
+                    style: AppTextStyles.label(
+                      color: AppColors.blue,
+                    ).copyWith(fontSize: 9, letterSpacing: 0.4),
+                  ),
                 ],
               ),
           ],
@@ -175,30 +207,45 @@ class _LargeHourRow extends StatelessWidget {
               // Hour
               SizedBox(
                 width: 36,
-                child: Text(h.hour,
-                    style: AppTextStyles.caption(color: AppColors.textMuted)
-                        .copyWith(fontSize: 9, fontWeight: FontWeight.w600)),
+                child: Text(
+                  h.hour,
+                  style: AppTextStyles.caption(
+                    color: AppColors.textMuted,
+                  ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+                ),
               ),
               // Icon
-              Icon(_conditionIcon(h.condition),
-                  size: 16, color: _conditionColor(h.condition)),
+              Icon(
+                _conditionIcon(h.condition),
+                size: 16,
+                color: _conditionColor(h.condition),
+              ),
               const SizedBox(width: 6),
               // Temp
               SizedBox(
                 width: 28,
-                child: Text('${h.tempC.toInt()}°',
-                    style: AppTextStyles.label(color: AppColors.textPrimary)
-                        .copyWith(fontSize: 11, letterSpacing: 0)),
+                child: Text(
+                  '${h.tempC.toInt()}°',
+                  style: AppTextStyles.label(
+                    color: AppColors.textPrimary,
+                  ).copyWith(fontSize: 11, letterSpacing: 0),
+                ),
               ),
               // Wind
-              const Icon(Icons.air_rounded,
-                  size: 10, color: AppColors.textMuted),
+              const Icon(
+                Icons.air_rounded,
+                size: 10,
+                color: AppColors.textMuted,
+              ),
               const SizedBox(width: 2),
               SizedBox(
                 width: 22,
-                child: Text('${h.windKph.toInt()}',
-                    style: AppTextStyles.caption(color: AppColors.textMuted)
-                        .copyWith(fontSize: 8)),
+                child: Text(
+                  '${h.windKph.toInt()}',
+                  style: AppTextStyles.caption(
+                    color: AppColors.textMuted,
+                  ).copyWith(fontSize: 8),
+                ),
               ),
               // Precip bar
               Expanded(
@@ -216,15 +263,15 @@ class _LargeHourRow extends StatelessWidget {
                 child: Text(
                   '${(h.precipChance * 100).toInt()}%',
                   textAlign: TextAlign.right,
-                  style: AppTextStyles.caption(color: precipColor)
-                      .copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.caption(
+                    color: precipColor,
+                  ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
                 ),
               ),
             ],
           ),
         ),
-        if (showDivider)
-          Container(height: 0.5, color: AppColors.divider),
+        if (showDivider) Container(height: 0.5, color: AppColors.divider),
       ],
     );
   }
@@ -234,22 +281,22 @@ class _LargeHourRow extends StatelessWidget {
 
 // Maps a weather condition string to its representative Material icon.
 IconData _conditionIcon(String condition) => switch (condition) {
-      'sunny' => Icons.wb_sunny_rounded,
-      'partly_cloudy' => Icons.wb_cloudy_rounded,
-      'cloudy' => Icons.cloud_rounded,
-      'rain' => Icons.grain_rounded,
-      'storm' => Icons.bolt_rounded,
-      _ => Icons.cloud_rounded,
-    };
+  'sunny' => Icons.wb_sunny_rounded,
+  'partly_cloudy' => Icons.wb_cloudy_rounded,
+  'cloudy' => Icons.cloud_rounded,
+  'rain' => Icons.grain_rounded,
+  'storm' => Icons.bolt_rounded,
+  _ => Icons.cloud_rounded,
+};
 
 Color _conditionColor(String condition) => switch (condition) {
-      'sunny' => AppColors.gold,
-      'partly_cloudy' => const Color(0xFFCCDDFF),
-      'cloudy' => AppColors.textMuted,
-      'rain' => AppColors.blue,
-      'storm' => const Color(0xFFFFD700),
-      _ => AppColors.textMuted,
-    };
+  'sunny' => AppColors.gold,
+  'partly_cloudy' => const Color(0xFFCCDDFF),
+  'cloudy' => AppColors.textMuted,
+  'rain' => AppColors.blue,
+  'storm' => const Color(0xFFFFD700),
+  _ => AppColors.textMuted,
+};
 
 // Returns a traffic-light color (green → amber → red) based on precipitation probability.
 Color _precipColor(double chance) {

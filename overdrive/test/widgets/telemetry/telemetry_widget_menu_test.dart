@@ -97,10 +97,8 @@ void main() {
         Scaffold(
           body: Builder(
             builder: (context) => ElevatedButton(
-              onPressed: () => showTelemetryWidgetMenu(
-                context,
-                widgetLabel: 'Fuel',
-              ),
+              onPressed: () =>
+                  showTelemetryWidgetMenu(context, widgetLabel: 'Fuel'),
               child: const Text('Open menu'),
             ),
           ),

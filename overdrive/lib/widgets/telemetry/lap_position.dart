@@ -50,37 +50,47 @@ class _LapPositionState extends State<LapPosition> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context,
-            widgetLabel: 'Lap Positions',
-            onReset: actions?.onReset,
-            onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Lap Positions',
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          final histories = {
-            for (final id in ['VER', 'LEC', 'NOR'])
-              id: sim.getPositionHistory(id),
-          };
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            final histories = {
+              for (final id in ['VER', 'LEC', 'NOR'])
+                id: sim.getPositionHistory(id),
+            };
 
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _Header(histories: histories),
-                const SizedBox(height: 8),
-                Expanded(
-                  child: mode == TelemetryMode.small
-                      ? _StaticChart(histories: histories, lastN: 12)
-                      : _ScrollableChart(histories: histories, scroll: _scroll),
-                ),
-                const SizedBox(height: 4),
-                _AxisLabel(),
-              ],
-            ),
-          );
-        }),
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _Header(histories: histories),
+                  const SizedBox(height: 8),
+                  Expanded(
+                    child: mode == TelemetryMode.small
+                        ? _StaticChart(histories: histories, lastN: 12)
+                        : _ScrollableChart(
+                            histories: histories,
+                            scroll: _scroll,
+                          ),
+                  ),
+                  const SizedBox(height: 4),
+                  _AxisLabel(),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -96,17 +106,23 @@ class _Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('POSITIONS',
-            style: AppTextStyles.label(color: AppColors.textMuted)
-                .copyWith(fontSize: 10, letterSpacing: 0.6)),
+        Text(
+          'POSITIONS',
+          style: AppTextStyles.label(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 10, letterSpacing: 0.6),
+        ),
         const Spacer(),
         for (final entry in _kDriverColors.entries) ...[
           const SizedBox(width: 8),
           Container(width: 8, height: 2, color: entry.value),
           const SizedBox(width: 3),
-          Text(entry.key,
-              style: AppTextStyles.caption(color: AppColors.textSecondary)
-                  .copyWith(fontSize: 8, fontWeight: FontWeight.w600)),
+          Text(
+            entry.key,
+            style: AppTextStyles.caption(
+              color: AppColors.textSecondary,
+            ).copyWith(fontSize: 8, fontWeight: FontWeight.w600),
+          ),
         ],
       ],
     );
@@ -120,17 +136,26 @@ class _AxisLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Text('L1',
-            style: AppTextStyles.caption(color: AppColors.textMuted)
-                .copyWith(fontSize: 7)),
+        Text(
+          'L1',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7),
+        ),
         const Spacer(),
-        Text('← DÉFILER →',
-            style: AppTextStyles.caption(color: AppColors.textMuted)
-                .copyWith(fontSize: 7, letterSpacing: 0.5)),
+        Text(
+          '← DÉFILER →',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7, letterSpacing: 0.5),
+        ),
         const Spacer(),
-        Text('L${TelemetrySnapshot.totalLaps}',
-            style: AppTextStyles.caption(color: AppColors.textMuted)
-                .copyWith(fontSize: 7)),
+        Text(
+          'L${TelemetrySnapshot.totalLaps}',
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 7),
+        ),
       ],
     );
   }
@@ -193,7 +218,9 @@ class _ScrollableChartState extends State<_ScrollableChart> {
         width: chartWidth,
         child: CustomPaint(
           painter: _PositionPainter(
-              histories: widget.histories, showAllLaps: true),
+            histories: widget.histories,
+            showAllLaps: true,
+          ),
           child: const SizedBox.expand(),
         ),
       ),
@@ -216,14 +243,14 @@ class _PositionPainter extends CustomPainter {
     final maxLap = showAllLaps
         ? TelemetrySnapshot.totalLaps
         : histories.values.fold<int>(
-            1, (m, laps) => math.max(m, laps.isEmpty ? 1 : laps.last.lap));
+            1,
+            (m, laps) => math.max(m, laps.isEmpty ? 1 : laps.last.lap),
+          );
 
     // xOf: map lap number to x coordinate
-    double xOf(int lap) =>
-        size.width * (lap - 1) / math.max(maxLap - 1, 1);
+    double xOf(int lap) => size.width * (lap - 1) / math.max(maxLap - 1, 1);
     // yOf: map position 1-3 to y coordinate (1=top, 3=bottom)
-    double yOf(int pos) =>
-        size.height * (pos - 1) / (_positions - 1);
+    double yOf(int pos) => size.height * (pos - 1) / (_positions - 1);
 
     // Position grid lines (P1 / P2 / P3)
     final gridPaint = Paint()

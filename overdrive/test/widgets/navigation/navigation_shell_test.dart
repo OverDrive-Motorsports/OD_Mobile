@@ -50,7 +50,9 @@ void main() {
     testWidgets('renders the current branch content and nav icons', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(MaterialApp.router(routerConfig: _buildTestRouter()));
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: _buildTestRouter()),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Branch 0'), findsOneWidget);
@@ -64,7 +66,9 @@ void main() {
     testWidgets('switches branches when a tab icon is tapped', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(MaterialApp.router(routerConfig: _buildTestRouter()));
+      await tester.pumpWidget(
+        MaterialApp.router(routerConfig: _buildTestRouter()),
+      );
       await tester.pumpAndSettle();
 
       expect(find.text('Branch 0'), findsOneWidget);

@@ -35,23 +35,23 @@ Color _wearColor(double w) {
 
 // Returns the single-character abbreviation used in the compound badge (e.g. "Soft" → "S").
 String _compoundLetter(String c) => switch (c) {
-      'Soft' => 'S',
-      'Medium' => 'M',
-      'Hard' => 'H',
-      'Inter' => 'I',
-      'Wet' => 'W',
-      _ => c.isNotEmpty ? c[0] : '?',
-    };
+  'Soft' => 'S',
+  'Medium' => 'M',
+  'Hard' => 'H',
+  'Inter' => 'I',
+  'Wet' => 'W',
+  _ => c.isNotEmpty ? c[0] : '?',
+};
 
 // Returns the canonical F1 compound colour (red = soft, yellow = medium, white = hard, etc.).
 Color _compoundColor(String c) => switch (c) {
-      'Soft' => AppColors.red,
-      'Medium' => const Color(0xFFFFD700),
-      'Hard' => AppColors.white,
-      'Inter' => AppColors.green,
-      'Wet' => AppColors.blue,
-      _ => AppColors.textMuted,
-    };
+  'Soft' => AppColors.red,
+  'Medium' => const Color(0xFFFFD700),
+  'Hard' => AppColors.white,
+  'Inter' => AppColors.green,
+  'Wet' => AppColors.blue,
+  _ => AppColors.textMuted,
+};
 
 // ── Public widget ──────────────────────────────────────────────────────────
 
@@ -80,21 +80,30 @@ class _TireTempsState extends State<TireTemps> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Tyre Temps',
-            currentDriverId: _driverId,
-            onDriverSelected: (id) => setState(() => _driverId = id),
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Tyre Temps',
+          currentDriverId: _driverId,
+          onDriverSelected: (id) => setState(() => _driverId = id),
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.all(12),
-            child: mode == TelemetryMode.small
-                ? _SmallTires(data: data, driverId: _driverId)
-                : _LargeTires(data: data, driverId: _driverId),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallTires(data: data, driverId: _driverId)
+                  : _LargeTires(data: data, driverId: _driverId),
+            );
+          },
+        ),
       ),
     );
   }
@@ -117,33 +126,77 @@ class _SmallTires extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header with compound tag
-        Row(children: [
-          Text('TYRES',
-              style: AppTextStyles.label(color: AppColors.textMuted)
-                  .copyWith(fontSize: 10, letterSpacing: 0.6)),
-          const SizedBox(width: 6),
-          Text(_compoundLetter(data.tyreCompound),
-              style: AppTextStyles.label(color: cc)
-                  .copyWith(fontSize: 10, fontWeight: FontWeight.w700)),
-          const Spacer(),
-          Text(driverId,
-              style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 10)),
-        ]),
+        Row(
+          children: [
+            Text(
+              'TYRES',
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 10, letterSpacing: 0.6),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              _compoundLetter(data.tyreCompound),
+              style: AppTextStyles.label(
+                color: cc,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+            ),
+            const Spacer(),
+            Text(
+              driverId,
+              style: AppTextStyles.label(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 10),
+            ),
+          ],
+        ),
         const SizedBox(height: 6),
         Expanded(
           child: Column(
             children: [
-              Expanded(child: Row(children: [
-                Expanded(child: _SmallTireCell(pos: 'FL', temp: temps['fl'] ?? 90, wear: wear['fl'] ?? 0)),
-                const SizedBox(width: 5),
-                Expanded(child: _SmallTireCell(pos: 'FR', temp: temps['fr'] ?? 90, wear: wear['fr'] ?? 0)),
-              ])),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _SmallTireCell(
+                        pos: 'FL',
+                        temp: temps['fl'] ?? 90,
+                        wear: wear['fl'] ?? 0,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: _SmallTireCell(
+                        pos: 'FR',
+                        temp: temps['fr'] ?? 90,
+                        wear: wear['fr'] ?? 0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 5),
-              Expanded(child: Row(children: [
-                Expanded(child: _SmallTireCell(pos: 'RL', temp: temps['rl'] ?? 90, wear: wear['rl'] ?? 0)),
-                const SizedBox(width: 5),
-                Expanded(child: _SmallTireCell(pos: 'RR', temp: temps['rr'] ?? 90, wear: wear['rr'] ?? 0)),
-              ])),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _SmallTireCell(
+                        pos: 'RL',
+                        temp: temps['rl'] ?? 90,
+                        wear: wear['rl'] ?? 0,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: _SmallTireCell(
+                        pos: 'RR',
+                        temp: temps['rr'] ?? 90,
+                        wear: wear['rr'] ?? 0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -170,40 +223,88 @@ class _LargeTires extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Header with compound + age
-        Row(children: [
-          Text('TYRES',
-              style: AppTextStyles.label(color: AppColors.textMuted)
-                  .copyWith(fontSize: 10, letterSpacing: 0.6)),
-          const SizedBox(width: 6),
-          Text(_compoundLetter(data.tyreCompound),
-              style: AppTextStyles.label(color: cc)
-                  .copyWith(fontSize: 10, fontWeight: FontWeight.w700)),
-          const SizedBox(width: 3),
-          Text('${data.tyreAge} laps',
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
-          const Spacer(),
-          Text(driverId,
-              style: AppTextStyles.label(color: AppColors.gold).copyWith(fontSize: 10)),
-        ]),
+        Row(
+          children: [
+            Text(
+              'TYRES',
+              style: AppTextStyles.label(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 10, letterSpacing: 0.6),
+            ),
+            const SizedBox(width: 6),
+            Text(
+              _compoundLetter(data.tyreCompound),
+              style: AppTextStyles.label(
+                color: cc,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(width: 3),
+            Text(
+              '${data.tyreAge} laps',
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 8),
+            ),
+            const Spacer(),
+            Text(
+              driverId,
+              style: AppTextStyles.label(
+                color: AppColors.gold,
+              ).copyWith(fontSize: 10),
+            ),
+          ],
+        ),
         const SizedBox(height: 7),
         Expanded(
           child: Column(
             children: [
-              Expanded(child: Row(children: [
-                Expanded(child: _LargeTireCard(pos: 'FL',
-                    temp: temps['fl'] ?? 90, pressure: pressure['fl'] ?? 23, wear: wear['fl'] ?? 0)),
-                const SizedBox(width: 5),
-                Expanded(child: _LargeTireCard(pos: 'FR',
-                    temp: temps['fr'] ?? 90, pressure: pressure['fr'] ?? 23, wear: wear['fr'] ?? 0)),
-              ])),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _LargeTireCard(
+                        pos: 'FL',
+                        temp: temps['fl'] ?? 90,
+                        pressure: pressure['fl'] ?? 23,
+                        wear: wear['fl'] ?? 0,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: _LargeTireCard(
+                        pos: 'FR',
+                        temp: temps['fr'] ?? 90,
+                        pressure: pressure['fr'] ?? 23,
+                        wear: wear['fr'] ?? 0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 5),
-              Expanded(child: Row(children: [
-                Expanded(child: _LargeTireCard(pos: 'RL',
-                    temp: temps['rl'] ?? 90, pressure: pressure['rl'] ?? 22, wear: wear['rl'] ?? 0)),
-                const SizedBox(width: 5),
-                Expanded(child: _LargeTireCard(pos: 'RR',
-                    temp: temps['rr'] ?? 90, pressure: pressure['rr'] ?? 22, wear: wear['rr'] ?? 0)),
-              ])),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: _LargeTireCard(
+                        pos: 'RL',
+                        temp: temps['rl'] ?? 90,
+                        pressure: pressure['rl'] ?? 22,
+                        wear: wear['rl'] ?? 0,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: _LargeTireCard(
+                        pos: 'RR',
+                        temp: temps['rr'] ?? 90,
+                        pressure: pressure['rr'] ?? 22,
+                        wear: wear['rr'] ?? 0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -215,7 +316,11 @@ class _LargeTires extends StatelessWidget {
 // ── Tire cell — small mode ────────────────────────────────────────────────────
 
 class _SmallTireCell extends StatelessWidget {
-  const _SmallTireCell({required this.pos, required this.temp, required this.wear});
+  const _SmallTireCell({
+    required this.pos,
+    required this.temp,
+    required this.wear,
+  });
   final String pos;
   final double temp;
   final double wear;
@@ -237,18 +342,30 @@ class _SmallTireCell extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(pos, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+          Text(
+            pos,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8),
+          ),
           TweenAnimationBuilder<double>(
             tween: Tween<double>(end: temp),
             duration: const Duration(milliseconds: 300),
             builder: (_, v, _) => FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
-              child: Text('${v.toInt()}°',
-                  style: AppTextStyles.bodyBold(color: tc).copyWith(fontSize: 15)),
+              child: Text(
+                '${v.toInt()}°',
+                style: AppTextStyles.bodyBold(color: tc).copyWith(fontSize: 15),
+              ),
             ),
           ),
-          TelemetryBar(fraction: wear, color: wc, height: 2.5, trackColor: wc.withValues(alpha: 0.12)),
+          TelemetryBar(
+            fraction: wear,
+            color: wc,
+            height: 2.5,
+            trackColor: wc.withValues(alpha: 0.12),
+          ),
         ],
       ),
     );
@@ -258,7 +375,12 @@ class _SmallTireCell extends StatelessWidget {
 // ── Tire card — large mode ────────────────────────────────────────────────────
 
 class _LargeTireCard extends StatelessWidget {
-  const _LargeTireCard({required this.pos, required this.temp, required this.pressure, required this.wear});
+  const _LargeTireCard({
+    required this.pos,
+    required this.temp,
+    required this.pressure,
+    required this.wear,
+  });
   final String pos;
   final double temp;
   final double pressure;
@@ -281,7 +403,12 @@ class _LargeTireCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Position label
-          Text(pos, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+          Text(
+            pos,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8),
+          ),
           const Spacer(),
           // Temperature — primary
           TweenAnimationBuilder<double>(
@@ -290,27 +417,44 @@ class _LargeTireCard extends StatelessWidget {
             builder: (_, v, _) => FittedBox(
               fit: BoxFit.scaleDown,
               alignment: Alignment.centerLeft,
-              child: Text('${v.toInt()}°',
-                  style: AppTextStyles.display(color: tc)
-                      .copyWith(fontSize: 22, fontWeight: FontWeight.bold)),
+              child: Text(
+                '${v.toInt()}°',
+                style: AppTextStyles.display(
+                  color: tc,
+                ).copyWith(fontSize: 22, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
           const SizedBox(height: 2),
           // Pressure
-          Text('${pressure.toStringAsFixed(1)} PSI',
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+          Text(
+            '${pressure.toStringAsFixed(1)} PSI',
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 8),
+          ),
           const SizedBox(height: 5),
           // Wear bar + %
           Row(
             children: [
-              Expanded(child: TelemetryBar(fraction: wear, color: wc, height: 3, trackColor: wc.withValues(alpha: 0.12))),
+              Expanded(
+                child: TelemetryBar(
+                  fraction: wear,
+                  color: wc,
+                  height: 3,
+                  trackColor: wc.withValues(alpha: 0.12),
+                ),
+              ),
               const SizedBox(width: 5),
               SizedBox(
                 width: 26,
-                child: Text('${(wear * 100).toInt()}%',
-                    textAlign: TextAlign.right,
-                    style: AppTextStyles.caption(color: wc)
-                        .copyWith(fontSize: 8, fontWeight: FontWeight.w700)),
+                child: Text(
+                  '${(wear * 100).toInt()}%',
+                  textAlign: TextAlign.right,
+                  style: AppTextStyles.caption(
+                    color: wc,
+                  ).copyWith(fontSize: 8, fontWeight: FontWeight.w700),
+                ),
               ),
             ],
           ),

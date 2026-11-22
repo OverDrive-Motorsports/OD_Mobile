@@ -76,7 +76,10 @@ class _SectorSplitState extends State<SectorSplit> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
@@ -159,7 +162,12 @@ class _LargeSectors extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            Text('BEST', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
+            Text(
+              'BEST',
+              style: AppTextStyles.caption(
+                color: AppColors.textMuted,
+              ).copyWith(fontSize: 8),
+            ),
             const Spacer(),
             for (var i = 0; i < 3; i++) ...[
               SizedBox(
@@ -167,7 +175,9 @@ class _LargeSectors extends StatelessWidget {
                 child: Text(
                   _fmtSector(data.bestSectorTimes[i]),
                   textAlign: TextAlign.right,
-                  style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+                  style: AppTextStyles.caption(
+                    color: AppColors.textSecondary,
+                  ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
                 ),
               ),
               if (i < 2) const SizedBox(width: 6),
@@ -182,7 +192,12 @@ class _LargeSectors extends StatelessWidget {
 // ── Sector card ───────────────────────────────────────────────────────────────
 
 class _SectorCard extends StatelessWidget {
-  const _SectorCard({required this.label, required this.time, required this.best, required this.large});
+  const _SectorCard({
+    required this.label,
+    required this.time,
+    required this.best,
+    required this.large,
+  });
   final String label;
   final double? time;
   final double best;
@@ -196,10 +211,14 @@ class _SectorCard extends StatelessWidget {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        color: time != null ? color.withValues(alpha: 0.10) : AppColors.surface.withValues(alpha: 0.50),
+        color: time != null
+            ? color.withValues(alpha: 0.10)
+            : AppColors.surface.withValues(alpha: 0.50),
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: time != null ? color.withValues(alpha: 0.45) : AppColors.border.withValues(alpha: 0.30),
+          color: time != null
+              ? color.withValues(alpha: 0.45)
+              : AppColors.border.withValues(alpha: 0.30),
         ),
       ),
       child: Column(
@@ -207,15 +226,18 @@ class _SectorCard extends StatelessWidget {
         children: [
           Text(
             label,
-            style: AppTextStyles.label(color: AppColors.textMuted).copyWith(fontSize: 9, letterSpacing: 0.4),
+            style: AppTextStyles.label(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 9, letterSpacing: 0.4),
           ),
           SizedBox(height: large ? 6 : 4),
           FittedBox(
             fit: BoxFit.scaleDown,
             child: Text(
               formatted,
-              style: AppTextStyles.bodyBold(color: time != null ? color : AppColors.textMuted)
-                  .copyWith(fontSize: large ? 13 : 11),
+              style: AppTextStyles.bodyBold(
+                color: time != null ? color : AppColors.textMuted,
+              ).copyWith(fontSize: large ? 13 : 11),
             ),
           ),
           // Delta vs best — only show when completed and large mode
@@ -223,7 +245,9 @@ class _SectorCard extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               _delta(time!, best),
-              style: AppTextStyles.caption(color: color.withValues(alpha: 0.80)).copyWith(fontSize: 9),
+              style: AppTextStyles.caption(
+                color: color.withValues(alpha: 0.80),
+              ).copyWith(fontSize: 9),
             ),
           ],
         ],

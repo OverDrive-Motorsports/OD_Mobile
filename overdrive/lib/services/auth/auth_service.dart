@@ -1,4 +1,4 @@
-/**
+/*
 ##
 ## OverDrive 2026
 ## All Technical rights reserved
@@ -17,35 +17,36 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// Stores authentication credentials received from backend.
 /// Needed to keep user session active and manage token expiration.
 class AuthTokens {
-	AuthTokens({
-		required this.accessToken,
-		required this.sessionId,
-		required this.refreshToken,
-		this.expiresAt,
-	});
+  AuthTokens({
+    required this.accessToken,
+    required this.sessionId,
+    required this.refreshToken,
+    this.expiresAt,
+  });
 
-	final String accessToken;
-	final String sessionId;
-	final String refreshToken;
-	final DateTime? expiresAt;
+  final String accessToken;
+  final String sessionId;
+  final String refreshToken;
+  final DateTime? expiresAt;
 
-	bool get isExpired {
-		if (expiresAt == null) {
-			return false;
-		}
+  bool get isExpired {
+    if (expiresAt == null) {
+      return false;
+    }
 
-		return DateTime.now().isAfter(expiresAt!);
-	}
+    return DateTime.now().isAfter(expiresAt!);
+  }
 }
 
 /// Custom authentication exception.
 /// Needed to provide user-friendly errors instead of raw network errors.
 class AuthServiceException implements Exception {
-	const AuthServiceException(this.message);
+  const AuthServiceException(this.message);
 
-	final String message;
+  final String message;
 
-	@override String toString() => message;
+  @override
+  String toString() => message;
 }
 
 /// Main authentication manager.

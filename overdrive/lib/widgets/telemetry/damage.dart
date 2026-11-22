@@ -61,21 +61,30 @@ class _DamageState extends State<Damage> {
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context, widgetLabel: 'Damage',
-            currentDriverId: _driverId,
-            onDriverSelected: (id) => setState(() => _driverId = id),
-            onReset: actions?.onReset, onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Damage',
+          currentDriverId: _driverId,
+          onDriverSelected: (id) => setState(() => _driverId = id),
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Padding(
-            padding: const EdgeInsets.all(12),
-            child: mode == TelemetryMode.small
-                ? _SmallDamage(data: data, driverId: _driverId)
-                : _LargeDamage(data: data, driverId: _driverId),
-          );
-        }),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Padding(
+              padding: const EdgeInsets.all(12),
+              child: mode == TelemetryMode.small
+                  ? _SmallDamage(data: data, driverId: _driverId)
+                  : _LargeDamage(data: data, driverId: _driverId),
+            );
+          },
+        ),
       ),
     );
   }
@@ -92,8 +101,12 @@ class _SmallDamage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Most severe damage drives the overall status
     final maxDamage = [
-      data.frontWingDamage, data.rearWingDamage, data.floorDamage,
-      data.gearboxDamage, data.suspensionDamage, data.engineDamage,
+      data.frontWingDamage,
+      data.rearWingDamage,
+      data.floorDamage,
+      data.gearboxDamage,
+      data.suspensionDamage,
+      data.engineDamage,
     ].reduce((a, b) => a > b ? a : b);
     final overallColor = _damageColor(maxDamage);
 
@@ -137,13 +150,20 @@ class _SmallDamage extends StatelessWidget {
         Row(
           children: [
             Container(
-              width: 5, height: 5,
-              decoration: BoxDecoration(shape: BoxShape.circle, color: overallColor),
+              width: 5,
+              height: 5,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: overallColor,
+              ),
             ),
             const SizedBox(width: 5),
-            Text(_damageLabel(maxDamage),
-                style: AppTextStyles.caption(color: overallColor)
-                    .copyWith(fontSize: 9, fontWeight: FontWeight.w700)),
+            Text(
+              _damageLabel(maxDamage),
+              style: AppTextStyles.caption(
+                color: overallColor,
+              ).copyWith(fontSize: 9, fontWeight: FontWeight.w700),
+            ),
           ],
         ),
       ],
@@ -165,7 +185,7 @@ class _LargeDamage extends StatelessWidget {
       children: [
         TelemetryHeader(label: 'DÉGÂTS', driverId: driverId),
         const SizedBox(height: 8),
-        _SectionLabel('AÉRODYNAMIQUE'),
+        const _SectionLabel('AÉRODYNAMIQUE'),
         const SizedBox(height: 5),
         _DamageBar(label: 'AILE AV', value: data.frontWingDamage),
         const SizedBox(height: 5),
@@ -173,7 +193,7 @@ class _LargeDamage extends StatelessWidget {
         const SizedBox(height: 5),
         _DamageBar(label: 'PLANCHER', value: data.floorDamage),
         const SizedBox(height: 8),
-        _SectionLabel('MÉCANIQUE'),
+        const _SectionLabel('MÉCANIQUE'),
         const SizedBox(height: 5),
         _DamageBar(label: 'BOÎTE', value: data.gearboxDamage),
         const SizedBox(height: 5),
@@ -194,9 +214,12 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text,
-        style: AppTextStyles.caption(color: AppColors.textMuted)
-            .copyWith(fontSize: 8, letterSpacing: 0.8));
+    return Text(
+      text,
+      style: AppTextStyles.caption(
+        color: AppColors.textMuted,
+      ).copyWith(fontSize: 8, letterSpacing: 0.8),
+    );
   }
 }
 
@@ -213,16 +236,24 @@ class _DotRow extends StatelessWidget {
       children: [
         AnimatedContainer(
           duration: const Duration(milliseconds: 300),
-          width: 7, height: 7,
+          width: 7,
+          height: 7,
           decoration: BoxDecoration(shape: BoxShape.circle, color: color),
         ),
         const SizedBox(width: 5),
-        Text(label,
-            style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+        Text(
+          label,
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 9),
+        ),
         const Spacer(),
-        Text('${(value * 100).toInt()}%',
-            style: AppTextStyles.caption(color: color)
-                .copyWith(fontSize: 8, fontWeight: FontWeight.w600)),
+        Text(
+          '${(value * 100).toInt()}%',
+          style: AppTextStyles.caption(
+            color: color,
+          ).copyWith(fontSize: 8, fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }
@@ -241,8 +272,12 @@ class _DamageBar extends StatelessWidget {
       children: [
         SizedBox(
           width: 52,
-          child: Text(label,
-              style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 9)),
+          child: Text(
+            label,
+            style: AppTextStyles.caption(
+              color: AppColors.textMuted,
+            ).copyWith(fontSize: 9),
+          ),
         ),
         Expanded(
           child: TelemetryBar(
@@ -255,10 +290,13 @@ class _DamageBar extends StatelessWidget {
         const SizedBox(width: 6),
         SizedBox(
           width: 28,
-          child: Text('${(value * 100).toInt()}%',
-              textAlign: TextAlign.right,
-              style: AppTextStyles.caption(color: color)
-                  .copyWith(fontSize: 9, fontWeight: FontWeight.w700)),
+          child: Text(
+            '${(value * 100).toInt()}%',
+            textAlign: TextAlign.right,
+            style: AppTextStyles.caption(
+              color: color,
+            ).copyWith(fontSize: 9, fontWeight: FontWeight.w700),
+          ),
         ),
       ],
     );

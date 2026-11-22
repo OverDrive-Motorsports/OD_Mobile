@@ -75,28 +75,28 @@ enum _WidgetType {
 
 // Factory that instantiates the concrete telemetry widget for a given catalogue entry.
 Widget _buildWidget(_WidgetType type) => switch (type) {
-      _WidgetType.speedometer => const Speedometer(),
-      _WidgetType.gearRpm => const GearRpm(),
-      _WidgetType.throttleBrake => const ThrottleBrake(),
-      _WidgetType.lapDelta => const LapDelta(),
-      _WidgetType.drsErs => const DrsErs(),
-      _WidgetType.gForce => const GForce(),
-      _WidgetType.sectorSplit => const SectorSplit(),
-      _WidgetType.driverSnapshot => const DriverSnapshot(),
-      _WidgetType.tireTemp => const TireTemps(),
-      _WidgetType.fuel => const FuelGauge(),
-      _WidgetType.weather => const Weather(),
-      _WidgetType.pitStrategy => const PitStrategy(),
-      _WidgetType.engine => const EngineTemps(),
-      _WidgetType.standings => const RaceStandings(),
-      _WidgetType.penalty => const Penalty(),
-      _WidgetType.damage => const Damage(),
-      _WidgetType.lapHistory => const LapHistory(),
-      _WidgetType.lapPosition => const LapPosition(),
-      _WidgetType.pedalTrace => const PedalTrace(),
-      _WidgetType.weatherForecast => const WeatherForecast(),
-      _WidgetType.weatherRadar => const WeatherRadar(),
-    };
+  _WidgetType.speedometer => const Speedometer(),
+  _WidgetType.gearRpm => const GearRpm(),
+  _WidgetType.throttleBrake => const ThrottleBrake(),
+  _WidgetType.lapDelta => const LapDelta(),
+  _WidgetType.drsErs => const DrsErs(),
+  _WidgetType.gForce => const GForce(),
+  _WidgetType.sectorSplit => const SectorSplit(),
+  _WidgetType.driverSnapshot => const DriverSnapshot(),
+  _WidgetType.tireTemp => const TireTemps(),
+  _WidgetType.fuel => const FuelGauge(),
+  _WidgetType.weather => const Weather(),
+  _WidgetType.pitStrategy => const PitStrategy(),
+  _WidgetType.engine => const EngineTemps(),
+  _WidgetType.standings => const RaceStandings(),
+  _WidgetType.penalty => const Penalty(),
+  _WidgetType.damage => const Damage(),
+  _WidgetType.lapHistory => const LapHistory(),
+  _WidgetType.lapPosition => const LapPosition(),
+  _WidgetType.pedalTrace => const PedalTrace(),
+  _WidgetType.weatherForecast => const WeatherForecast(),
+  _WidgetType.weatherRadar => const WeatherRadar(),
+};
 
 // ─── Page root — owns the simulator ──────────────────────────────────────────
 
@@ -200,14 +200,16 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
       return;
     }
     setState(() {
-      _items.add(GridItem(
-        id: '${type.name}_$_idCounter',
-        col: slot.col,
-        row: slot.row,
-        colSpan: _defaultColSpan,
-        rowSpan: _defaultRowSpan,
-        child: _buildWidget(type),
-      ));
+      _items.add(
+        GridItem(
+          id: '${type.name}_$_idCounter',
+          col: slot.col,
+          row: slot.row,
+          colSpan: _defaultColSpan,
+          rowSpan: _defaultRowSpan,
+          child: _buildWidget(type),
+        ),
+      );
       _idCounter++;
     });
   }
@@ -265,17 +267,9 @@ class _TelemetryBoardState extends State<_TelemetryBoard> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         automaticallyImplyLeading: false,
-        leading: AppButton(
-          icon: Icons.arrow_back_rounded,
-          onPressed: _goBack,
-        ),
+        leading: AppButton(icon: Icons.arrow_back_rounded, onPressed: _goBack),
         title: Text('Telemetry', style: AppTextStyles.bodyBold()),
-        actions: [
-          AppButton(
-            icon: Icons.add_rounded,
-            onPressed: _showAddSheet,
-          ),
-        ],
+        actions: [AppButton(icon: Icons.add_rounded, onPressed: _showAddSheet)],
       ),
       body: SingleChildScrollView(
         controller: _verticalScroll,

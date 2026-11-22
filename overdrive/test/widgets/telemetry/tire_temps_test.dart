@@ -16,37 +16,36 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('TireTemps', () {
-    testWidgets('renders header, driver tag and compound letter at large size', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const TireTemps());
+    testWidgets(
+      'renders header, driver tag and compound letter at large size',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const TireTemps());
 
-      expect(find.text('TYRES'), findsOneWidget);
-      expect(find.text('VER'), findsOneWidget);
-      // Compound letter is one of S/M/H/I/W depending on the current tick.
-      expect(
-        find.textContaining(RegExp(r'^[SMHIW]$')),
-        findsWidgets,
-      );
-    });
+        expect(find.text('TYRES'), findsOneWidget);
+        expect(find.text('VER'), findsOneWidget);
+        // Compound letter is one of S/M/H/I/W depending on the current tick.
+        expect(find.textContaining(RegExp(r'^[SMHIW]$')), findsWidgets);
+      },
+    );
 
-    testWidgets('renders the four tyre-corner cells without exceptions at small size', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(
-        tester,
-        const TireTemps(),
-        width: 150,
-        height: 150,
-      );
+    testWidgets(
+      'renders the four tyre-corner cells without exceptions at small size',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(
+          tester,
+          const TireTemps(),
+          width: 150,
+          height: 150,
+        );
 
-      expect(find.text('TYRES'), findsOneWidget);
-      expect(find.text('FL'), findsOneWidget);
-      expect(find.text('FR'), findsOneWidget);
-      expect(find.text('RL'), findsOneWidget);
-      expect(find.text('RR'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.text('TYRES'), findsOneWidget);
+        expect(find.text('FL'), findsOneWidget);
+        expect(find.text('FR'), findsOneWidget);
+        expect(find.text('RL'), findsOneWidget);
+        expect(find.text('RR'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('honors a custom initial driver id', (
       WidgetTester tester,

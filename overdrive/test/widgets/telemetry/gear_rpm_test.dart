@@ -16,16 +16,17 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('GearRpm', () {
-    testWidgets('renders the large layout with header, driver tag and RPM label', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const GearRpm());
+    testWidgets(
+      'renders the large layout with header, driver tag and RPM label',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const GearRpm());
 
-      expect(find.text('GEAR'), findsOneWidget);
-      // Default driver is VER per the widget's initialDriverId.
-      expect(find.text('VER'), findsOneWidget);
-      expect(find.text('RPM'), findsOneWidget);
-    });
+        expect(find.text('GEAR'), findsOneWidget);
+        // Default driver is VER per the widget's initialDriverId.
+        expect(find.text('VER'), findsOneWidget);
+        expect(find.text('RPM'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the small layout without throwing', (
       WidgetTester tester,

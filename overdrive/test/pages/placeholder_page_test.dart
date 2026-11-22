@@ -17,7 +17,10 @@ import '../helpers/test_app.dart';
 void main() {
   group('PlaceholderPage', () {
     testWidgets('renders the given title', (WidgetTester tester) async {
-      await pumpTestApp(tester, const PlaceholderPage(title: 'Bientôt disponible'));
+      await pumpTestApp(
+        tester,
+        const PlaceholderPage(title: 'Bientôt disponible'),
+      );
 
       expect(find.text('Bientôt disponible'), findsOneWidget);
     });

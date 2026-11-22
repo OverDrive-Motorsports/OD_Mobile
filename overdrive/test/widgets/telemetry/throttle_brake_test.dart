@@ -16,32 +16,34 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('ThrottleBrake', () {
-    testWidgets('renders header, driver tag and full pedal labels at large size', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const ThrottleBrake());
+    testWidgets(
+      'renders header, driver tag and full pedal labels at large size',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const ThrottleBrake());
 
-      expect(find.text('PEDALS'), findsOneWidget);
-      expect(find.text('LEC'), findsOneWidget);
-      expect(find.text('THROTTLE'), findsOneWidget);
-      expect(find.text('BRAKE'), findsOneWidget);
-    });
+        expect(find.text('PEDALS'), findsOneWidget);
+        expect(find.text('LEC'), findsOneWidget);
+        expect(find.text('THROTTLE'), findsOneWidget);
+        expect(find.text('BRAKE'), findsOneWidget);
+      },
+    );
 
-    testWidgets('renders compact pedal labels without exceptions at small size', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(
-        tester,
-        const ThrottleBrake(),
-        width: 150,
-        height: 150,
-      );
+    testWidgets(
+      'renders compact pedal labels without exceptions at small size',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(
+          tester,
+          const ThrottleBrake(),
+          width: 150,
+          height: 150,
+        );
 
-      expect(find.text('PEDALS'), findsOneWidget);
-      expect(find.text('THR'), findsOneWidget);
-      expect(find.text('BRK'), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
+        expect(find.text('PEDALS'), findsOneWidget);
+        expect(find.text('THR'), findsOneWidget);
+        expect(find.text('BRK'), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
 
     testWidgets('honors a custom initial driver id', (
       WidgetTester tester,

@@ -16,19 +16,20 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('LapDelta', () {
-    testWidgets('renders the large layout with header, best/delta labels and lap counter', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const LapDelta());
+    testWidgets(
+      'renders the large layout with header, best/delta labels and lap counter',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const LapDelta());
 
-      expect(find.text('LAP'), findsOneWidget);
-      // Default driver is VER per the widget's initialDriverId.
-      expect(find.text('VER'), findsOneWidget);
-      expect(find.text('BEST'), findsOneWidget);
-      expect(find.text('DELTA'), findsOneWidget);
-      // Lap counter is formatted as "L{n}/57" — assert the fixed total-laps suffix only.
-      expect(find.textContaining('/57'), findsOneWidget);
-    });
+        expect(find.text('LAP'), findsOneWidget);
+        // Default driver is VER per the widget's initialDriverId.
+        expect(find.text('VER'), findsOneWidget);
+        expect(find.text('BEST'), findsOneWidget);
+        expect(find.text('DELTA'), findsOneWidget);
+        // Lap counter is formatted as "L{n}/57" — assert the fixed total-laps suffix only.
+        expect(find.textContaining('/57'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the small layout without throwing', (
       WidgetTester tester,
@@ -42,7 +43,10 @@ void main() {
 
       expect(find.text('LAP'), findsOneWidget);
       expect(find.text('NOR'), findsOneWidget);
-      expect(tester.takeException(), isFlutterError); // known pre-existing small-mode overflow, unrelated to this test
+      expect(
+        tester.takeException(),
+        isFlutterError,
+      ); // known pre-existing small-mode overflow, unrelated to this test
     });
 
     testWidgets('tapping the widget opens the driver-switcher menu', (

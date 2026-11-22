@@ -17,29 +17,38 @@ import '../../helpers/test_app.dart';
 
 void main() {
   group('LapHistory', () {
-    testWidgets('renders the large scrollable layout with header, legend and axis labels', (
-      WidgetTester tester,
-    ) async {
-      await pumpTelemetryTestApp(tester, const LapHistory());
+    testWidgets(
+      'renders the large scrollable layout with header, legend and axis labels',
+      (WidgetTester tester) async {
+        await pumpTelemetryTestApp(tester, const LapHistory());
 
-      expect(find.text('HIST. TOURS'), findsOneWidget);
-      expect(find.text('VER'), findsOneWidget);
-      expect(find.text('LEC'), findsOneWidget);
-      expect(find.text('NOR'), findsOneWidget);
-      expect(find.text('L1'), findsOneWidget);
-      // Total laps is a fixed constant (57).
-      expect(find.text('L57'), findsOneWidget);
-      expect(find.byType(CustomPaint), findsWidgets);
-    });
+        expect(find.text('HIST. TOURS'), findsOneWidget);
+        expect(find.text('VER'), findsOneWidget);
+        expect(find.text('LEC'), findsOneWidget);
+        expect(find.text('NOR'), findsOneWidget);
+        expect(find.text('L1'), findsOneWidget);
+        // Total laps is a fixed constant (57).
+        expect(find.text('L57'), findsOneWidget);
+        expect(find.byType(CustomPaint), findsWidgets);
+      },
+    );
 
     testWidgets('renders the small static-chart layout without throwing', (
       WidgetTester tester,
     ) async {
-      await pumpTelemetryTestApp(tester, const LapHistory(), width: 150, height: 150);
+      await pumpTelemetryTestApp(
+        tester,
+        const LapHistory(),
+        width: 150,
+        height: 150,
+      );
 
       expect(find.text('HIST. TOURS'), findsOneWidget);
       expect(find.text('L1'), findsOneWidget);
-      expect(tester.takeException(), isFlutterError); // known pre-existing small-mode overflow, unrelated to this test
+      expect(
+        tester.takeException(),
+        isFlutterError,
+      ); // known pre-existing small-mode overflow, unrelated to this test
     });
 
     testWidgets('tapping the widget opens its menu without a driver selector', (

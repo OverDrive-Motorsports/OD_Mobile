@@ -43,7 +43,10 @@ void main() {
       expect(find.text('FUEL'), findsOneWidget);
       expect(find.text('LEC'), findsOneWidget);
       expect(find.text('kg'), findsOneWidget);
-      expect(tester.takeException(), isFlutterError); // known pre-existing small-mode overflow, unrelated to this test
+      expect(
+        tester.takeException(),
+        isFlutterError,
+      ); // known pre-existing small-mode overflow, unrelated to this test
     });
 
     testWidgets('tapping the widget opens the driver-switcher menu', (

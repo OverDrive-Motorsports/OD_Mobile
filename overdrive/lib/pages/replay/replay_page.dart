@@ -86,9 +86,7 @@ class _ReplayPageState extends State<ReplayPage> {
 
   void _openReplay(ReplayItem replay) {
     Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => ReplayDetailPage(replay: replay),
-      ),
+      MaterialPageRoute<void>(builder: (_) => ReplayDetailPage(replay: replay)),
     );
   }
 
@@ -178,10 +176,7 @@ class _ReplayRow extends StatelessWidget {
           child: GestureDetector(
             onTap: onOpen,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 12,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
               child: Row(
                 children: [
                   _ReplayThumb(color: replay.accentColor),

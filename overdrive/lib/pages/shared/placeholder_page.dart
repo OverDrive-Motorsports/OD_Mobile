@@ -20,9 +20,7 @@ class PlaceholderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.black,
-      body: Center(
-        child: Text(title, style: AppTextStyles.display()),
-      ),
+      body: Center(child: Text(title, style: AppTextStyles.display())),
     );
   }
 }

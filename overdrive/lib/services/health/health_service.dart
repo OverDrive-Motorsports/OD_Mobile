@@ -8,37 +8,39 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import '../api_client.dart';
 
 class HealthCheck {
-	const HealthCheck({required this.status, this.timestamp});
+  const HealthCheck({required this.status, this.timestamp});
 
-	final String status;
-	final DateTime? timestamp;
+  final String status;
+  final DateTime? timestamp;
 
-	String get timestampLabel {
-		if (timestamp == null) {
-			return 'n/a';
-		}
+  String get timestampLabel {
+    if (timestamp == null) {
+      return 'n/a';
+    }
 
-		return timestamp!.toIso8601String();
-	}
+    return timestamp!.toIso8601String();
+  }
 
-	factory HealthCheck.fromJson(Map<String, dynamic> json) {
-		final statusRaw = json['status'];
-		final status = statusRaw is String && statusRaw.trim().isNotEmpty
-				? statusRaw.trim()
-				: 'unknown';
+  factory HealthCheck.fromJson(Map<String, dynamic> json) {
+    final statusRaw = json['status'];
+    final status = statusRaw is String && statusRaw.trim().isNotEmpty
+        ? statusRaw.trim()
+        : 'unknown';
 
-		DateTime? parsedTimestamp;
-		final timestampRaw = json['time'];
-		if (timestampRaw is String && timestampRaw.trim().isNotEmpty) {
-			parsedTimestamp = DateTime.tryParse(timestampRaw.trim());
-		}
+    DateTime? parsedTimestamp;
+    final timestampRaw = json['time'];
+    if (timestampRaw is String && timestampRaw.trim().isNotEmpty) {
+      parsedTimestamp = DateTime.tryParse(timestampRaw.trim());
+    }
 
-		return HealthCheck(status: status, timestamp: parsedTimestamp);
-	}
+    return HealthCheck(status: status, timestamp: parsedTimestamp);
+  }
 }
 
 class HealthService {
@@ -90,10 +92,10 @@ class HealthService {
 }
 
 class HealthServiceException implements Exception {
-	const HealthServiceException(this.message);
+  const HealthServiceException(this.message);
 
-	final String message;
+  final String message;
 
-	@override
-	String toString() => message;
+  @override
+  String toString() => message;
 }

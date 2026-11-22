@@ -75,12 +75,25 @@ class _FuelGaugeState extends State<FuelGauge> {
       child: TelemetryCard(
         child: LayoutBuilder(
           builder: (context, constraints) {
-            final mode = telemetryMode(constraints.maxWidth, constraints.maxHeight);
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
             return Padding(
               padding: const EdgeInsets.all(12),
               child: mode == TelemetryMode.small
-                  ? _SmallFuel(data: data, driverId: _driverId, fuelFraction: fuelFraction, fuelColor: fuelColor)
-                  : _LargeFuel(data: data, driverId: _driverId, fuelFraction: fuelFraction, fuelColor: fuelColor),
+                  ? _SmallFuel(
+                      data: data,
+                      driverId: _driverId,
+                      fuelFraction: fuelFraction,
+                      fuelColor: fuelColor,
+                    )
+                  : _LargeFuel(
+                      data: data,
+                      driverId: _driverId,
+                      fuelFraction: fuelFraction,
+                      fuelColor: fuelColor,
+                    ),
             );
           },
         ),
@@ -92,7 +105,12 @@ class _FuelGaugeState extends State<FuelGauge> {
 // ── Small ─────────────────────────────────────────────────────────────────────
 
 class _SmallFuel extends StatelessWidget {
-  const _SmallFuel({required this.data, required this.driverId, required this.fuelFraction, required this.fuelColor});
+  const _SmallFuel({
+    required this.data,
+    required this.driverId,
+    required this.fuelFraction,
+    required this.fuelColor,
+  });
   final TelemetrySnapshot data;
   final String driverId;
   final double fuelFraction;
@@ -117,11 +135,19 @@ class _SmallFuel extends StatelessWidget {
                 children: [
                   Text(
                     v.toStringAsFixed(1),
-                    style: AppTextStyles.display(color: fuelColor)
-                        .copyWith(fontSize: 36, fontWeight: FontWeight.bold, letterSpacing: -1),
+                    style: AppTextStyles.display(color: fuelColor).copyWith(
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -1,
+                    ),
                   ),
                   const SizedBox(width: 4),
-                  Text('kg', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 11)),
+                  Text(
+                    'kg',
+                    style: AppTextStyles.caption(
+                      color: AppColors.textMuted,
+                    ).copyWith(fontSize: 11),
+                  ),
                 ],
               ),
             ),
@@ -131,7 +157,9 @@ class _SmallFuel extends StatelessWidget {
           children: [
             Text(
               '~${data.lapsRemaining} tours',
-              style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 10),
+              style: AppTextStyles.caption(
+                color: AppColors.textSecondary,
+              ).copyWith(fontSize: 10),
             ),
           ],
         ),
@@ -145,7 +173,12 @@ class _SmallFuel extends StatelessWidget {
 // ── Large ─────────────────────────────────────────────────────────────────────
 
 class _LargeFuel extends StatelessWidget {
-  const _LargeFuel({required this.data, required this.driverId, required this.fuelFraction, required this.fuelColor});
+  const _LargeFuel({
+    required this.data,
+    required this.driverId,
+    required this.fuelFraction,
+    required this.fuelColor,
+  });
   final TelemetrySnapshot data;
   final String driverId;
   final double fuelFraction;
@@ -181,15 +214,26 @@ class _LargeFuel extends StatelessWidget {
                         Text(
                           v.toStringAsFixed(1),
                           style: AppTextStyles.display(color: fuelColor)
-                              .copyWith(fontSize: 46, fontWeight: FontWeight.bold, letterSpacing: -2),
+                              .copyWith(
+                                fontSize: 46,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -2,
+                              ),
                         ),
                         const SizedBox(width: 4),
-                        Text('kg', style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 12)),
+                        Text(
+                          'kg',
+                          style: AppTextStyles.caption(
+                            color: AppColors.textMuted,
+                          ).copyWith(fontSize: 12),
+                        ),
                       ],
                     ),
                     Text(
                       '~${data.lapsRemaining} tours',
-                      style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 11),
+                      style: AppTextStyles.caption(
+                        color: AppColors.textSecondary,
+                      ).copyWith(fontSize: 11),
                     ),
                   ],
                 ),
@@ -200,13 +244,21 @@ class _LargeFuel extends StatelessWidget {
         // Consumption row
         Row(
           children: [
-            _Stat(label: 'ACT', value: '${data.fuelPerLap.toStringAsFixed(2)} kg/t'),
+            _Stat(
+              label: 'ACT',
+              value: '${data.fuelPerLap.toStringAsFixed(2)} kg/t',
+            ),
             const SizedBox(width: 10),
-            _Stat(label: 'TGT', value: '${data.fuelTargetPerLap.toStringAsFixed(2)} kg/t'),
+            _Stat(
+              label: 'TGT',
+              value: '${data.fuelTargetPerLap.toStringAsFixed(2)} kg/t',
+            ),
             const Spacer(),
             Text(
               'Δ $sign${delta.toStringAsFixed(2)}',
-              style: AppTextStyles.caption(color: dColor).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
+              style: AppTextStyles.caption(
+                color: dColor,
+              ).copyWith(fontSize: 10, fontWeight: FontWeight.w700),
             ),
           ],
         ),
@@ -232,8 +284,18 @@ class _Stat extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(label, style: AppTextStyles.caption(color: AppColors.textMuted).copyWith(fontSize: 8)),
-        Text(value, style: AppTextStyles.caption(color: AppColors.textSecondary).copyWith(fontSize: 9, fontWeight: FontWeight.w600)),
+        Text(
+          label,
+          style: AppTextStyles.caption(
+            color: AppColors.textMuted,
+          ).copyWith(fontSize: 8),
+        ),
+        Text(
+          value,
+          style: AppTextStyles.caption(
+            color: AppColors.textSecondary,
+          ).copyWith(fontSize: 9, fontWeight: FontWeight.w600),
+        ),
       ],
     );
   }
@@ -255,19 +317,22 @@ class _SegmentedBar extends StatelessWidget {
         const n = 10;
         final filled = (f * n).round();
         return Row(
-          children: List.generate(n, (i) => Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(right: i < n - 1 ? 2.0 : 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(2),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  height: 5,
-                  color: i < filled ? color : AppColors.surface,
+          children: List.generate(
+            n,
+            (i) => Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(right: i < n - 1 ? 2.0 : 0),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(2),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    height: 5,
+                    color: i < filled ? color : AppColors.surface,
+                  ),
                 ),
               ),
             ),
-          )),
+          ),
         );
       },
     );

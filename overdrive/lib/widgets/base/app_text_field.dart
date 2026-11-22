@@ -179,7 +179,9 @@ class _AppTextFieldState extends State<AppTextField> {
                                 width: 22,
                                 height: 22,
                                 decoration: BoxDecoration(
-                                  color: AppColors.white.withValues(alpha: 0.12),
+                                  color: AppColors.white.withValues(
+                                    alpha: 0.12,
+                                  ),
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(

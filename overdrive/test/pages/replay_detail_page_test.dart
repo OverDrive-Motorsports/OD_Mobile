@@ -21,26 +21,27 @@ import '../helpers/test_app.dart';
 
 void main() {
   group('ReplayDetailPage', () {
-    testWidgets('renders race info, actions and standings for the mock replay', (
-      WidgetTester tester,
-    ) async {
-      await pumpTestApp(
-        tester,
-        ReplayDetailPage(replay: replayCatalogMock.first),
-      );
+    testWidgets(
+      'renders race info, actions and standings for the mock replay',
+      (WidgetTester tester) async {
+        await pumpTestApp(
+          tester,
+          ReplayDetailPage(replay: replayCatalogMock.first),
+        );
 
-      expect(find.text('Grand Prix de Bahrein 2024'), findsOneWidget);
-      expect(
-        find.text('Bahrain International Circuit · Sakhir, Bahrein'),
-        findsOneWidget,
-      );
+        expect(find.text('Grand Prix de Bahrein 2024'), findsOneWidget);
+        expect(
+          find.text('Bahrain International Circuit · Sakhir, Bahrein'),
+          findsOneWidget,
+        );
 
-      expect(find.text('ACCES'), findsOneWidget);
-      expect(find.text('TV'), findsOneWidget);
-      expect(find.text('Telemetrie'), findsOneWidget);
+        expect(find.text('ACCES'), findsOneWidget);
+        expect(find.text('TV'), findsOneWidget);
+        expect(find.text('Telemetrie'), findsOneWidget);
 
-      expect(find.text('Classement'), findsOneWidget);
-      expect(find.text('Pilotes'), findsOneWidget);
-    });
+        expect(find.text('Classement'), findsOneWidget);
+        expect(find.text('Pilotes'), findsOneWidget);
+      },
+    );
   });
 }

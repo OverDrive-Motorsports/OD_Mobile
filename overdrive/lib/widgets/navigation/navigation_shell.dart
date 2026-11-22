@@ -174,12 +174,14 @@ class _GlassBarState extends State<_GlassBar>
   }
 
   void _animateTo(int index, {double initialVelocity = 0.0}) {
-    _ctrl.animateWith(SpringSimulation(
-      _spring,
-      _position.value,
-      index.toDouble(),
-      initialVelocity,
-    ));
+    _ctrl.animateWith(
+      SpringSimulation(
+        _spring,
+        _position.value,
+        index.toDouble(),
+        initialVelocity,
+      ),
+    );
   }
 
   // Drag gesture — swipe across the bar to slide the selector.
@@ -187,7 +189,10 @@ class _GlassBarState extends State<_GlassBar>
     _ctrl.stop();
     final tabWidth = contentWidth / _tabs.length;
     final delta = d.delta.dx / tabWidth;
-    _position.value = (_position.value + delta).clamp(0.0, _maxIndex.toDouble());
+    _position.value = (_position.value + delta).clamp(
+      0.0,
+      _maxIndex.toDouble(),
+    );
     _velocity.value = delta;
   }
 
@@ -196,9 +201,7 @@ class _GlassBarState extends State<_GlassBar>
     final flingVel = d.velocity.pixelsPerSecond.dx / tabWidth;
     int target = _position.value.round();
     if (flingVel.abs() > 3.0) {
-      target = flingVel > 0
-          ? _position.value.ceil()
-          : _position.value.floor();
+      target = flingVel > 0 ? _position.value.ceil() : _position.value.floor();
     }
     target = target.clamp(0, _maxIndex);
     widget.onTap(target);
@@ -275,9 +278,16 @@ class _AnimatedTabIcon extends StatelessWidget {
     return ListenableBuilder(
       listenable: position,
       builder: (context, _) {
-        final proximity = (1.0 - (position.value - index).abs()).clamp(0.0, 1.0);
+        final proximity = (1.0 - (position.value - index).abs()).clamp(
+          0.0,
+          1.0,
+        );
         final isActive = proximity > 0.5;
-        final color = Color.lerp(AppColors.grayText, AppColors.white, proximity)!;
+        final color = Color.lerp(
+          AppColors.grayText,
+          AppColors.white,
+          proximity,
+        )!;
         final scale = 1.0 + proximity * 0.12;
 
         return Transform.scale(

@@ -257,13 +257,14 @@ class _EventCalendarCard extends StatelessWidget {
                                   event.name,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.bodyBold(
-                                    color: style.titleColor,
-                                  ).copyWith(
-                                    fontSize: 19,
-                                    height: 1.1,
-                                    letterSpacing: -0.2,
-                                  ),
+                                  style:
+                                      AppTextStyles.bodyBold(
+                                        color: style.titleColor,
+                                      ).copyWith(
+                                        fontSize: 19,
+                                        height: 1.1,
+                                        letterSpacing: -0.2,
+                                      ),
                                 ),
                               ],
                             ),
@@ -411,10 +412,7 @@ class _StatusPill extends StatelessWidget {
 
 // Shown when the filtered event list is empty; displays a centred icon, title, and subtitle.
 class _EventCalendarEmptyState extends StatelessWidget {
-  const _EventCalendarEmptyState({
-    required this.title,
-    required this.subtitle,
-  });
+  const _EventCalendarEmptyState({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;

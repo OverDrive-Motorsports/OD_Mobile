@@ -21,11 +21,6 @@ void main() {
     ) async {
       await pumpTestApp(tester, const TelemetryPage());
 
-      // The default 3-column speedometer tile has a pre-existing overflow
-      // at this fixed aspect ratio (unrelated to this test); consume it so
-      // it doesn't fail the test instead of asserting on unrelated pixels.
-      expect(tester.takeException(), isFlutterError);
-
       expect(find.text('Telemetry'), findsOneWidget);
     });
   });

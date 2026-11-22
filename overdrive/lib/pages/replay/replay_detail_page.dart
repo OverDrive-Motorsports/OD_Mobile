@@ -16,7 +16,8 @@ import '../../services/championship/championship_standing.dart';
 import '../../services/replay/replay_item.dart';
 import '../../widgets/base/app_button.dart';
 import '../../widgets/championships/championship_circuit_weather.dart';
-import '../../widgets/championships/championship_standings.dart' as standings_ui;
+import '../../widgets/championships/championship_standings.dart'
+    as standings_ui;
 
 /// Pre-race info for a single replay, with quick access to TV and telemetry.
 class ReplayDetailPage extends StatelessWidget {
@@ -71,12 +72,16 @@ class ReplayDetailPage extends StatelessWidget {
   /// Builds the visible content blocks in the order used by the page.
   List<Widget> _buildSections(BuildContext context) {
     final blocks = <Widget>[
-      ChampionshipCircuitWeatherCard(circuit: replay.circuit, weather: replay.weather),
+      ChampionshipCircuitWeatherCard(
+        circuit: replay.circuit,
+        weather: replay.weather,
+      ),
       _Section(
         label: 'Acces',
         child: _ReplayActionButtons(replay: replay),
       ),
-      if (replay.standings.isNotEmpty) _StandingsBlock(tables: replay.standings),
+      if (replay.standings.isNotEmpty)
+        _StandingsBlock(tables: replay.standings),
     ];
 
     return [
@@ -113,7 +118,11 @@ class _PageHero extends StatelessWidget {
         const SizedBox(height: 10),
         Row(
           children: [
-            const Icon(Icons.location_on_outlined, color: AppColors.textSecondary, size: 16),
+            const Icon(
+              Icons.location_on_outlined,
+              color: AppColors.textSecondary,
+              size: 16,
+            ),
             const SizedBox(width: 8),
             Expanded(
               child: Text(
@@ -328,35 +337,22 @@ class _ReplayBackground extends StatelessWidget {
     'formula_1' => const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [
-        Color(0x42E80000),
-        Color(0x12FFFFFF),
-        Color(0x00000000),
-      ],
+      colors: [Color(0x42E80000), Color(0x12FFFFFF), Color(0x00000000)],
       stops: _kStops3,
     ),
     'wec' => const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [
-        Color(0x421B52D4),
-        Color(0x12FFFFFF),
-        Color(0x00000000),
-      ],
+      colors: [Color(0x421B52D4), Color(0x12FFFFFF), Color(0x00000000)],
       stops: _kStops3,
     ),
     'motogp' => const LinearGradient(
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,
-      colors: [
-        Color(0x52CC0000),
-        Color(0x00000000),
-      ],
+      colors: [Color(0x52CC0000), Color(0x00000000)],
       stops: _kStops2,
     ),
-    _ => const LinearGradient(
-      colors: [Color(0x00000000), Color(0x00000000)],
-    ),
+    _ => const LinearGradient(colors: [Color(0x00000000), Color(0x00000000)]),
   };
 
   @override

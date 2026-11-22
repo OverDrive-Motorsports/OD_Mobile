@@ -38,16 +38,16 @@ void main() {
       );
 
       expect(find.text('PÉNALITÉS'), findsOneWidget);
-      expect(tester.takeException(), isFlutterError); // known pre-existing small-mode overflow, unrelated to this test
+      expect(
+        tester.takeException(),
+        isFlutterError,
+      ); // known pre-existing small-mode overflow, unrelated to this test
     });
 
     testWidgets('honors a custom initial driver id', (
       WidgetTester tester,
     ) async {
-      await pumpTelemetryTestApp(
-        tester,
-        const Penalty(initialDriverId: 'NOR'),
-      );
+      await pumpTelemetryTestApp(tester, const Penalty(initialDriverId: 'NOR'));
 
       expect(find.text('NOR'), findsOneWidget);
     });

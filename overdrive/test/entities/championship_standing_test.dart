@@ -41,8 +41,16 @@ void main() {
   group('ChampionshipStandingTable', () {
     test('stores type, label and entries', () {
       const entries = [
-        ChampionshipStandingEntry(position: 1, name: 'Max Verstappen', points: 400),
-        ChampionshipStandingEntry(position: 2, name: 'Lando Norris', points: 350),
+        ChampionshipStandingEntry(
+          position: 1,
+          name: 'Max Verstappen',
+          points: 400,
+        ),
+        ChampionshipStandingEntry(
+          position: 2,
+          name: 'Lando Norris',
+          points: 350,
+        ),
       ];
       const table = ChampionshipStandingTable(
         type: StandingType.drivers,

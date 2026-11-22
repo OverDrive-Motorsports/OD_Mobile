@@ -50,115 +50,145 @@ class _WeatherRadarState extends State<WeatherRadar>
   Widget build(BuildContext context) {
     final forecast = context.watch<TelemetrySimulator>().getWeatherForecast();
     final firstRain = forecast.indexWhere(
-        (h) => h.condition == 'rain' || h.condition == 'storm');
+      (h) => h.condition == 'rain' || h.condition == 'storm',
+    );
 
     return GestureDetector(
       onTap: () {
         final actions = TelemetryItemActions.maybeOf(context);
-        showTelemetryWidgetMenu(context,
-            widgetLabel: 'Radar Météo',
-            onReset: actions?.onReset,
-            onRemove: actions?.onRemove);
+        showTelemetryWidgetMenu(
+          context,
+          widgetLabel: 'Radar Météo',
+          onReset: actions?.onReset,
+          onRemove: actions?.onRemove,
+        );
       },
       child: TelemetryCard(
-        child: LayoutBuilder(builder: (context, constraints) {
-          final mode =
-              telemetryMode(constraints.maxWidth, constraints.maxHeight);
-          return Stack(
-            children: [
-              // ── Full-bleed radar map ──
-              Positioned.fill(
-                child: AnimatedBuilder(
-                  animation: _anim,
-                  builder: (_, _) => CustomPaint(
-                    painter: _RadarMapPainter(pulse: _anim.value),
-                    child: const SizedBox.expand(),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final mode = telemetryMode(
+              constraints.maxWidth,
+              constraints.maxHeight,
+            );
+            return Stack(
+              children: [
+                // ── Full-bleed radar map ──
+                Positioned.fill(
+                  child: AnimatedBuilder(
+                    animation: _anim,
+                    builder: (_, _) => CustomPaint(
+                      painter: _RadarMapPainter(pulse: _anim.value),
+                      child: const SizedBox.expand(),
+                    ),
                   ),
                 ),
-              ),
-              // ── UI overlay ──
-              Padding(
-                padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Top badges
-                    Row(
-                      children: [
-                        _Badge(
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              AnimatedBuilder(
-                                animation: _anim,
-                                builder: (_, _) => Container(
-                                  width: 5,
-                                  height: 5,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: AppColors.green.withValues(
-                                        alpha: 0.5 + _anim.value * 0.5),
+                // ── UI overlay ──
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Top badges
+                      Row(
+                        children: [
+                          _Badge(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AnimatedBuilder(
+                                  animation: _anim,
+                                  builder: (_, _) => Container(
+                                    width: 5,
+                                    height: 5,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: AppColors.green.withValues(
+                                        alpha: 0.5 + _anim.value * 0.5,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(width: 4),
-                              const Text('RADAR',
+                                const SizedBox(width: 4),
+                                const Text(
+                                  'RADAR',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 8,
                                     fontWeight: FontWeight.w700,
                                     letterSpacing: 0.5,
-                                  )),
-                            ],
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                        if (firstRain > 0 && mode == TelemetryMode.large) ...[
-                          const SizedBox(width: 5),
-                          _Badge(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(Icons.water_drop_rounded,
-                                    size: 8, color: Color(0xFF64B5F6)),
-                                const SizedBox(width: 3),
-                                Text('AVERSES ~${firstRain}H',
+                          if (firstRain > 0 && mode == TelemetryMode.large) ...[
+                            const SizedBox(width: 5),
+                            _Badge(
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Icon(
+                                    Icons.water_drop_rounded,
+                                    size: 8,
+                                    color: Color(0xFF64B5F6),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(
+                                    'AVERSES ~${firstRain}H',
                                     style: const TextStyle(
                                       color: Color(0xFF90CAF9),
                                       fontSize: 7,
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 0.3,
-                                    )),
-                              ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                      ],
-                    ),
-                    const Spacer(),
-                    // Legend (large mode only)
-                    if (mode == TelemetryMode.large)
-                      const _Badge(
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            _LegendDot(color: Color(0xFF00E5FF), label: 'LÉGÈRE'),
-                            SizedBox(width: 8),
-                            _LegendDot(color: Color(0xFF76FF03), label: 'MODÉRÉE'),
-                            SizedBox(width: 8),
-                            _LegendDot(color: Color(0xFFFFEE00), label: 'FORTE'),
-                            SizedBox(width: 8),
-                            _LegendDot(color: Color(0xFFFF6600), label: 'INTENSE'),
-                            SizedBox(width: 8),
-                            _LegendDot(color: Color(0xFFFF1100), label: 'EXTRÊME'),
                           ],
-                        ),
+                        ],
                       ),
-                  ],
+                      const Spacer(),
+                      // Legend (large mode only)
+                      if (mode == TelemetryMode.large)
+                        const _Badge(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _LegendDot(
+                                color: Color(0xFF00E5FF),
+                                label: 'LÉGÈRE',
+                              ),
+                              SizedBox(width: 8),
+                              _LegendDot(
+                                color: Color(0xFF76FF03),
+                                label: 'MODÉRÉE',
+                              ),
+                              SizedBox(width: 8),
+                              _LegendDot(
+                                color: Color(0xFFFFEE00),
+                                label: 'FORTE',
+                              ),
+                              SizedBox(width: 8),
+                              _LegendDot(
+                                color: Color(0xFFFF6600),
+                                label: 'INTENSE',
+                              ),
+                              SizedBox(width: 8),
+                              _LegendDot(
+                                color: Color(0xFFFF1100),
+                                label: 'EXTRÊME',
+                              ),
+                            ],
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          );
-        }),
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -202,12 +232,14 @@ class _LegendDot extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 3),
-        Text(label,
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 6.5,
-              fontWeight: FontWeight.w600,
-            )),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white70,
+            fontSize: 6.5,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ],
     );
   }
@@ -271,8 +303,7 @@ class _RadarMapPainter extends CustomPainter {
         ),
         textDirection: ui.TextDirection.ltr,
       )..layout();
-      tp.paint(canvas,
-          Offset(cx - r - tp.width - 2, cy + 2));
+      tp.paint(canvas, Offset(cx - r - tp.width - 2, cy + 2));
     }
 
     // ── Crosshairs ───────────────────────────────────────────────────────────
@@ -300,29 +331,41 @@ class _RadarMapPainter extends CustomPainter {
     canvas.drawLine(Offset(0, cy * 0.6), Offset(size.width, cy * 1.3), paint);
     canvas.drawLine(Offset(cx * 1.7, 0), Offset(cx * 0.4, size.height), paint);
     canvas.drawLine(
-        Offset(0, cy * 1.5), Offset(size.width * 0.7, cy * 0.3), paint);
+      Offset(0, cy * 1.5),
+      Offset(size.width * 0.7, cy * 0.3),
+      paint,
+    );
 
     // A small "water body" oval (muted blue)
     canvas.drawOval(
       Rect.fromCenter(
-          center: Offset(cx * 0.35, cy * 1.55), width: 28, height: 14),
+        center: Offset(cx * 0.35, cy * 1.55),
+        width: 28,
+        height: 14,
+      ),
       Paint()..color = const Color(0xFF8BBED6).withValues(alpha: 0.45),
     );
     canvas.drawOval(
       Rect.fromCenter(
-          center: Offset(cx * 1.70, cy * 0.45), width: 18, height: 10),
+        center: Offset(cx * 1.70, cy * 0.45),
+        width: 18,
+        height: 10,
+      ),
       Paint()..color = const Color(0xFF8BBED6).withValues(alpha: 0.40),
     );
   }
 
   // Layered precipitation blobs — cyan → green → yellow → orange → red
   void _drawPrecipitation(
-      Canvas canvas, Offset center, double maxR, double pulse) {
+    Canvas canvas,
+    Offset center,
+    double maxR,
+    double pulse,
+  ) {
     // Subtle scale pulse so the edges "breathe" slightly
     final p = 1.0 + (pulse - 0.5) * 0.012;
 
-    void blob(
-        double nx, double ny, double nr, Color color, double opacity) {
+    void blob(double nx, double ny, double nr, Color color, double opacity) {
       final bx = center.dx + nx * maxR * p;
       final by = center.dy + ny * maxR * p;
       final br = nr * maxR * p;
@@ -331,7 +374,10 @@ class _RadarMapPainter extends CustomPainter {
         br,
         Paint()
           ..shader = RadialGradient(
-            colors: [color.withValues(alpha: opacity), color.withValues(alpha: 0)],
+            colors: [
+              color.withValues(alpha: opacity),
+              color.withValues(alpha: 0),
+            ],
             stops: const [0.15, 1.0],
           ).createShader(Rect.fromCircle(center: Offset(bx, by), radius: br)),
       );
@@ -343,50 +389,50 @@ class _RadarMapPainter extends CustomPainter {
     blob(-0.18, -0.50, 0.42, const Color(0xFF00DDFF), 0.66);
     blob(-0.62, -0.18, 0.38, const Color(0xFF00D8FF), 0.64);
     blob(-0.22, -0.22, 0.32, const Color(0xFF00D0FF), 0.68);
-    blob( 0.08, -0.58, 0.30, const Color(0xFF00DDFF), 0.62);
-    blob(-0.38,  0.10, 0.28, const Color(0xFF00C8FF), 0.58); // SW extension
-    blob( 0.26, -0.40, 0.24, const Color(0xFF00CCFF), 0.62);
+    blob(0.08, -0.58, 0.30, const Color(0xFF00DDFF), 0.62);
+    blob(-0.38, 0.10, 0.28, const Color(0xFF00C8FF), 0.58); // SW extension
+    blob(0.26, -0.40, 0.24, const Color(0xFF00CCFF), 0.62);
     blob(-0.08, -0.12, 0.22, const Color(0xFF00C0FF), 0.60); // close to center
 
     // Layer 2 — medium cyan / blue-cyan
     blob(-0.22, -0.38, 0.34, const Color(0xFF00CCFF), 0.75);
-    blob( 0.12, -0.42, 0.26, const Color(0xFF00BBFF), 0.72);
+    blob(0.12, -0.42, 0.26, const Color(0xFF00BBFF), 0.72);
     blob(-0.05, -0.25, 0.22, const Color(0xFF00AAFF), 0.70);
 
     // Layer 3 — green (moderate rain)
     blob(-0.14, -0.32, 0.30, const Color(0xFF44EE00), 0.78);
-    blob( 0.14, -0.35, 0.24, const Color(0xFF66EE00), 0.74);
-    blob( 0.00, -0.20, 0.20, const Color(0xFF55DD00), 0.74);
-    blob( 0.18, -0.28, 0.16, const Color(0xFF77EE00), 0.70);
+    blob(0.14, -0.35, 0.24, const Color(0xFF66EE00), 0.74);
+    blob(0.00, -0.20, 0.20, const Color(0xFF55DD00), 0.74);
+    blob(0.18, -0.28, 0.16, const Color(0xFF77EE00), 0.70);
 
     // Layer 4 — yellow-green (heavy)
-    blob( 0.10, -0.26, 0.18, const Color(0xFFCCFF00), 0.82);
-    blob( 0.22, -0.22, 0.14, const Color(0xFFEEFF00), 0.78);
-    blob( 0.00, -0.16, 0.14, const Color(0xFFDDFF00), 0.78);
+    blob(0.10, -0.26, 0.18, const Color(0xFFCCFF00), 0.82);
+    blob(0.22, -0.22, 0.14, const Color(0xFFEEFF00), 0.78);
+    blob(0.00, -0.16, 0.14, const Color(0xFFDDFF00), 0.78);
 
     // Layer 5 — yellow (very heavy)
-    blob( 0.17, -0.18, 0.11, const Color(0xFFFFEE00), 0.86);
-    blob( 0.26, -0.14, 0.08, const Color(0xFFFFDD00), 0.82);
+    blob(0.17, -0.18, 0.11, const Color(0xFFFFEE00), 0.86);
+    blob(0.26, -0.14, 0.08, const Color(0xFFFFDD00), 0.82);
 
     // Layer 6 — orange (intense)
-    blob( 0.19, -0.12, 0.075, const Color(0xFFFF8800), 0.88);
-    blob( 0.28, -0.10, 0.055, const Color(0xFFFF6600), 0.86);
+    blob(0.19, -0.12, 0.075, const Color(0xFFFF8800), 0.88);
+    blob(0.28, -0.10, 0.055, const Color(0xFFFF6600), 0.86);
 
     // Layer 7 — red (extreme core)
-    blob( 0.21, -0.08, 0.042, const Color(0xFFFF2200), 0.92);
-    blob( 0.25, -0.06, 0.030, const Color(0xFFFF0000), 0.96);
+    blob(0.21, -0.08, 0.042, const Color(0xFFFF2200), 0.92);
+    blob(0.25, -0.06, 0.030, const Color(0xFFFF0000), 0.96);
 
     // ── Isolated cell — E/SE ─────────────────────────────────────────────────
-    blob( 0.66, 0.28, 0.14, const Color(0xFF00DDFF), 0.70);
-    blob( 0.66, 0.26, 0.09, const Color(0xFF55EE00), 0.76);
-    blob( 0.68, 0.23, 0.055, const Color(0xFFFFEE00), 0.84);
-    blob( 0.69, 0.21, 0.032, const Color(0xFFFF8800), 0.90);
-    blob( 0.70, 0.20, 0.016, const Color(0xFFFF2200), 0.94);
+    blob(0.66, 0.28, 0.14, const Color(0xFF00DDFF), 0.70);
+    blob(0.66, 0.26, 0.09, const Color(0xFF55EE00), 0.76);
+    blob(0.68, 0.23, 0.055, const Color(0xFFFFEE00), 0.84);
+    blob(0.69, 0.21, 0.032, const Color(0xFFFF8800), 0.90);
+    blob(0.70, 0.20, 0.016, const Color(0xFFFF2200), 0.94);
 
     // ── Scattered light rain — S/SE ──────────────────────────────────────────
-    blob( 0.06, 0.70, 0.09, const Color(0xFF00D8FF), 0.60);
+    blob(0.06, 0.70, 0.09, const Color(0xFF00D8FF), 0.60);
     blob(-0.24, 0.74, 0.07, const Color(0xFF00D0FF), 0.55);
-    blob( 0.32, 0.78, 0.06, const Color(0xFF00CCFF), 0.52);
+    blob(0.32, 0.78, 0.06, const Color(0xFF00CCFF), 0.52);
   }
 
   void _drawCircuitMarker(Canvas canvas, Offset center) {
@@ -411,10 +457,14 @@ class _RadarMapPainter extends CustomPainter {
       ..strokeWidth = 1.2;
     for (final angle in [0.0, math.pi / 2, math.pi, 3 * math.pi / 2]) {
       canvas.drawLine(
-        Offset(center.dx + math.cos(angle) * 4.5,
-            center.dy + math.sin(angle) * 4.5),
-        Offset(center.dx + math.cos(angle) * 7.0,
-            center.dy + math.sin(angle) * 7.0),
+        Offset(
+          center.dx + math.cos(angle) * 4.5,
+          center.dy + math.sin(angle) * 4.5,
+        ),
+        Offset(
+          center.dx + math.cos(angle) * 7.0,
+          center.dy + math.sin(angle) * 7.0,
+        ),
         tickPaint,
       );
     }

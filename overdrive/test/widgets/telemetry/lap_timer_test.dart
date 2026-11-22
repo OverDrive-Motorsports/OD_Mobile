@@ -19,21 +19,24 @@ void main() {
   group('LapTimer', () {
     // LapTimer owns its own Stopwatch/Timer and does not read TelemetrySimulator,
     // so it does not need the telemetry provider — plain pumpTestApp is enough.
-    testWidgets('renders the large layout with header, best label and play/lap controls', (
-      WidgetTester tester,
-    ) async {
-      await pumpTestApp(
-        tester,
-        const Scaffold(
-          body: Center(child: SizedBox(width: 320, height: 320, child: LapTimer())),
-        ),
-      );
+    testWidgets(
+      'renders the large layout with header, best label and play/lap controls',
+      (WidgetTester tester) async {
+        await pumpTestApp(
+          tester,
+          const Scaffold(
+            body: Center(
+              child: SizedBox(width: 320, height: 320, child: LapTimer()),
+            ),
+          ),
+        );
 
-      expect(find.text('LAP TIMER'), findsOneWidget);
-      expect(find.text('BEST'), findsOneWidget);
-      expect(find.text('PAUSE'), findsOneWidget);
-      expect(find.text('LAP'), findsOneWidget);
-    });
+        expect(find.text('LAP TIMER'), findsOneWidget);
+        expect(find.text('BEST'), findsOneWidget);
+        expect(find.text('PAUSE'), findsOneWidget);
+        expect(find.text('LAP'), findsOneWidget);
+      },
+    );
 
     testWidgets('renders the small layout without throwing', (
       WidgetTester tester,
@@ -41,12 +44,17 @@ void main() {
       await pumpTestApp(
         tester,
         const Scaffold(
-          body: Center(child: SizedBox(width: 150, height: 150, child: LapTimer())),
+          body: Center(
+            child: SizedBox(width: 150, height: 150, child: LapTimer()),
+          ),
         ),
       );
 
       expect(find.text('LAP TIMER'), findsOneWidget);
-      expect(tester.takeException(), isFlutterError); // known pre-existing small-mode overflow, unrelated to this test
+      expect(
+        tester.takeException(),
+        isFlutterError,
+      ); // known pre-existing small-mode overflow, unrelated to this test
     });
 
     testWidgets('the pause button toggles to PLAY when tapped', (
@@ -55,7 +63,9 @@ void main() {
       await pumpTestApp(
         tester,
         const Scaffold(
-          body: Center(child: SizedBox(width: 320, height: 320, child: LapTimer())),
+          body: Center(
+            child: SizedBox(width: 320, height: 320, child: LapTimer()),
+          ),
         ),
       );
 
@@ -73,7 +83,9 @@ void main() {
       await pumpTestApp(
         tester,
         const Scaffold(
-          body: Center(child: SizedBox(width: 320, height: 320, child: LapTimer())),
+          body: Center(
+            child: SizedBox(width: 320, height: 320, child: LapTimer()),
+          ),
         ),
       );
 

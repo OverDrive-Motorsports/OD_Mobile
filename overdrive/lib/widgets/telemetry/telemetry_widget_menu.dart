@@ -20,11 +20,11 @@ import 'telemetry_mock_data.dart';
 
 // Maps a team name to its official brand colour; falls back to AppColors.gold for unknown teams.
 Color teamColor(String team) => switch (team) {
-      'Red Bull Racing' => const Color(0xFF3671C6),
-      'Ferrari' => const Color(0xFFE8002D),
-      'McLaren' => const Color(0xFFFF8000),
-      _ => AppColors.gold,
-    };
+  'Red Bull Racing' => const Color(0xFF3671C6),
+  'Ferrari' => const Color(0xFFE8002D),
+  'McLaren' => const Color(0xFFFF8000),
+  _ => AppColors.gold,
+};
 
 // ── Public entry point ──────────────────────────────────────────────────
 
@@ -89,9 +89,10 @@ class _TelemetryMenuRoute extends PopupRoute<void> {
     Animation<double> secondaryAnimation,
   ) {
     final fade = CurvedAnimation(parent: animation, curve: Curves.easeOut);
-    final scale = Tween<double>(begin: 0.92, end: 1.0).animate(
-      CurvedAnimation(parent: animation, curve: Curves.easeOutBack),
-    );
+    final scale = Tween<double>(
+      begin: 0.92,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutBack));
 
     return Material(
       type: MaterialType.transparency,
@@ -210,7 +211,9 @@ class _MenuCard extends StatelessWidget {
                         padding: const EdgeInsets.fromLTRB(18, 10, 18, 4),
                         child: Text(
                           'DRIVER',
-                          style: AppTextStyles.label(color: AppColors.textMuted),
+                          style: AppTextStyles.label(
+                            color: AppColors.textMuted,
+                          ),
                         ),
                       ),
                       for (final driver in TelemetryMockData.drivers)
@@ -298,8 +301,9 @@ class _DriverRow extends StatelessWidget {
               alignment: Alignment.center,
               child: Text(
                 driver['id'] as String,
-                style: AppTextStyles.label(color: AppColors.white)
-                    .copyWith(fontSize: 10),
+                style: AppTextStyles.label(
+                  color: AppColors.white,
+                ).copyWith(fontSize: 10),
               ),
             ),
             const SizedBox(width: 10),
