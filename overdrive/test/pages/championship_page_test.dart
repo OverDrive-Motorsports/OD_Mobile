@@ -11,12 +11,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:overdrive/pages/championship/championship_data_loader.dart';
+import 'package:overdrive/pages/championship/championship_page.dart';
+import 'package:overdrive/services/championship/championship_data.dart';
+import 'package:overdrive/services/championship/championship_enums.dart';
+import 'package:overdrive/services/championship/championship_mock_data.dart';
 
-import '../../lib/pages/championship/championship_data_loader.dart';
-import '../../lib/pages/championship/championship_page.dart';
-import '../../lib/services/championship/championship_data.dart';
-import '../../lib/services/championship/championship_enums.dart';
-import '../../lib/services/championship/championship_mock_data.dart';
 import '../helpers/test_app.dart';
 
 typedef ChampionshipLoadHandler =

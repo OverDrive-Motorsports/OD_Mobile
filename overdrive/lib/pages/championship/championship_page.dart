@@ -121,9 +121,9 @@ class _ChampionshipPageState extends State<ChampionshipPage> {
     final headline = _resolveHeadline(_selectedData);
 
     if (_isLoading) {
-      return Scaffold(
+      return const Scaffold(
         backgroundColor: AppColors.background,
-        body: const Center(child: CircularProgressIndicator()),
+        body: Center(child: CircularProgressIndicator()),
       );
     }
 

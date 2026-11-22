@@ -7,8 +7,6 @@
 ##
 */
 
-import 'dart:math' as math;
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/foundation.dart';
@@ -199,10 +197,10 @@ class AuthService extends ChangeNotifier {
 
   /// Secure storage keys.
   /// Needed to persist authentication data between application launches.
-  static const _tokenKey = "od_access_token";
-  static const _sessionIdKey = "od_session_id";
-  static const _refreshTokenKey = "od_refresh_token";
-  static const _expiresAtKey = "od_expires_at";
+  static const _tokenKey = 'od_access_token';
+  static const _sessionIdKey = 'od_session_id';
+  static const _refreshTokenKey = 'od_refresh_token';
+  static const _expiresAtKey = 'od_expires_at';
 
   final Dio _dio;
   final FlutterSecureStorage _storage;
@@ -221,9 +219,9 @@ class AuthService extends ChangeNotifier {
   /// Authenticates user credentials and creates a session.
   /// Needed to obtain JWT and refresh token for protected API requests.
   Future<AuthTokens> login(String email, String password) async {
-    final tokens = await _authenticate("/login", {
-      "email": email.trim(),
-      "password": password.trim(),
+    final tokens = await _authenticate('/login', {
+      'email': email.trim(),
+      'password': password.trim(),
     });
     _isAuthenticated = true;
     notifyListeners();
@@ -236,11 +234,11 @@ class AuthService extends ChangeNotifier {
   Future<void> signup(String email, String password, String username) async {
     try {
       final response = await _dio.post(
-        "/register",
+        '/register',
         data: {
-          "email": email.trim(),
-          "password": password.trim(),
-          "username": username.trim(),
+          'email': email.trim(),
+          'password': password.trim(),
+          'username': username.trim(),
         },
       );
 
@@ -272,7 +270,7 @@ class AuthService extends ChangeNotifier {
 
       if (tokens == null) {
         throw const AuthServiceException(
-          "Authentication payload missing required token fields",
+          'Authentication payload missing required token fields',
         );
       }
 
@@ -327,7 +325,7 @@ class AuthService extends ChangeNotifier {
     // Validate refresh token availability before contacting backend.
     // Needed because token refresh is impossible without existing session credentials.
     if (refresh == null) {
-      throw const AuthServiceException("No refresh token");
+      throw const AuthServiceException('No refresh token');
     }
 
     final session = await sessionId;
@@ -335,12 +333,12 @@ class AuthService extends ChangeNotifier {
     // Validate session identifier before refresh request.
     // Needed to correctly identify the active user session.
     if (session == null) {
-      throw const AuthServiceException("No session id");
+      throw const AuthServiceException('No session id');
     }
 
     final response = await _dio.post(
-      "/refresh",
-      data: {"sessionId": session, "refreshToken": refresh},
+      '/refresh',
+      data: {'sessionId': session, 'refreshToken': refresh},
     );
 
     // Validate backend refresh response.
@@ -360,7 +358,7 @@ class AuthService extends ChangeNotifier {
     // Ensure backend returned new valid credentials.
     // Needed to avoid replacing working session with incomplete data.
     if (refreshed == null) {
-      throw const AuthServiceException("Invalid refresh response");
+      throw const AuthServiceException('Invalid refresh response');
     }
 
     // Creates updated authentication model with refreshed credentials.
@@ -459,20 +457,20 @@ class AuthService extends ChangeNotifier {
   /// Needed to display meaningful authentication errors to the user.
   String _extractError(dynamic data) {
     if (data is Map<String, dynamic>) {
-      return data["error"] ?? data["message"] ?? "Authentication failed";
+      return data['error'] ?? data['message'] ?? 'Authentication failed';
     }
 
-    return "Authentication failed";
+    return 'Authentication failed';
   }
 
   /// Converts network exceptions into application-level errors.
   /// Needed to hide HTTP client details from authentication screens.
   String _resolveError(DioException e) {
     if (e.type == DioExceptionType.connectionTimeout) {
-      return "Backend timeout";
+      return 'Backend timeout';
     }
 
-    return e.message ?? "Network error";
+    return e.message ?? 'Network error';
   }
 
   /// Resolves backend URL from configuration and platform defaults.
