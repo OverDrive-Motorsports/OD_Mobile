@@ -39,9 +39,10 @@ const List<MenuOverlayItem> _championshipMenuItems = [
 
 /// Adaptive championship screen rendered from a single data payload.
 class ChampionshipPage extends StatefulWidget {
-  const ChampionshipPage({super.key, required this.data});
+  const ChampionshipPage({super.key, required this.data, this.dataLoader});
 
   final ChampionshipData data;
+  final ChampionshipDataLoader? dataLoader;
 
   @override
   State<ChampionshipPage> createState() => _ChampionshipPageState();
@@ -50,109 +51,109 @@ class ChampionshipPage extends StatefulWidget {
 class _ChampionshipPageState extends State<ChampionshipPage> {
   late ChampionshipData _selectedData;
 
-  final ChampionshipDataLoader _dataLoader = ChampionshipDataLoader();
+  late final ChampionshipDataLoader _dataLoader;
 
   bool _isLoading = true;
   String? _loadError;
 
   @override
   void initState() {
-      super.initState();
-      _selectedData = widget.data;
-      _loadChampionshipData(widget.data.id);
+    super.initState();
+
+    _selectedData = widget.data;
+    _dataLoader = widget.dataLoader ?? ChampionshipDataLoader();
+
+    if (widget.data.id == 'formula_1' || widget.data.id == 'f1') {
+      _loadChampionshipData('formula_1');
+    } else {
+      // WEC and MotoGP remain mock-backed until Gateway support exists.
+      _isLoading = false;
+    }
   }
 
   Future<void> _loadChampionshipData(String championshipCode) async {
+    setState(() {
+      _isLoading = true;
+      _loadError = null;
+    });
+
+    try {
+      final data = await _dataLoader.load(championshipCode);
+
+      if (!mounted) return;
+
       setState(() {
-          _isLoading = true;
-          _loadError = null;
+        _selectedData = data;
+        _isLoading = false;
       });
+    } catch (error) {
+      if (!mounted) return;
 
-      try {
-          final data = await _dataLoader.load(championshipCode);
-
-          if (!mounted) return;
-
-          setState(() {
-              _selectedData = data;
-              _isLoading = false;
-          });
-      } catch (error) {
-          if (!mounted) return;
-
-          setState(() {
-              _loadError = error.toString();
-              _isLoading = false;
-          });
-      }
+      setState(() {
+        _loadError = error.toString();
+        _isLoading = false;
+      });
+    }
   }
 
   int get _selectedMenuIndex =>
       championshipMocks.indexWhere((d) => d.id == _selectedData.id);
 
-void _onChampionshipSelected(int index) {
-  final selectedChampionship = championshipMocks[index];
+  void _onChampionshipSelected(int index) {
+    final selectedChampionship = championshipMocks[index];
 
-  if (selectedChampionship.id == 'formula_1' ||
-      selectedChampionship.id == 'f1') {
-    _loadChampionshipData('formula_1');
-    return;
+    if (selectedChampionship.id == 'formula_1' ||
+        selectedChampionship.id == 'f1') {
+      _loadChampionshipData('formula_1');
+      return;
+    }
+
+    setState(() {
+      _selectedData = selectedChampionship;
+      _loadError = null;
+      _isLoading = false;
+    });
   }
 
-  setState(() {
-    _selectedData = selectedChampionship;
-    _loadError = null;
-    _isLoading = false;
-  });
-}
-
-
-@override
-Widget build(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     final now = DateTime.now();
     final headline = _resolveHeadline(_selectedData);
 
     if (_isLoading) {
-        return Scaffold(
-            backgroundColor: AppColors.background,
-            body: const Center(
-                child: CircularProgressIndicator(),
-            ),
-        );
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
 
     if (_loadError != null) {
-        return Scaffold(
-            backgroundColor: AppColors.background,
-            body: Center(
-                child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                            const Text(
-                                'Impossible de charger le championnat.',
-                                textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                                _loadError!,
-                                textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                                onPressed: () {
-                                    _loadChampionshipData(
-                                        widget.data.id,
-                                    );
-                                },
-                                child: const Text('Réessayer'),
-                            ),
-                        ],
-                    ),
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  'Impossible de charger le championnat.',
+                  textAlign: TextAlign.center,
                 ),
+                const SizedBox(height: 12),
+                Text(_loadError!, textAlign: TextAlign.center),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _loadChampionshipData(widget.data.id);
+                  },
+                  child: const Text('Réessayer'),
+                ),
+              ],
             ),
-        );
+          ),
+        ),
+      );
     }
 
     return Scaffold(

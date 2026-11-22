@@ -5,30 +5,25 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../../services/auth/auth_refresh_interceptor.dart';
 
 class ChampionshipGatewayClient {
-    ChampionshipGatewayClient({Dio? dio, String? baseUrl})
-        : _dio = dio ?? _buildDio(baseUrl ?? _resolveBaseUrl()) {
-        if (dio != null) {
-            _dio.interceptors.add(
-                AuthRefreshInterceptor(_dio),
-            );
-        }
+  ChampionshipGatewayClient({Dio? dio, String? baseUrl})
+    : _dio = dio ?? _buildDio(baseUrl ?? _resolveBaseUrl()) {
+    if (dio != null) {
+      _dio.interceptors.add(AuthRefreshInterceptor(_dio));
     }
+  }
 
-    final Dio _dio;
-
+  final Dio _dio;
 
   static Dio _buildDio(String baseUrl) {
     final dio = Dio(
-        BaseOptions(
-            baseUrl: baseUrl,
-            connectTimeout: const Duration(seconds: 15),
-            receiveTimeout: const Duration(seconds: 60),
-        ),
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 60),
+      ),
     );
 
-    dio.interceptors.add(
-        AuthRefreshInterceptor(dio),
-    );
+    dio.interceptors.add(AuthRefreshInterceptor(dio));
 
     return dio;
   }
@@ -50,29 +45,51 @@ class ChampionshipGatewayClient {
         type: DioExceptionType.badResponse,
       );
     }
-debugPrint('Championship API response: ${response.data}');
+    debugPrint('Championship API response: ${response.data}');
     return response;
   }
 
   static String _resolveBaseUrl([String? explicitBaseUrl]) {
     final targetPlatform = defaultTargetPlatform;
+
     final fromExplicit = (explicitBaseUrl ?? '').trim();
     final explicitCandidate = _normalizeHostForPlatform(
       fromExplicit,
       platform: targetPlatform,
     );
-    if (explicitCandidate.isNotEmpty && Uri.tryParse(explicitCandidate) != null) {
+
+    if (_isValidUrl(explicitCandidate)) {
       return explicitCandidate;
     }
 
-    final envUrl =
-        dotenv.env['GATEWAY_BASE_URL'] ?? dotenv.env['API_BASE_URL'];
-    final gatewayUrl = _normalizeHostForPlatform(
-      envUrl ?? 'http://localhost:3000',
+    var envUrl = '';
+
+    if (dotenv.isInitialized) {
+      envUrl =
+          (dotenv.env['GATEWAY_BASE_URL'] ?? dotenv.env['API_BASE_URL'] ?? '')
+              .trim();
+    }
+
+    final gatewayCandidate = _normalizeHostForPlatform(
+      envUrl,
       platform: targetPlatform,
     );
 
-    return gatewayUrl;
+    if (_isValidUrl(gatewayCandidate)) {
+      return gatewayCandidate;
+    }
+
+    return targetPlatform == TargetPlatform.android
+        ? 'http://10.0.2.2:3000'
+        : 'http://localhost:3000';
+  }
+
+  static bool _isValidUrl(String value) {
+    final uri = Uri.tryParse(value);
+
+    return uri != null &&
+        (uri.scheme == 'http' || uri.scheme == 'https') &&
+        uri.host.isNotEmpty;
   }
 
   static String _normalizeHostForPlatform(
@@ -89,7 +106,8 @@ debugPrint('Championship API response: ${response.data}');
     }
 
     final targetPlatform = platform ?? defaultTargetPlatform;
-    final isAndroidLocalhost = targetPlatform == TargetPlatform.android &&
+    final isAndroidLocalhost =
+        targetPlatform == TargetPlatform.android &&
         (uri.host == 'localhost' || uri.host == '127.0.0.1');
 
     if (isAndroidLocalhost) {
